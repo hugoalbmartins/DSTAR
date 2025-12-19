@@ -246,6 +246,8 @@ async def create_sale(sale_data: SaleCreate, current_user: dict = Depends(get_cu
     sale_dict["updated_at"] = sale_dict["updated_at"].isoformat()
     
     await db.sales.insert_one(sale_dict)
+    # Remove MongoDB _id before returning
+    sale_dict.pop("_id", None)
     return sale_dict
 
 @api_router.get("/sales")
