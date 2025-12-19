@@ -685,7 +685,14 @@ class CRMLeiritrixTester:
             self.test_toggle_user_status,
             self.test_reports_generation,
             self.test_invalid_login,
-            self.test_unauthorized_access
+            self.test_unauthorized_access,
+            # New comprehensive tests for review requirements
+            self.test_partner_management,
+            self.test_energy_dual_sale,
+            self.test_telecom_sale,
+            self.test_sales_filtering,
+            self.test_sale_edit_restrictions,
+            self.test_user_edit_delete
         ]
         
         # Run tests
