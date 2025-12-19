@@ -1,34 +1,278 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
-}
-
-.App-header {
-    background-color: #0f0f10;
+/* Sidebar styles */
+.sidebar {
+    background-color: #0d474f;
+    border-right: 1px solid rgba(200, 243, 29, 0.1);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
+    width: 260px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 40;
+}
+
+.sidebar-item {
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.2s ease;
+    border-radius: 0.3rem;
+    margin: 0.25rem 0;
+}
+
+.sidebar-item:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-item.active {
+    background-color: #c8f31d;
+    color: #0d474f;
+    font-weight: 700;
+    box-shadow: 0 0 15px rgba(200, 243, 29, 0.4);
+}
+
+/* Main content area */
+.main-content {
+    margin-left: 260px;
+    min-height: 100vh;
+    background-color: #0d474f;
+}
+
+/* Top bar */
+.top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background-color: rgba(13, 71, 79, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(200, 243, 29, 0.1);
+}
+
+/* Metric cards */
+.metric-card {
+    background-color: #082d32;
+    border: 1px solid rgba(200, 243, 29, 0.15);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.3);
+}
+
+.metric-value {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    color: #c8f31d;
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 0.5rem;
+}
+
+/* Data table */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.5);
+    background-color: #062428;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 500;
+}
+
+.data-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     color: white;
 }
 
-.App-link {
-    color: #61dafb;
+.data-table tr {
+    transition: background-color 0.15s ease;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
+.data-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Form inputs */
+.form-input {
+    background-color: #082d32;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 0.3rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+    border-color: #c8f31d;
+    box-shadow: 0 0 0 2px rgba(200, 243, 29, 0.2);
+    outline: none;
+}
+
+.form-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.5rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #c8f31d;
+    color: #0d474f;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.3rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 0 10px rgba(200, 243, 29, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: #d4f92e;
+    box-shadow: 0 0 20px rgba(200, 243, 29, 0.5);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 0.3rem;
+}
+
+.btn-ghost:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Badge */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Alert panel */
+.alert-item {
+    background-color: #082d32;
+    border-left: 4px solid #c8f31d;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: 0 0.3rem 0.3rem 0;
+    transition: transform 0.2s ease;
+}
+
+.alert-item:hover {
+    transform: translateX(4px);
+}
+
+/* Login page */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0d474f 0%, #062428 100%);
+}
+
+.login-card {
+    background-color: #082d32;
+    border: 1px solid rgba(200, 243, 29, 0.2);
+    border-radius: 0.5rem;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Chart container */
+.chart-container {
+    background-color: #082d32;
+    border: 1px solid rgba(200, 243, 29, 0.1);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+}
+
+/* Responsive sidebar */
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
     }
-    to {
-        transform: rotate(360deg);
+    
+    .sidebar.open {
+        transform: translateX(0);
     }
+    
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+/* Loading spinner */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(200, 243, 29, 0.2);
+    border-top-color: #c8f31d;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Page transitions */
+.page-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.page-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
