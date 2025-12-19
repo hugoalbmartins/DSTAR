@@ -253,7 +253,7 @@ class CRMLeiritrixTester:
         )
         
         if success:
-            required_fields = ['id', 'client_name', 'category', 'partner', 'status', 'seller_name']
+            required_fields = ['id', 'client_name', 'category', 'partner_name', 'status', 'seller_name']
             for field in required_fields:
                 if field not in response:
                     self.log(f"❌ Missing field in sale detail: {field}")
