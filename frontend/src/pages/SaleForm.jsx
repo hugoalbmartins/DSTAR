@@ -358,20 +358,23 @@ export default function SaleForm() {
                 </Select>
               </div>
 
-              <div>
-                <Label htmlFor="contract_value" className="form-label">Valor do Contrato (€)</Label>
-                <Input
-                  id="contract_value"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.contract_value}
-                  onChange={(e) => handleChange("contract_value", e.target.value)}
-                  className="form-input"
-                  placeholder="0.00"
-                  data-testid="contract-value-input"
-                />
-              </div>
+              {/* Mensalidade Contratada - apenas para Telecomunicações */}
+              {formData.category === "telecomunicacoes" && (
+                <div>
+                  <Label htmlFor="contract_value" className="form-label">Mensalidade Contratada (€)</Label>
+                  <Input
+                    id="contract_value"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.contract_value}
+                    onChange={(e) => handleChange("contract_value", e.target.value)}
+                    className="form-input"
+                    placeholder="0.00"
+                    data-testid="contract-value-input"
+                  />
+                </div>
+              )}
 
               <div>
                 <Label htmlFor="loyalty_months" className="form-label">Prazo de Fidelização (meses)</Label>
