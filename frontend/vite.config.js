@@ -20,5 +20,21 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          recharts: ['recharts'],
+          'ui-components': [
+            '@/components/ui/card',
+            '@/components/ui/button',
+            '@/components/ui/input',
+            '@/components/ui/select',
+            '@/components/ui/dialog',
+            '@/components/ui/table'
+          ]
+        }
+      }
+    }
   },
 })
