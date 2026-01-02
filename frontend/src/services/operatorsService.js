@@ -2,20 +2,43 @@ import { supabase } from '@/lib/supabase';
 
 export const operatorsService = {
   async getOperators(partnerId = null, includeInactive = false) {
-    let query = supabase.from('operators').select('*');
-
     if (partnerId) {
-      query = query.eq('partner_id', partnerId);
+      let query = supabase
+        .from('partner_operators')
+        .select(`
+          operators:operator_id (
+            id,
+            name,
+            categories,
+            commission_visible_to_bo,
+            active,
+            created_at,
+            updated_at
+          )
+        `)
+        .eq('partner_id', partnerId);
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      let operators = data.map(item => item.operators).filter(Boolean);
+
+      if (!includeInactive) {
+        operators = operators.filter(op => op.active);
+      }
+
+      return operators.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      let query = supabase.from('operators').select('*');
+
+      if (!includeInactive) {
+        query = query.eq('active', true);
+      }
+
+      const { data, error } = await query.order('name', { ascending: true });
+      if (error) throw error;
+      return data;
     }
-
-    if (!includeInactive) {
-      query = query.eq('active', true);
-    }
-
-    const { data, error } = await query.order('name', { ascending: true });
-
-    if (error) throw error;
-    return data;
   },
 
   async getOperatorById(operatorId) {
@@ -89,6 +112,44 @@ export const operatorsService = {
       ...operatorData,
       sales: salesData,
       salesCount: salesData.length,
+    };
+  },
+
+  async associateOperatorWithPartner(operatorId, partnerId) {
+    const { data, error } = await supabase
+      .from('partner_operators')
+      .insert([{ partner_id: partnerId, operator_id: operatorId }])
+      .select();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async dissociateOperatorFromPartner(operatorId, partnerId) {
+    const { error } = await supabase
+      .from('partner_operators')
+      .delete()
+      .eq('partner_id', partnerId)
+      .eq('operator_id', operatorId);
+
+    if (error) throw error;
+  },
+
+  async getAvailableOperatorsForPartner(partnerId) {
+    const allOperators = await this.getOperators(null, false);
+
+    const { data: associations, error } = await supabase
+      .from('partner_operators')
+      .select('operator_id')
+      .eq('partner_id', partnerId);
+
+    if (error) throw error;
+
+    const associatedIds = new Set(associations.map(a => a.operator_id));
+
+    return {
+      associated: allOperators.filter(op => associatedIds.has(op.id)),
+      available: allOperators.filter(op => !associatedIds.has(op.id))
     };
   },
 };

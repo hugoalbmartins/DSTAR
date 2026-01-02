@@ -214,11 +214,17 @@ export default function Partners() {
     }
   };
 
+  const [availableOperators, setAvailableOperators] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const operatorsPerPage = 5;
+
   const openOperatorsModal = async (partner) => {
     setSelectedPartner(partner);
+    setCurrentPage(1);
     try {
-      const operatorsData = await operatorsService.getOperatorsByPartner(partner.id);
-      setOperators(operatorsData);
+      const { associated, available } = await operatorsService.getAvailableOperatorsForPartner(partner.id);
+      setOperators(associated);
+      setAvailableOperators(available);
       setOperatorsModalOpen(true);
     } catch (error) {
       toast.error("Erro ao carregar operadoras");
@@ -274,17 +280,38 @@ export default function Partners() {
       } else {
         const created = await operatorsService.createOperator({
           ...operatorFormData,
-          partner_id: selectedPartner.id,
           active: true
         });
+        await operatorsService.associateOperatorWithPartner(created.id, selectedPartner.id);
         setOperators([...operators, created]);
-        toast.success("Operadora criada");
+        setAvailableOperators(availableOperators.filter(o => o.id !== created.id));
+        toast.success("Operadora criada e associada");
       }
       setOperatorModalOpen(false);
     } catch (error) {
       toast.error("Erro ao guardar operadora");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleToggleOperatorAssociation = async (operator) => {
+    const isAssociated = operators.some(o => o.id === operator.id);
+
+    try {
+      if (isAssociated) {
+        await operatorsService.dissociateOperatorFromPartner(operator.id, selectedPartner.id);
+        setOperators(operators.filter(o => o.id !== operator.id));
+        setAvailableOperators([...availableOperators, operator]);
+        toast.success("Operadora desassociada");
+      } else {
+        await operatorsService.associateOperatorWithPartner(operator.id, selectedPartner.id);
+        setOperators([...operators, operator]);
+        setAvailableOperators(availableOperators.filter(o => o.id !== operator.id));
+        toast.success("Operadora associada");
+      }
+    } catch (error) {
+      toast.error("Erro ao atualizar associação");
     }
   };
 
@@ -620,7 +647,7 @@ export default function Partners() {
 
       {/* Operators Modal */}
       <Dialog open={operatorsModalOpen} onOpenChange={setOperatorsModalOpen}>
-        <DialogContent className="bg-[#082d32] border-white/10 max-w-2xl">
+        <DialogContent className="bg-[#082d32] border-white/10 max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-white font-['Manrope']">
               Operadoras - {selectedPartner?.name}
@@ -629,7 +656,7 @@ export default function Partners() {
           <div className="py-4">
             <div className="flex justify-between items-center mb-4">
               <p className="text-white/50 text-sm">
-                {operators.length} operadora{operators.length !== 1 ? 's' : ''}
+                {operators.length} operadora{operators.length !== 1 ? 's' : ''} associada{operators.length !== 1 ? 's' : ''}
               </p>
               <Button
                 onClick={openCreateOperatorModal}
@@ -641,37 +668,40 @@ export default function Partners() {
               </Button>
             </div>
 
-            {operators.length > 0 ? (
-              <div className="space-y-2">
-                {operators.map((operator) => (
-                  <Card key={operator.id} className="card-leiritrix">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 flex-1">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${operator.active ? 'bg-[#c8f31d]/20' : 'bg-white/10'}`}>
-                            <Radio size={16} className={operator.active ? 'text-[#c8f31d]' : 'text-white/40'} />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-white font-medium">{operator.name}</p>
-                            <div className="flex gap-2 mt-1">
-                              {operator.commission_visible_to_bo ? (
-                                <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 text-xs">
-                                  Comissões Visíveis BO
-                                </Badge>
-                              ) : (
-                                <Badge className="bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs">
-                                  Comissões Ocultas BO
-                                </Badge>
-                              )}
-                              {!operator.active && (
-                                <Badge className="bg-red-500/20 text-red-400 border border-red-500/30 text-xs">
-                                  Inativa
-                                </Badge>
-                              )}
+            {/* Associated Operators */}
+            {operators.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-white font-medium mb-3 text-sm">Operadoras Associadas</h3>
+                <div className="space-y-2">
+                  {operators.map((operator) => (
+                    <Card key={operator.id} className="card-leiritrix">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1">
+                            <Checkbox
+                              checked={true}
+                              onCheckedChange={() => handleToggleOperatorAssociation(operator)}
+                              className="border-[#c8f31d]"
+                            />
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${operator.active ? 'bg-[#c8f31d]/20' : 'bg-white/10'}`}>
+                              <Radio size={16} className={operator.active ? 'text-[#c8f31d]' : 'text-white/40'} />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-white font-medium">{operator.name}</p>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {operator.categories && operator.categories.map((cat) => {
+                                  const option = CATEGORY_OPTIONS.find(opt => opt.value === cat);
+                                  const Icon = option?.icon || Radio;
+                                  return (
+                                    <Badge key={cat} className="bg-[#c8f31d]/20 text-[#c8f31d] border border-[#c8f31d]/30 text-xs">
+                                      <Icon size={10} className="mr-1" />
+                                      {option?.label.split(' - ')[1] || cat}
+                                    </Badge>
+                                  );
+                                })}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex gap-2">
                           <Button
                             onClick={() => openEditOperatorModal(operator)}
                             variant="ghost"
@@ -680,32 +710,87 @@ export default function Partners() {
                           >
                             <Edit2 size={16} />
                           </Button>
-                          <Button
-                            onClick={() => toggleOperatorActive(operator.id)}
-                            variant="ghost"
-                            size="sm"
-                            className={`${operator.active ? 'text-red-400 hover:bg-red-400/10' : 'text-green-400 hover:bg-green-400/10'}`}
-                          >
-                            {operator.active ? <PowerOff size={16} /> : <Power size={16} />}
-                          </Button>
-                          <Button
-                            onClick={() => setOperatorDeleteId(operator.id)}
-                            variant="ghost"
-                            size="sm"
-                            className="text-white/70 hover:text-red-400"
-                          >
-                            <Trash2 size={16} />
-                          </Button>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
-            ) : (
+            )}
+
+            {/* Available Operators */}
+            {availableOperators.length > 0 && (
+              <div>
+                <h3 className="text-white font-medium mb-3 text-sm">Operadoras Disponíveis</h3>
+                <div className="space-y-2">
+                  {availableOperators
+                    .slice((currentPage - 1) * operatorsPerPage, currentPage * operatorsPerPage)
+                    .map((operator) => (
+                      <Card key={operator.id} className="card-leiritrix">
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              checked={false}
+                              onCheckedChange={() => handleToggleOperatorAssociation(operator)}
+                              className="border-white/30"
+                            />
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${operator.active ? 'bg-[#c8f31d]/20' : 'bg-white/10'}`}>
+                              <Radio size={16} className={operator.active ? 'text-[#c8f31d]' : 'text-white/40'} />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-white font-medium">{operator.name}</p>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {operator.categories && operator.categories.map((cat) => {
+                                  const option = CATEGORY_OPTIONS.find(opt => opt.value === cat);
+                                  const Icon = option?.icon || Radio;
+                                  return (
+                                    <Badge key={cat} className="bg-white/10 text-white/70 border border-white/20 text-xs">
+                                      <Icon size={10} className="mr-1" />
+                                      {option?.label.split(' - ')[1] || cat}
+                                    </Badge>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </div>
+
+                {/* Pagination */}
+                {availableOperators.length > operatorsPerPage && (
+                  <div className="flex justify-center items-center gap-2 mt-4">
+                    <Button
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      size="sm"
+                      variant="ghost"
+                      className="text-white/70"
+                    >
+                      Anterior
+                    </Button>
+                    <span className="text-white/70 text-sm">
+                      Página {currentPage} de {Math.ceil(availableOperators.length / operatorsPerPage)}
+                    </span>
+                    <Button
+                      onClick={() => setCurrentPage(p => Math.min(Math.ceil(availableOperators.length / operatorsPerPage), p + 1))}
+                      disabled={currentPage >= Math.ceil(availableOperators.length / operatorsPerPage)}
+                      size="sm"
+                      variant="ghost"
+                      className="text-white/70"
+                    >
+                      Próxima
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {operators.length === 0 && availableOperators.length === 0 && (
               <div className="text-center py-8 text-white/50">
                 <Radio size={48} className="mx-auto mb-2 text-white/20" />
-                <p>Nenhuma operadora registada</p>
+                <p>Nenhuma operadora disponível</p>
               </div>
             )}
           </div>

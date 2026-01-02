@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { operatorsService } from "@/services/operatorsService";
-import { partnersService } from "@/services/partnersService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,13 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -65,7 +57,6 @@ const getCategoryLabel = (category) => {
 
 export default function Operators() {
   const [operators, setOperators] = useState([]);
-  const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingOperator, setEditingOperator] = useState(null);
@@ -74,7 +65,6 @@ export default function Operators() {
 
   const [formData, setFormData] = useState({
     name: "",
-    partner_id: "",
     categories: [],
     commission_visible_to_bo: false
   });
@@ -85,14 +75,10 @@ export default function Operators() {
 
   const fetchData = async () => {
     try {
-      const [operatorsData, partnersData] = await Promise.all([
-        operatorsService.getOperators(null, true),
-        partnersService.getPartners(true)
-      ]);
+      const operatorsData = await operatorsService.getOperators(null, true);
       setOperators(operatorsData);
-      setPartners(partnersData);
     } catch (error) {
-      toast.error("Erro ao carregar dados");
+      toast.error("Erro ao carregar operadoras");
     } finally {
       setLoading(false);
     }
@@ -102,7 +88,6 @@ export default function Operators() {
     setEditingOperator(null);
     setFormData({
       name: "",
-      partner_id: "",
       categories: [],
       commission_visible_to_bo: false
     });
@@ -113,7 +98,6 @@ export default function Operators() {
     setEditingOperator(operator);
     setFormData({
       name: operator.name || "",
-      partner_id: operator.partner_id || "",
       categories: operator.categories || [],
       commission_visible_to_bo: operator.commission_visible_to_bo || false
     });
@@ -132,11 +116,6 @@ export default function Operators() {
   const handleSave = async () => {
     if (!formData.name) {
       toast.error("Nome da operadora é obrigatório");
-      return;
-    }
-
-    if (!formData.partner_id) {
-      toast.error("Parceiro é obrigatório");
       return;
     }
 
@@ -160,6 +139,7 @@ export default function Operators() {
         toast.success("Operadora criada");
       }
       setModalOpen(false);
+      fetchData();
     } catch (error) {
       toast.error("Erro ao guardar operadora");
     } finally {
@@ -190,11 +170,6 @@ export default function Operators() {
     } catch (error) {
       toast.error("Erro ao atualizar status");
     }
-  };
-
-  const getPartnerName = (partnerId) => {
-    const partner = partners.find(p => p.id === partnerId);
-    return partner ? partner.name : "Desconhecido";
   };
 
   if (loading) {
@@ -244,11 +219,6 @@ export default function Operators() {
                 </div>
 
                 <div className="space-y-3 mb-4">
-                  <div>
-                    <p className="text-white/50 text-xs mb-1">Parceiro</p>
-                    <p className="text-white text-sm">{getPartnerName(operator.partner_id)}</p>
-                  </div>
-
                   <div>
                     <p className="text-white/50 text-xs mb-2">Categorias</p>
                     <div className="flex flex-wrap gap-1">
@@ -347,25 +317,6 @@ export default function Operators() {
                 placeholder="Nome da operadora"
                 data-testid="operator-name-input"
               />
-            </div>
-
-            <div>
-              <Label className="form-label">Parceiro *</Label>
-              <Select
-                value={formData.partner_id}
-                onValueChange={(v) => setFormData({ ...formData, partner_id: v })}
-              >
-                <SelectTrigger className="form-input mt-1" data-testid="operator-partner-select">
-                  <SelectValue placeholder="Selecione o parceiro" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#082d32] border-white/10">
-                  {partners.filter(p => p.active).map((partner) => (
-                    <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
-                      {partner.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
             <div>
