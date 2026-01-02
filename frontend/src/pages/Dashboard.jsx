@@ -149,10 +149,12 @@ export default function Dashboard() {
           .reduce((sum, s) => sum + (s.commission_partner || 0), 0);
       };
 
-      const calcBackofficeCommission = (salesList, percentage, minimum) => {
+      const calcBackofficeCommission = (salesList, percentage, threshold) => {
         const visibleCommissions = calcPartnerCommissions(salesList);
-        const calculated = visibleCommissions * (percentage / 100);
-        return Math.max(calculated, minimum || 0);
+        if (visibleCommissions < (threshold || 0)) {
+          return 0;
+        }
+        return visibleCommissions * (percentage / 100);
       };
 
       const currentMonthMensalidades = calcMensalidadesTelecom(currentMonthSales);
@@ -190,10 +192,10 @@ export default function Dashboard() {
         };
       } else if (user.role === 'backoffice') {
         const percentage = currentUserData?.commission_percentage || 0;
-        const minimum = currentUserData?.commission_minimum || 0;
+        const threshold = currentUserData?.commission_threshold || 0;
 
-        const currentMonthBoCommission = calcBackofficeCommission(currentMonthSales, percentage, minimum);
-        const lastYearBoCommission = calcBackofficeCommission(lastYearSameMonthSales, percentage, minimum);
+        const currentMonthBoCommission = calcBackofficeCommission(currentMonthSales, percentage, threshold);
+        const lastYearBoCommission = calcBackofficeCommission(lastYearSameMonthSales, percentage, threshold);
 
         const currentMonthPartnerCommissions = calcPartnerCommissions(currentMonthSales);
         const lastYearPartnerCommissions = calcPartnerCommissions(lastYearSameMonthSales);

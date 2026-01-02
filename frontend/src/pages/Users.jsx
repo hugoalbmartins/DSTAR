@@ -71,7 +71,7 @@ export default function Users() {
     confirmPassword: "",
     role: "vendedor",
     commission_percentage: 0,
-    commission_minimum: 0
+    commission_threshold: 0
   });
 
   const handleGeneratePassword = () => {
@@ -106,7 +106,7 @@ export default function Users() {
       confirmPassword: "",
       role: "vendedor",
       commission_percentage: 0,
-      commission_minimum: 0
+      commission_threshold: 0
     });
     setShowPassword(false);
     setShowConfirmPassword(false);
@@ -122,7 +122,7 @@ export default function Users() {
       confirmPassword: "",
       role: user.role || "vendedor",
       commission_percentage: user.commission_percentage || 0,
-      commission_minimum: user.commission_minimum || 0
+      commission_threshold: user.commission_threshold || 0
     });
     setShowPassword(false);
     setShowConfirmPassword(false);
@@ -153,7 +153,7 @@ export default function Users() {
           email: formData.email,
           role: formData.role,
           commission_percentage: formData.role === 'backoffice' ? formData.commission_percentage : 0,
-          commission_minimum: formData.role === 'backoffice' ? formData.commission_minimum : 0
+          commission_threshold: formData.role === 'backoffice' ? formData.commission_threshold : 0
         };
 
         const updated = await usersService.updateUser(editingUser.id, updateData);
@@ -168,7 +168,7 @@ export default function Users() {
             name: formData.name,
             role: formData.role,
             commission_percentage: formData.role === 'backoffice' ? formData.commission_percentage : 0,
-            commission_minimum: formData.role === 'backoffice' ? formData.commission_minimum : 0
+            commission_threshold: formData.role === 'backoffice' ? formData.commission_threshold : 0
           }
         );
         setUsers([...users, newUser]);
@@ -446,19 +446,19 @@ export default function Users() {
                   </p>
                 </div>
                 <div>
-                  <Label className="form-label">Comissão Mínima Garantida (€)</Label>
+                  <Label className="form-label">Limiar Mínimo de Comissões (€)</Label>
                   <Input
                     type="number"
                     min="0"
                     step="0.01"
-                    value={formData.commission_minimum || 0}
-                    onChange={(e) => setFormData({ ...formData, commission_minimum: parseFloat(e.target.value) || 0 })}
+                    value={formData.commission_threshold || 0}
+                    onChange={(e) => setFormData({ ...formData, commission_threshold: parseFloat(e.target.value) || 0 })}
                     className="form-input mt-1"
                     placeholder="0.00"
-                    data-testid="user-commission-minimum-input"
+                    data-testid="user-commission-threshold-input"
                   />
                   <p className="text-xs text-white/40 mt-1">
-                    Valor mínimo garantido de comissões mensais
+                    Valor mínimo de comissões totais visíveis que precisa ser atingido para receber comissão
                   </p>
                 </div>
               </>
