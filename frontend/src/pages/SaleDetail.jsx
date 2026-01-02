@@ -128,7 +128,7 @@ export default function SaleDetail({ editMode = false }) {
         req: sale.category === "telecomunicacoes" ? editReq : null
       };
 
-      if (isAdminOrBackoffice && sale?.operators?.commission_visible_to_bo) {
+      if (isAdminOrBackoffice && (user.role === 'admin' || sale?.operators?.commission_visible_to_bo)) {
         if (sale.is_backoffice) {
           if (editCommissionBackoffice) {
             const commissionBackofficeValue = parseFloat(editCommissionBackoffice);
@@ -343,8 +343,8 @@ export default function SaleDetail({ editMode = false }) {
                 </div>
               )}
 
-              {/* Commissions - editable by Admin/BO if operator allows */}
-              {isAdminOrBackoffice && sale?.operators?.commission_visible_to_bo && (
+              {/* Commissions - editable by Admin always, by BO if operator allows */}
+              {isAdminOrBackoffice && (user.role === 'admin' || sale?.operators?.commission_visible_to_bo) && (
                 <>
                   {sale.is_backoffice ? (
                     <div>
@@ -401,7 +401,7 @@ export default function SaleDetail({ editMode = false }) {
                   )}
                 </>
               )}
-              {isAdminOrBackoffice && sale?.operators && !sale.operators.commission_visible_to_bo && (
+              {user.role === 'backoffice' && sale?.operators && !sale.operators.commission_visible_to_bo && (
                 <div className="md:col-span-2">
                   <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
                     <p className="text-orange-400 text-sm flex items-center gap-2">
@@ -487,8 +487,8 @@ export default function SaleDetail({ editMode = false }) {
               </div>
             )}
             
-            {/* Commissions - only visible if operator allows */}
-            {sale.operators?.commission_visible_to_bo ? (
+            {/* Commissions - visible to Admin always, to BO if operator allows */}
+            {user.role === 'admin' || sale.operators?.commission_visible_to_bo ? (
               <>
                 {sale.is_backoffice ? (
                   <div>
