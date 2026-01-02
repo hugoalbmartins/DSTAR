@@ -69,7 +69,9 @@ export default function Users() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "vendedor"
+    role: "vendedor",
+    commission_percentage: 0,
+    commission_minimum: 0
   });
 
   const handleGeneratePassword = () => {
@@ -97,7 +99,15 @@ export default function Users() {
 
   const openCreateModal = () => {
     setEditingUser(null);
-    setFormData({ name: "", email: "", password: "", confirmPassword: "", role: "vendedor" });
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "vendedor",
+      commission_percentage: 0,
+      commission_minimum: 0
+    });
     setShowPassword(false);
     setShowConfirmPassword(false);
     setModalOpen(true);
@@ -110,7 +120,9 @@ export default function Users() {
       email: user.email || "",
       password: "",
       confirmPassword: "",
-      role: user.role || "vendedor"
+      role: user.role || "vendedor",
+      commission_percentage: user.commission_percentage || 0,
+      commission_minimum: user.commission_minimum || 0
     });
     setShowPassword(false);
     setShowConfirmPassword(false);
@@ -139,7 +151,9 @@ export default function Users() {
         const updateData = {
           name: formData.name,
           email: formData.email,
-          role: formData.role
+          role: formData.role,
+          commission_percentage: formData.role === 'backoffice' ? formData.commission_percentage : 0,
+          commission_minimum: formData.role === 'backoffice' ? formData.commission_minimum : 0
         };
 
         const updated = await usersService.updateUser(editingUser.id, updateData);
@@ -152,7 +166,9 @@ export default function Users() {
           {
             email: formData.email,
             name: formData.name,
-            role: formData.role
+            role: formData.role,
+            commission_percentage: formData.role === 'backoffice' ? formData.commission_percentage : 0,
+            commission_minimum: formData.role === 'backoffice' ? formData.commission_minimum : 0
           }
         );
         setUsers([...users, newUser]);
@@ -409,6 +425,44 @@ export default function Users() {
                 </SelectContent>
               </Select>
             </div>
+
+            {formData.role === 'backoffice' && (
+              <>
+                <div>
+                  <Label className="form-label">Percentagem de Comissão (%)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    value={formData.commission_percentage || 0}
+                    onChange={(e) => setFormData({ ...formData, commission_percentage: parseFloat(e.target.value) || 0 })}
+                    className="form-input mt-1"
+                    placeholder="0.00"
+                    data-testid="user-commission-percentage-input"
+                  />
+                  <p className="text-xs text-white/40 mt-1">
+                    Percentagem sobre comissões de operadoras visíveis (0-100%)
+                  </p>
+                </div>
+                <div>
+                  <Label className="form-label">Comissão Mínima Garantida (€)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.commission_minimum || 0}
+                    onChange={(e) => setFormData({ ...formData, commission_minimum: parseFloat(e.target.value) || 0 })}
+                    className="form-input mt-1"
+                    placeholder="0.00"
+                    data-testid="user-commission-minimum-input"
+                  />
+                  <p className="text-xs text-white/40 mt-1">
+                    Valor mínimo garantido de comissões mensais
+                  </p>
+                </div>
+              </>
+            )}
           </div>
           <DialogFooter>
             <Button
