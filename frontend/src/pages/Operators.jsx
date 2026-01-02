@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "@/App";
 import { operatorsService } from "@/services/operatorsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -56,6 +57,7 @@ const getCategoryLabel = (category) => {
 };
 
 export default function Operators() {
+  const { isAdmin, user } = useAuth();
   const [operators, setOperators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -241,11 +243,11 @@ export default function Operators() {
                   <div>
                     {operator.commission_visible_to_bo ? (
                       <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 text-xs">
-                        Comissões Visíveis BO
+                        {isAdmin ? "Comissões Visíveis BO" : "Com comissão a contabilizar"}
                       </Badge>
                     ) : (
-                      <Badge className="bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs">
-                        Comissões Ocultas BO
+                      <Badge className="bg-white/10 text-white/60 border border-white/10 text-xs">
+                        {isAdmin ? "Comissões Ocultas BO" : "Sem comissão a contabilizar"}
                       </Badge>
                     )}
                   </div>
@@ -348,20 +350,22 @@ export default function Operators() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
-              <div className="flex-1">
-                <Label className="form-label mb-1">Comissões Visíveis para Backoffice</Label>
-                <p className="text-white/50 text-xs">
-                  Se ativo, os utilizadores de backoffice podem ver e registar comissões nas vendas desta operadora
-                </p>
+            {isAdmin && (
+              <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
+                <div className="flex-1">
+                  <Label className="form-label mb-1">Comissões Visíveis para Backoffice</Label>
+                  <p className="text-white/50 text-xs">
+                    Se ativo, os utilizadores de backoffice podem ver e registar comissões nas vendas desta operadora
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.commission_visible_to_bo}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, commission_visible_to_bo: checked })
+                  }
+                />
               </div>
-              <Switch
-                checked={formData.commission_visible_to_bo}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, commission_visible_to_bo: checked })
-                }
-              />
-            </div>
+            )}
           </div>
           <DialogFooter>
             <Button

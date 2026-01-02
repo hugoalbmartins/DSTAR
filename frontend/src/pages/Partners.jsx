@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "@/App";
 import { partnersService } from "@/services/partnersService";
 import { operatorsService } from "@/services/operatorsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,6 +51,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 export default function Partners() {
+  const { isAdmin } = useAuth();
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -736,20 +738,22 @@ export default function Partners() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
-              <div className="flex-1">
-                <Label className="form-label mb-1">Comissões Visíveis para Backoffice</Label>
-                <p className="text-white/50 text-xs">
-                  Se ativo, os utilizadores de backoffice podem ver e registar comissões nas vendas desta operadora
-                </p>
+            {isAdmin && (
+              <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
+                <div className="flex-1">
+                  <Label className="form-label mb-1">Comissões Visíveis para Backoffice</Label>
+                  <p className="text-white/50 text-xs">
+                    Se ativo, os utilizadores de backoffice podem ver e registar comissões nas vendas desta operadora
+                  </p>
+                </div>
+                <Switch
+                  checked={operatorFormData.commission_visible_to_bo}
+                  onCheckedChange={(checked) =>
+                    setOperatorFormData({ ...operatorFormData, commission_visible_to_bo: checked })
+                  }
+                />
               </div>
-              <Switch
-                checked={operatorFormData.commission_visible_to_bo}
-                onCheckedChange={(checked) =>
-                  setOperatorFormData({ ...operatorFormData, commission_visible_to_bo: checked })
-                }
-              />
-            </div>
+            )}
           </div>
           <DialogFooter>
             <Button

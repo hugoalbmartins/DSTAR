@@ -403,10 +403,10 @@ export default function SaleDetail({ editMode = false }) {
               )}
               {user.role === 'backoffice' && sale?.operators && !sale.operators.commission_visible_to_bo && (
                 <div className="md:col-span-2">
-                  <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
-                    <p className="text-orange-400 text-sm flex items-center gap-2">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <p className="text-white/60 text-sm flex items-center gap-2">
                       <AlertTriangle size={16} />
-                      As comissões desta venda não são visíveis para o Backoffice. A operadora <strong>{sale.operators.name}</strong> tem comissões ocultas.
+                      Operadora sem comissão a contabilizar
                     </p>
                   </div>
                 </div>
@@ -533,16 +533,11 @@ export default function SaleDetail({ editMode = false }) {
                 )}
               </>
             ) : (
-              <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
-                <p className="text-orange-400 text-sm flex items-center gap-2">
+              <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                <p className="text-white/60 text-sm flex items-center gap-2">
                   <AlertTriangle size={16} />
-                  Comissões ocultas para o Backoffice
+                  Operadora sem comissão a contabilizar
                 </p>
-                {sale.operators?.name && (
-                  <p className="text-white/40 text-xs mt-1">
-                    Operadora: {sale.operators.name}
-                  </p>
-                )}
               </div>
             )}
           </CardContent>
