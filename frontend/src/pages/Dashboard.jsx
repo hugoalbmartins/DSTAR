@@ -60,16 +60,19 @@ const PIE_COLORS = ["#c8f31d", "#3b82f6", "#f59e0b"];
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const now = new Date();
   const [metrics, setMetrics] = useState(null);
   const [monthlyStats, setMonthlyStats] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasSellers, setHasSellers] = useState(false);
   const [hasHiddenOperators, setHasHiddenOperators] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   const fetchData = async () => {
     try {
@@ -91,9 +94,8 @@ export default function Dashboard() {
         setHasHiddenOperators(hiddenOperators.length > 0);
       }
 
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth();
+      const currentYear = selectedYear;
+      const currentMonth = selectedMonth;
       const lastYear = currentYear - 1;
 
       const currentYearSales = [];
@@ -290,8 +292,62 @@ export default function Dashboard() {
     return value >= 0 ? 'text-green-400' : 'text-red-400';
   };
 
+  const months = [
+    { value: 0, label: "Janeiro" },
+    { value: 1, label: "Fevereiro" },
+    { value: 2, label: "Março" },
+    { value: 3, label: "Abril" },
+    { value: 4, label: "Maio" },
+    { value: 5, label: "Junho" },
+    { value: 6, label: "Julho" },
+    { value: 7, label: "Agosto" },
+    { value: 8, label: "Setembro" },
+    { value: 9, label: "Outubro" },
+    { value: 10, label: "Novembro" },
+    { value: 11, label: "Dezembro" }
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
+
   return (
     <div className="space-y-6" data-testid="dashboard">
+      {/* Month/Year Filter */}
+      <Card className="card-leiritrix">
+        <CardContent className="p-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="text-[#c8f31d]" size={20} />
+              <span className="text-white font-['Manrope'] font-medium">Período:</span>
+            </div>
+            <div className="flex gap-3">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                className="bg-[#082d32] border border-white/10 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-[#c8f31d] transition-colors font-['Manrope']"
+              >
+                {months.map((month) => (
+                  <option key={month.value} value={month.value}>
+                    {month.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                className="bg-[#082d32] border border-white/10 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-[#c8f31d] transition-colors font-['Manrope']"
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Metrics Grid - Main KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="metric-card" data-testid="metric-month-sales">
@@ -299,7 +355,7 @@ export default function Dashboard() {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <p className="metric-value">{metrics?.sales_this_month || 0}</p>
-                <p className="metric-label">Vendas Este Mês</p>
+                <p className="metric-label">Vendas do Mês</p>
               </div>
               <div className="bg-[#c8f31d]/10 p-2 rounded-lg">
                 <TrendingUp className="text-[#c8f31d]" size={20} />
