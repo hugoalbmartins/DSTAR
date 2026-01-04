@@ -362,7 +362,7 @@ export default function SaleDetail({ editMode = false }) {
                       <div>
                         <Label className="form-label flex items-center gap-2">
                           <Euro size={14} className="text-[#c8f31d]" />
-                          Comissão Parceiro (€)
+                          Comissão Operadora (€)
                         </Label>
                         <Input
                           type="number"
@@ -492,7 +492,7 @@ export default function SaleDetail({ editMode = false }) {
                       )}
                     </div>
                     <div>
-                      <p className="text-white/50 text-sm mb-1">Comissão Parceiro</p>
+                      <p className="text-white/50 text-sm mb-1">Comissão Operadora</p>
                       {sale.commission_partner !== null && sale.commission_partner !== undefined ? (
                         <p className="text-2xl font-bold text-green-400 font-mono">
                           {formatCurrency(sale.commission_partner)}

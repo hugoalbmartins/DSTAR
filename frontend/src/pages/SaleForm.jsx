@@ -590,24 +590,26 @@ export default function SaleForm() {
                 )}
               </div>
 
-              <div>
-                <Label htmlFor="seller_id" className="form-label">Vendedor</Label>
-                <Select value={formData.seller_id} onValueChange={(v) => handleChange("seller_id", v)}>
-                  <SelectTrigger className="form-input" data-testid="seller-select">
-                    <SelectValue placeholder="Selecione o vendedor" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
-                    <SelectItem value="none" className="text-white hover:bg-white/10">
-                      Nenhum
-                    </SelectItem>
-                    {sellers.map((seller) => (
-                      <SelectItem key={seller.id} value={seller.id} className="text-white hover:bg-white/10">
-                        {seller.name}
+              {sellers.length > 0 && (
+                <div>
+                  <Label htmlFor="seller_id" className="form-label">Vendedor</Label>
+                  <Select value={formData.seller_id} onValueChange={(v) => handleChange("seller_id", v)}>
+                    <SelectTrigger className="form-input" data-testid="seller-select">
+                      <SelectValue placeholder="Selecione o vendedor" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#082d32] border-white/10">
+                      <SelectItem value="none" className="text-white hover:bg-white/10">
+                        Nenhum
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                      {sellers.map((seller) => (
+                        <SelectItem key={seller.id} value={seller.id} className="text-white hover:bg-white/10">
+                          {seller.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               {/* Mensalidade Contratada - apenas para Telecomunicações */}
               {formData.category === "telecomunicacoes" && (
