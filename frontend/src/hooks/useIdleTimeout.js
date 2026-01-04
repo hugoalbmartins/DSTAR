@@ -2,18 +2,29 @@ import { useEffect, useRef } from 'react';
 
 export function useIdleTimeout(onIdle, idleTime = 1800000) {
   const timeoutId = useRef(null);
-
-  const resetTimer = () => {
-    if (timeoutId.current) {
-      clearTimeout(timeoutId.current);
-    }
-
-    timeoutId.current = setTimeout(() => {
-      onIdle();
-    }, idleTime);
-  };
+  const onIdleRef = useRef(onIdle);
 
   useEffect(() => {
+    onIdleRef.current = onIdle;
+  }, [onIdle]);
+
+  useEffect(() => {
+    if (!onIdleRef.current) {
+      return;
+    }
+
+    const resetTimer = () => {
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current);
+      }
+
+      timeoutId.current = setTimeout(() => {
+        if (onIdleRef.current) {
+          onIdleRef.current();
+        }
+      }, idleTime);
+    };
+
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
 
     const handleActivity = () => {
@@ -35,7 +46,7 @@ export function useIdleTimeout(onIdle, idleTime = 1800000) {
         clearTimeout(timeoutId.current);
       }
     };
-  }, [idleTime, onIdle]);
+  }, [idleTime]);
 
   return null;
 }

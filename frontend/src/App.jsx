@@ -87,12 +87,14 @@ const AuthProvider = ({ children }) => {
       setUser(null);
       setShowPasswordChange(false);
       toast.warning("Sessão expirada por inatividade");
+      window.location.href = '/login';
     } catch (error) {
       console.error("Error during idle logout:", error);
+      window.location.href = '/login';
     }
   };
 
-  useIdleTimeout(user ? handleIdleTimeout : () => {}, 1800000);
+  useIdleTimeout(user ? handleIdleTimeout : null, 1800000);
 
   const handlePasswordChanged = async (currentPassword, newPassword) => {
     await authService.changePassword(currentPassword, newPassword);
