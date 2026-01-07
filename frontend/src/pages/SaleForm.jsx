@@ -138,7 +138,9 @@ export default function SaleForm() {
     previous_monthly_value: "",
     new_monthly_value: "",
     seller_commission: "",
-    partner_commission: ""
+    partner_commission: "",
+    client_type: "",
+    portfolio_status: ""
   });
 
   useEffect(() => {
@@ -305,7 +307,9 @@ export default function SaleForm() {
         saleType: formData.sale_type,
         clientNif: formData.client_nif,
         loyaltyMonths: loyaltyMonths,
-        clientCategoryId: formData.client_category_id
+        clientCategoryId: formData.client_category_id,
+        clientType: formData.client_type,
+        portfolioStatus: formData.portfolio_status
       });
 
       if (!rule || rule.isManual) {
@@ -1105,6 +1109,53 @@ export default function SaleForm() {
                           {category.name}
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <div>
+                <Label htmlFor="client_type" className="form-label">Tipo de Cliente *</Label>
+                <Select
+                  value={formData.client_type}
+                  onValueChange={(v) => {
+                    handleChange("client_type", v);
+                    if (v === "residencial") {
+                      handleChange("portfolio_status", "");
+                    }
+                  }}
+                >
+                  <SelectTrigger className="form-input" data-testid="client-type-select">
+                    <SelectValue placeholder="Selecione o tipo de cliente" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#082d32] border-white/10">
+                    <SelectItem value="residencial" className="text-white hover:bg-white/10">
+                      Residencial
+                    </SelectItem>
+                    <SelectItem value="empresarial" className="text-white hover:bg-white/10">
+                      Empresarial
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {formData.client_type === "empresarial" && (
+                <div>
+                  <Label htmlFor="portfolio_status" className="form-label">Encarteiramento *</Label>
+                  <Select
+                    value={formData.portfolio_status}
+                    onValueChange={(v) => handleChange("portfolio_status", v)}
+                  >
+                    <SelectTrigger className="form-input" data-testid="portfolio-status-select">
+                      <SelectValue placeholder="Selecione o encarteiramento" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#082d32] border-white/10">
+                      <SelectItem value="cliente_carteira" className="text-white hover:bg-white/10">
+                        Cliente de Carteira
+                      </SelectItem>
+                      <SelectItem value="fora_carteira" className="text-white hover:bg-white/10">
+                        Fora de Carteira
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

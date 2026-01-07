@@ -172,7 +172,9 @@ export const commissionsService = {
       saleType,
       clientNif,
       loyaltyMonths,
-      clientCategoryId
+      clientCategoryId,
+      clientType,
+      portfolioStatus
     } = params;
 
     const settings = await this.getOperatorSettings(operatorId, partnerId);
@@ -194,6 +196,15 @@ export const commissionsService = {
       if (rule.nif_type !== 'all' && rule.nif_type !== nifType) return false;
       if (rule.depends_on_loyalty && rule.loyalty_months !== loyaltyMonths) return false;
       if (!rule.depends_on_loyalty && rule.loyalty_months !== null) return false;
+
+      if (rule.client_type_filter !== 'all' && rule.client_type_filter !== clientType) return false;
+
+      if (rule.portfolio_filter !== 'all') {
+        if (clientType !== 'empresarial' || rule.portfolio_filter !== portfolioStatus) {
+          return false;
+        }
+      }
+
       return true;
     });
 
@@ -224,6 +235,8 @@ export const commissionsService = {
       if (rule.nif_type !== 'all') return false;
       if (rule.depends_on_loyalty) return false;
       if (rule.client_category_id !== null) return false;
+      if (rule.client_type_filter !== 'all') return false;
+      if (rule.portfolio_filter !== 'all') return false;
       return true;
     });
 

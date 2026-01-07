@@ -173,7 +173,9 @@ export default function CommissionWizard() {
       seller_monthly_multiplier: 0,
       partner_fixed_value: 0,
       partner_monthly_multiplier: 0,
-      client_category_id: null
+      client_category_id: null,
+      client_type_filter: 'all',
+      portfolio_filter: 'all'
     }]);
   };
 
@@ -502,6 +504,55 @@ export default function CommissionWizard() {
                               </Select>
                             </div>
                           )}
+
+                          <div>
+                            <Label className="form-label text-sm">Tipo de Cliente</Label>
+                            <Select
+                              value={rule.client_type_filter}
+                              onValueChange={(v) => updateRule(index, 'client_type_filter', v)}
+                            >
+                              <SelectTrigger className="form-input">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-[#082d32] border-white/10">
+                                <SelectItem value="all" className="text-white hover:bg-white/10">
+                                  Todos os Tipos
+                                </SelectItem>
+                                <SelectItem value="residencial" className="text-white hover:bg-white/10">
+                                  Residencial
+                                </SelectItem>
+                                <SelectItem value="empresarial" className="text-white hover:bg-white/10">
+                                  Empresarial
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div>
+                            <Label className="form-label text-sm">Encarteiramento</Label>
+                            <Select
+                              value={rule.portfolio_filter}
+                              onValueChange={(v) => updateRule(index, 'portfolio_filter', v)}
+                            >
+                              <SelectTrigger className="form-input">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-[#082d32] border-white/10">
+                                <SelectItem value="all" className="text-white hover:bg-white/10">
+                                  Todos
+                                </SelectItem>
+                                <SelectItem value="cliente_carteira" className="text-white hover:bg-white/10">
+                                  Cliente de Carteira
+                                </SelectItem>
+                                <SelectItem value="fora_carteira" className="text-white hover:bg-white/10">
+                                  Fora de Carteira
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <p className="text-white/40 text-xs mt-1">
+                              Aplicável apenas a clientes empresariais
+                            </p>
+                          </div>
 
                           {nifDifferentiation && (
                             <div>
