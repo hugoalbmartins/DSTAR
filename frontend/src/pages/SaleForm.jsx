@@ -282,8 +282,6 @@ export default function SaleForm() {
     formData.contract_value,
     formData.loyalty_months,
     formData.custom_loyalty_months,
-    formData.previous_monthly_value,
-    formData.new_monthly_value,
     formData.potencia,
     commissionType
   ]);
@@ -396,6 +394,27 @@ export default function SaleForm() {
       console.error("Error calculating commission:", error);
     } finally {
       setCalculatingCommission(false);
+    }
+  };
+
+  const handleMonthlyValueBlur = () => {
+    if (!['Up_sell', 'Cross_sell'].includes(formData.sale_type)) {
+      return;
+    }
+
+    const previousValue = parseFloat(formData.previous_monthly_value);
+    const newValue = parseFloat(formData.new_monthly_value);
+
+    if (!formData.previous_monthly_value || !formData.new_monthly_value) {
+      return;
+    }
+
+    if (isNaN(previousValue) || isNaN(newValue)) {
+      return;
+    }
+
+    if (commissionType === "automatic") {
+      calculateCommission();
     }
   };
 
@@ -1274,6 +1293,7 @@ export default function SaleForm() {
                       min="0"
                       value={formData.previous_monthly_value}
                       onChange={(e) => handleChange("previous_monthly_value", e.target.value)}
+                      onBlur={handleMonthlyValueBlur}
                       className="form-input"
                       placeholder="0.00"
                     />
@@ -1287,6 +1307,7 @@ export default function SaleForm() {
                       min="0"
                       value={formData.new_monthly_value}
                       onChange={(e) => handleChange("new_monthly_value", e.target.value)}
+                      onBlur={handleMonthlyValueBlur}
                       className="form-input"
                       placeholder="0.00"
                     />
