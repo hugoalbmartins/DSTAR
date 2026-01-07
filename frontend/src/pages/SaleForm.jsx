@@ -5,6 +5,7 @@ import { salesService } from "@/services/salesService";
 import { partnersService } from "@/services/partnersService";
 import { operatorsService } from "@/services/operatorsService";
 import { usersService } from "@/services/usersService";
+import { commissionsService } from "@/services/commissionsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,9 +45,21 @@ const CATEGORIES = [
 ];
 
 const SALE_TYPES = [
-  { value: "nova_instalacao", label: "Nova Instalação" },
-  { value: "mudanca_casa", label: "Mudança de Casa" },
-  { value: "refid", label: "Refid (Renovação)" }
+  { value: "NI", label: "NI (Nova Instalação)" },
+  { value: "MC", label: "MC (Mudança de Casa)" },
+  { value: "Refid", label: "Refid (Refidelização)" },
+  { value: "Refid_Acrescimo", label: "Refid com Acréscimo" },
+  { value: "Refid_Decrescimo", label: "Refid com Decréscimo" },
+  { value: "Up_sell", label: "Up-sell" },
+  { value: "Cross_sell", label: "Cross-sell" }
+];
+
+const LOYALTY_OPTIONS = [
+  { value: "0", label: "Sem fidelização" },
+  { value: "12", label: "12 meses" },
+  { value: "24", label: "24 meses" },
+  { value: "36", label: "36 meses" },
+  { value: "outra", label: "Outra" }
 ];
 
 const ENERGY_TYPES = [
@@ -92,6 +105,8 @@ export default function SaleForm() {
   const [selectedPreviousAddress, setSelectedPreviousAddress] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [commissionType, setCommissionType] = useState("automatic");
+  const [calculatingCommission, setCalculatingCommission] = useState(false);
 
   const [formData, setFormData] = useState({
     client_name: "",
@@ -108,13 +123,18 @@ export default function SaleForm() {
     seller_id: "none",
     contract_value: "",
     loyalty_months: "",
+    custom_loyalty_months: "",
     notes: "",
     energy_type: "",
     cpe: "",
     potencia: "",
     cui: "",
     escalao: "",
-    sale_date: new Date()
+    sale_date: new Date(),
+    previous_monthly_value: "",
+    new_monthly_value: "",
+    seller_commission: "",
+    partner_commission: ""
   });
 
   useEffect(() => {
@@ -211,6 +231,124 @@ export default function SaleForm() {
     }
   }, [formData.category, formData.energy_type]);
 
+  useEffect(() => {
+    if (formData.operator_id && formData.partner_id) {
+      checkCommissionType();
+    }
+  }, [formData.operator_id, formData.partner_id]);
+
+  useEffect(() => {
+    if (commissionType === "automatic" && shouldCalculateCommission()) {
+      calculateCommission();
+    }
+  }, [
+    formData.sale_type,
+    formData.contract_value,
+    formData.loyalty_months,
+    formData.custom_loyalty_months,
+    formData.previous_monthly_value,
+    formData.new_monthly_value,
+    commissionType
+  ]);
+
+  const checkCommissionType = async () => {
+    try {
+      const settings = await commissionsService.getOperatorSettings(
+        formData.operator_id,
+        formData.partner_id
+      );
+
+      if (settings && settings.length > 0) {
+        const setting = settings.find(s => s.partner_id === formData.partner_id) || settings[0];
+        setCommissionType(setting.commission_type);
+
+        if (setting.commission_type === "automatic") {
+          calculateCommission();
+        }
+      } else {
+        setCommissionType("manual");
+      }
+    } catch (error) {
+      console.error("Error checking commission type:", error);
+      setCommissionType("manual");
+    }
+  };
+
+  const shouldCalculateCommission = () => {
+    if (!formData.sale_type || !formData.operator_id || !formData.partner_id) {
+      return false;
+    }
+
+    if (['Up_sell', 'Cross_sell'].includes(formData.sale_type)) {
+      return formData.previous_monthly_value && formData.new_monthly_value;
+    }
+
+    return formData.contract_value;
+  };
+
+  const calculateCommission = async () => {
+    if (!shouldCalculateCommission()) return;
+
+    setCalculatingCommission(true);
+    try {
+      const loyaltyMonths = formData.loyalty_months === "outra"
+        ? parseInt(formData.custom_loyalty_months) || 0
+        : parseInt(formData.loyalty_months) || 0;
+
+      const rule = await commissionsService.findApplicableRule({
+        operatorId: formData.operator_id,
+        partnerId: formData.partner_id,
+        saleType: formData.sale_type,
+        clientNif: formData.client_nif,
+        loyaltyMonths: loyaltyMonths
+      });
+
+      if (!rule || rule.isManual) {
+        setCommissionType("manual");
+        return;
+      }
+
+      const commissions = commissionsService.calculateCommission({
+        rule,
+        monthlyValue: parseFloat(formData.contract_value) || 0,
+        previousMonthlyValue: parseFloat(formData.previous_monthly_value) || 0,
+        newMonthlyValue: parseFloat(formData.new_monthly_value) || 0,
+        saleType: formData.sale_type,
+        quantity: 1
+      });
+
+      if (['Up_sell', 'Cross_sell'].includes(formData.sale_type)) {
+        const previousValue = parseFloat(formData.previous_monthly_value) || 0;
+        const newValue = parseFloat(formData.new_monthly_value) || 0;
+
+        if (previousValue >= newValue) {
+          setAlertMessage(
+            "Atenção: A mensalidade anterior é superior ou igual à nova mensalidade. " +
+            "A comissão foi definida como 0. Pode alterar manualmente se necessário."
+          );
+          setShowAlert(true);
+          setFormData(prev => ({
+            ...prev,
+            seller_commission: "0",
+            partner_commission: "0"
+          }));
+          return;
+        }
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        seller_commission: commissions.seller.toString(),
+        partner_commission: commissions.partner.toString()
+      }));
+
+    } catch (error) {
+      console.error("Error calculating commission:", error);
+    } finally {
+      setCalculatingCommission(false);
+    }
+  };
+
   const handleCheckNIF = async () => {
     if (!nifInput) {
       toast.error("Insira um NIF");
@@ -245,9 +383,9 @@ export default function SaleForm() {
     setSelectedSaleFlow(type);
     setShowTypeDialog(false);
 
-    if (type === "nova") {
+    if (type === "NI") {
       handleNovaVenda();
-    } else if (type === "mc" || type === "refid") {
+    } else {
       setShowAddressDialog(true);
     }
   };
@@ -273,67 +411,58 @@ export default function SaleForm() {
 
     const validSeller = sellers.find(s => s.id === sale.seller_id && s.active);
 
-    setFormData({
+    const newFormData = {
       ...formData,
       client_name: sale.client_name || "",
       client_email: sale.client_email || "",
       client_phone: sale.client_phone || "",
       client_nif: nifInput,
-      street_address: "",
-      postal_code: "",
-      city: "",
       category: sale.category || "",
-      sale_type: "mudanca_casa",
+      sale_type: selectedSaleFlow,
       partner_id: sale.partner_id || "",
       operator_id: sale.operator_id || "",
       seller_id: validSeller ? sale.seller_id : "none",
       energy_type: sale.energy_type || "",
-    });
+    };
 
-    try {
-      await salesService.updateSale(sale.id, { loyalty_months: 0 });
-    } catch (error) {
-      console.error("Error updating previous sale loyalty:", error);
+    if (selectedSaleFlow === "MC") {
+      newFormData.street_address = "";
+      newFormData.postal_code = "";
+      newFormData.city = "";
+
+      try {
+        await salesService.updateSale(sale.id, { loyalty_months: 0 });
+      } catch (error) {
+        console.error("Error updating previous sale loyalty:", error);
+      }
+    } else {
+      newFormData.street_address = sale.street_address || "";
+      newFormData.postal_code = sale.postal_code || "";
+      newFormData.city = sale.city || "";
+
+      if (selectedSaleFlow.startsWith('Refid') || ['Up_sell', 'Cross_sell'].includes(selectedSaleFlow)) {
+        newFormData.cpe = sale.cpe || "";
+        newFormData.potencia = sale.potencia || "";
+        newFormData.cui = sale.cui || "";
+        newFormData.escalao = sale.escalao || "";
+
+        try {
+          await salesService.updateSale(sale.id, { loyalty_months: 0 });
+        } catch (error) {
+          console.error("Error updating previous sale loyalty:", error);
+        }
+      }
+
+      if (['Up_sell', 'Cross_sell'].includes(selectedSaleFlow)) {
+        newFormData.previous_monthly_value = sale.contract_value || "";
+      }
     }
 
+    setFormData(newFormData);
     setShowForm(true);
   };
 
-  const handleRefidSelection = async (sale) => {
-    setSelectedPreviousAddress(sale);
-    setShowAddressDialog(false);
-
-    const validSeller = sellers.find(s => s.id === sale.seller_id && s.active);
-
-    setFormData({
-      ...formData,
-      client_name: sale.client_name || "",
-      client_email: sale.client_email || "",
-      client_phone: sale.client_phone || "",
-      client_nif: nifInput,
-      street_address: sale.street_address || "",
-      postal_code: sale.postal_code || "",
-      city: sale.city || "",
-      category: sale.category || "",
-      sale_type: "refid",
-      partner_id: sale.partner_id || "",
-      operator_id: sale.operator_id || "",
-      seller_id: validSeller ? sale.seller_id : "none",
-      energy_type: sale.energy_type || "",
-      cpe: sale.cpe || "",
-      potencia: sale.potencia || "",
-      cui: sale.cui || "",
-      escalao: sale.escalao || "",
-    });
-
-    try {
-      await salesService.updateSale(sale.id, { loyalty_months: 0 });
-    } catch (error) {
-      console.error("Error updating previous sale loyalty:", error);
-    }
-
-    setShowForm(true);
-  };
+  const handleRefidSelection = handleMCSelection;
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -394,21 +523,48 @@ export default function SaleForm() {
       }
     }
 
+    if (['Up_sell', 'Cross_sell'].includes(formData.sale_type)) {
+      if (!formData.previous_monthly_value || !formData.new_monthly_value) {
+        toast.error("Mensalidade anterior e nova são obrigatórias para Up-sell e Cross-sell");
+        return;
+      }
+    }
+
+    if (formData.loyalty_months === "outra" && !formData.custom_loyalty_months) {
+      toast.error("Insira o prazo de fidelização personalizado");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const finalLoyaltyMonths = formData.loyalty_months === "outra"
+        ? parseInt(formData.custom_loyalty_months) || 0
+        : parseInt(formData.loyalty_months) || 0;
+
       const payload = {
         ...formData,
         seller_id: formData.seller_id === "none" ? null : formData.seller_id,
         status: 'em_negociacao',
-        contract_value: parseFloat(formData.contract_value) || 0,
-        loyalty_months: parseInt(formData.loyalty_months) || 0,
+        contract_value: ['Up_sell', 'Cross_sell'].includes(formData.sale_type)
+          ? parseFloat(formData.new_monthly_value) || 0
+          : parseFloat(formData.contract_value) || 0,
+        loyalty_months: finalLoyaltyMonths,
+        custom_loyalty_months: formData.loyalty_months === "outra" ? parseInt(formData.custom_loyalty_months) || null : null,
         sale_type: formData.sale_type || null,
         energy_type: formData.energy_type || null,
         cpe: formData.cpe || null,
         potencia: formData.potencia || null,
         cui: formData.cui || null,
         escalao: formData.escalao || null,
+        previous_monthly_value: ['Up_sell', 'Cross_sell'].includes(formData.sale_type)
+          ? parseFloat(formData.previous_monthly_value) || 0
+          : 0,
+        new_monthly_value: ['Up_sell', 'Cross_sell'].includes(formData.sale_type)
+          ? parseFloat(formData.new_monthly_value) || 0
+          : 0,
+        seller_commission: parseFloat(formData.seller_commission) || 0,
+        partner_commission: parseFloat(formData.partner_commission) || 0,
         sale_date: formData.sale_date ? formData.sale_date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
       };
 
@@ -511,22 +667,46 @@ export default function SaleForm() {
             </DialogHeader>
             <div className="space-y-3 mt-4">
               <Button
-                onClick={() => handleSaleTypeSelection("nova")}
+                onClick={() => handleSaleTypeSelection("NI")}
                 className="w-full bg-[#c8f31d] hover:bg-[#b5db1a] text-[#031819] font-['Manrope'] font-semibold py-6"
               >
-                Nova Venda
+                NI (Nova Instalação)
               </Button>
               <Button
-                onClick={() => handleSaleTypeSelection("mc")}
+                onClick={() => handleSaleTypeSelection("MC")}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-['Manrope'] font-semibold py-6"
               >
                 MC (Mudança de Casa)
               </Button>
               <Button
-                onClick={() => handleSaleTypeSelection("refid")}
+                onClick={() => handleSaleTypeSelection("Refid")}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white font-['Manrope'] font-semibold py-6"
               >
                 Refid (Refidelização)
+              </Button>
+              <Button
+                onClick={() => handleSaleTypeSelection("Refid_Acrescimo")}
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-['Manrope'] font-semibold py-6"
+              >
+                Refid com Acréscimo
+              </Button>
+              <Button
+                onClick={() => handleSaleTypeSelection("Refid_Decrescimo")}
+                className="w-full bg-purple-400 hover:bg-purple-500 text-white font-['Manrope'] font-semibold py-6"
+              >
+                Refid com Decréscimo
+              </Button>
+              <Button
+                onClick={() => handleSaleTypeSelection("Up_sell")}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-['Manrope'] font-semibold py-6"
+              >
+                Up-sell
+              </Button>
+              <Button
+                onClick={() => handleSaleTypeSelection("Cross_sell")}
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-['Manrope'] font-semibold py-6"
+              >
+                Cross-sell
               </Button>
             </div>
           </DialogContent>
@@ -540,7 +720,7 @@ export default function SaleForm() {
                 Selecione a Morada Original
               </DialogTitle>
               <DialogDescription className="text-white/70">
-                Escolha a morada da venda anterior que deseja {selectedSaleFlow === "mc" ? "mudar" : "refidelizar"}
+                Escolha a morada da venda anterior que deseja processar
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 mt-4">
@@ -619,13 +799,18 @@ export default function SaleForm() {
               seller_id: "none",
               contract_value: "",
               loyalty_months: "",
+              custom_loyalty_months: "",
               notes: "",
               energy_type: "",
               cpe: "",
               potencia: "",
               cui: "",
               escalao: "",
-              sale_date: new Date()
+              sale_date: new Date(),
+              previous_monthly_value: "",
+              new_monthly_value: "",
+              seller_commission: "",
+              partner_commission: ""
             });
           }}
           className="text-white/70 hover:text-white"
@@ -911,19 +1096,110 @@ export default function SaleForm() {
                 </div>
               )}
 
+              {['Up_sell', 'Cross_sell'].includes(formData.sale_type) && (
+                <>
+                  <div>
+                    <Label htmlFor="previous_monthly_value" className="form-label">Mensalidade Anterior (€) *</Label>
+                    <Input
+                      id="previous_monthly_value"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.previous_monthly_value}
+                      onChange={(e) => handleChange("previous_monthly_value", e.target.value)}
+                      className="form-input"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="new_monthly_value" className="form-label">Nova Mensalidade (€) *</Label>
+                    <Input
+                      id="new_monthly_value"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.new_monthly_value}
+                      onChange={(e) => handleChange("new_monthly_value", e.target.value)}
+                      className="form-input"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </>
+              )}
+
               <div>
-                <Label htmlFor="loyalty_months" className="form-label">Prazo de Fidelização (meses)</Label>
-                <Input
-                  id="loyalty_months"
-                  type="number"
-                  min="0"
-                  value={formData.loyalty_months}
-                  onChange={(e) => handleChange("loyalty_months", e.target.value)}
-                  className="form-input"
-                  placeholder="24"
-                  data-testid="loyalty-months-input"
-                />
+                <Label htmlFor="loyalty_months" className="form-label">Prazo de Fidelização</Label>
+                <Select value={formData.loyalty_months} onValueChange={(v) => handleChange("loyalty_months", v)}>
+                  <SelectTrigger className="form-input">
+                    <SelectValue placeholder="Selecione o prazo" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#082d32] border-white/10">
+                    {LOYALTY_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value} className="text-white hover:bg-white/10">
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+
+              {formData.loyalty_months === "outra" && (
+                <div>
+                  <Label htmlFor="custom_loyalty_months" className="form-label">Fidelização Personalizada (meses)</Label>
+                  <Input
+                    id="custom_loyalty_months"
+                    type="number"
+                    min="0"
+                    value={formData.custom_loyalty_months}
+                    onChange={(e) => handleChange("custom_loyalty_months", e.target.value)}
+                    className="form-input"
+                    placeholder="Insira o número de meses"
+                  />
+                </div>
+              )}
+
+              {formData.operator_id && formData.partner_id && (
+                <>
+                  <div>
+                    <Label htmlFor="seller_commission" className="form-label">
+                      Comissão Vendedor (€)
+                      {commissionType === "automatic" && (
+                        <span className="ml-2 text-xs text-green-400">Automático</span>
+                      )}
+                    </Label>
+                    <Input
+                      id="seller_commission"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.seller_commission}
+                      onChange={(e) => handleChange("seller_commission", e.target.value)}
+                      className="form-input"
+                      placeholder="0.00"
+                      disabled={calculatingCommission}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="partner_commission" className="form-label">
+                      Comissão Operadora (€)
+                      {commissionType === "automatic" && (
+                        <span className="ml-2 text-xs text-green-400">Automático</span>
+                      )}
+                    </Label>
+                    <Input
+                      id="partner_commission"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.partner_commission}
+                      onChange={(e) => handleChange("partner_commission", e.target.value)}
+                      className="form-input"
+                      placeholder="0.00"
+                      disabled={calculatingCommission}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
