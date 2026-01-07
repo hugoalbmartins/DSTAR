@@ -85,6 +85,18 @@ export default function SaleDetail({ editMode = false }) {
   const [editCommissionSeller, setEditCommissionSeller] = useState("");
   const [editCommissionPartner, setEditCommissionPartner] = useState("");
   const [editCommissionBackoffice, setEditCommissionBackoffice] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editAddress, setEditAddress] = useState("");
+  const [editStreetAddress, setEditStreetAddress] = useState("");
+  const [editPostalCode, setEditPostalCode] = useState("");
+  const [editCity, setEditCity] = useState("");
+  const [editContractValue, setEditContractValue] = useState("");
+  const [editCpe, setEditCpe] = useState("");
+  const [editPotencia, setEditPotencia] = useState("");
+  const [editCui, setEditCui] = useState("");
+  const [editEscalao, setEditEscalao] = useState("");
+  const [editSolarPower, setEditSolarPower] = useState("");
+  const [editSolarPanelQuantity, setEditSolarPanelQuantity] = useState("");
   const [isEditing, setIsEditing] = useState(editMode);
 
   const fetchSale = useCallback(async () => {
@@ -97,6 +109,18 @@ export default function SaleDetail({ editMode = false }) {
       setEditStatus(saleData.status || "");
       setEditNotes(saleData.notes || "");
       setEditReq(saleData.req || "");
+      setEditEmail(saleData.client_email || "");
+      setEditAddress(saleData.client_address || "");
+      setEditStreetAddress(saleData.street_address || "");
+      setEditPostalCode(saleData.postal_code || "");
+      setEditCity(saleData.city || "");
+      setEditContractValue(saleData.contract_value?.toString() || "");
+      setEditCpe(saleData.cpe || "");
+      setEditPotencia(saleData.potencia || "");
+      setEditCui(saleData.cui || "");
+      setEditEscalao(saleData.escalao || "");
+      setEditSolarPower(saleData.solar_power?.toString() || "");
+      setEditSolarPanelQuantity(saleData.solar_panel_quantity?.toString() || "");
       if (saleData.active_date) {
         setEditActiveDate(new Date(saleData.active_date));
       }
@@ -123,7 +147,19 @@ export default function SaleDetail({ editMode = false }) {
         notes: editNotes,
         active_date: editActiveDate ? editActiveDate.toISOString() : null,
         sale_date: editSaleDate ? editSaleDate.toISOString().split('T')[0] : null,
-        req: sale.category === "telecomunicacoes" ? editReq : null
+        req: sale.category === "telecomunicacoes" ? editReq : null,
+        client_email: editEmail,
+        client_address: editAddress,
+        street_address: editStreetAddress,
+        postal_code: editPostalCode,
+        city: editCity,
+        contract_value: editContractValue ? parseFloat(editContractValue) : 0,
+        cpe: editCpe || null,
+        potencia: editPotencia || null,
+        cui: editCui || null,
+        escalao: editEscalao || null,
+        solar_power: editSolarPower ? parseFloat(editSolarPower) : null,
+        solar_panel_quantity: editSolarPanelQuantity ? parseInt(editSolarPanelQuantity) : null
       };
 
       if (isAdminOrBackoffice && (user.role === 'admin' || sale?.operators?.commission_visible_to_bo)) {
@@ -381,7 +417,7 @@ export default function SaleDetail({ editMode = false }) {
                       <div>
                         <Label className="form-label flex items-center gap-2">
                           <Euro size={14} className="text-[#c8f31d]" />
-                          Comissão Operadora (€)
+                          Comissão a receber (€)
                         </Label>
                         <Input
                           type="number"
@@ -407,6 +443,156 @@ export default function SaleDetail({ editMode = false }) {
                     </p>
                   </div>
                 </div>
+              )}
+
+              <div>
+                <Label className="form-label">Email do Cliente</Label>
+                <Input
+                  type="email"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  className="form-input"
+                  placeholder="email@exemplo.com"
+                />
+              </div>
+
+              <div>
+                <Label className="form-label">Valor do Contrato (€)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editContractValue}
+                  onChange={(e) => setEditContractValue(e.target.value)}
+                  className="form-input"
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label className="form-label">Morada Completa</Label>
+                <Input
+                  value={editAddress}
+                  onChange={(e) => setEditAddress(e.target.value)}
+                  className="form-input"
+                  placeholder="Morada completa"
+                />
+              </div>
+
+              <div>
+                <Label className="form-label">Rua / Endereço</Label>
+                <Input
+                  value={editStreetAddress}
+                  onChange={(e) => setEditStreetAddress(e.target.value)}
+                  className="form-input"
+                  placeholder="Rua, nº"
+                />
+              </div>
+
+              <div>
+                <Label className="form-label">Código Postal</Label>
+                <Input
+                  value={editPostalCode}
+                  onChange={(e) => setEditPostalCode(e.target.value)}
+                  className="form-input"
+                  placeholder="0000-000"
+                />
+              </div>
+
+              <div>
+                <Label className="form-label">Cidade</Label>
+                <Input
+                  value={editCity}
+                  onChange={(e) => setEditCity(e.target.value)}
+                  className="form-input"
+                  placeholder="Cidade"
+                />
+              </div>
+
+              {sale.category === "energia" && (
+                <>
+                  {(sale.energy_type === "eletricidade" || sale.energy_type === "dual") && (
+                    <>
+                      <div>
+                        <Label className="form-label">CPE</Label>
+                        <Input
+                          value={editCpe}
+                          onChange={(e) => setEditCpe(e.target.value)}
+                          className="form-input"
+                          placeholder="PT0002..."
+                        />
+                      </div>
+                      <div>
+                        <Label className="form-label">Potência (kVA)</Label>
+                        <Input
+                          value={editPotencia}
+                          onChange={(e) => setEditPotencia(e.target.value)}
+                          className="form-input"
+                          placeholder="6.9"
+                        />
+                      </div>
+                    </>
+                  )}
+                  {(sale.energy_type === "gas" || sale.energy_type === "dual") && (
+                    <>
+                      <div>
+                        <Label className="form-label">CUI</Label>
+                        <Input
+                          value={editCui}
+                          onChange={(e) => setEditCui(e.target.value)}
+                          className="form-input"
+                          placeholder="CUI"
+                        />
+                      </div>
+                      <div>
+                        <Label className="form-label">Escalão</Label>
+                        <Input
+                          value={editEscalao}
+                          onChange={(e) => setEditEscalao(e.target.value)}
+                          className="form-input"
+                          placeholder="Escalão"
+                        />
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+
+              {sale.category === "paineis_solares" && (
+                <>
+                  <div>
+                    <Label className="form-label">CPE</Label>
+                    <Input
+                      value={editCpe}
+                      onChange={(e) => setEditCpe(e.target.value)}
+                      className="form-input"
+                      placeholder="PT0002..."
+                    />
+                  </div>
+                  <div>
+                    <Label className="form-label">Potência Instalada (kW)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={editSolarPower}
+                      onChange={(e) => setEditSolarPower(e.target.value)}
+                      className="form-input"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div>
+                    <Label className="form-label">Quantidade de Painéis</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={editSolarPanelQuantity}
+                      onChange={(e) => setEditSolarPanelQuantity(e.target.value)}
+                      className="form-input"
+                      placeholder="0"
+                    />
+                  </div>
+                </>
               )}
 
               <div className="md:col-span-2">
@@ -511,7 +697,7 @@ export default function SaleDetail({ editMode = false }) {
                       )}
                     </div>
                     <div>
-                      <p className="text-white/50 text-sm mb-1">Comissão Operadora</p>
+                      <p className="text-white/50 text-sm mb-1">Comissão a receber</p>
                       {sale.commission_partner !== null && sale.commission_partner !== undefined ? (
                         <p className="text-2xl font-bold text-green-400 font-mono">
                           {formatCurrency(sale.commission_partner)}

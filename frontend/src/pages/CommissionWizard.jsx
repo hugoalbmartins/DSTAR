@@ -71,20 +71,45 @@ export default function CommissionWizard() {
     }
   }, [id]);
 
+  useEffect(() => {
+    if (operatorId) {
+      fetchPartnersByOperator(operatorId);
+    } else {
+      setPartners([]);
+      setPartnerId("all");
+    }
+  }, [operatorId]);
+
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [operatorsData, partnersData] = await Promise.all([
-        operatorsService.getOperators(),
-        partnersService.getPartners()
-      ]);
+      const operatorsData = await operatorsService.getOperators();
       setOperators(operatorsData);
-      setPartners(partnersData);
+
+      if (operatorIdFromQuery) {
+        const partnersData = await partnersService.getPartnersByOperator(operatorIdFromQuery);
+        setPartners(partnersData);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Erro ao carregar dados");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPartnersByOperator = async (opId) => {
+    try {
+      const partnersData = await partnersService.getPartnersByOperator(opId);
+      setPartners(partnersData);
+
+      if (partnerId !== "all" && !partnersData.find(p => p.id === partnerId)) {
+        setPartnerId("all");
+      }
+    } catch (error) {
+      console.error("Error fetching partners:", error);
+      toast.error("Erro ao carregar parceiros");
+      setPartners([]);
     }
   };
 
@@ -505,62 +530,32 @@ export default function CommissionWizard() {
 
                           <div className="md:col-span-2 pt-4 border-t border-white/10">
                             <h5 className="text-white text-sm font-medium mb-3">Valores de Comissão</h5>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <Checkbox
-                                    id={`applies-seller-${index}`}
-                                    checked={rule.applies_to_seller}
-                                    onCheckedChange={(v) => updateRule(index, 'applies_to_seller', v)}
-                                  />
-                                  <Label htmlFor={`applies-seller-${index}`} className="text-white text-sm cursor-pointer">
-                                    Comissão Vendedor
-                                  </Label>
-                                </div>
-                                {rule.applies_to_seller && (
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    value={rule.calculation_method === 'fixed_per_quantity' ? rule.seller_fixed_value : rule.seller_monthly_multiplier}
-                                    onChange={(e) => updateRule(
-                                      index,
-                                      rule.calculation_method === 'fixed_per_quantity' ? 'seller_fixed_value' : 'seller_monthly_multiplier',
-                                      parseFloat(e.target.value) || 0
-                                    )}
-                                    className="form-input"
-                                    placeholder={rule.calculation_method === 'fixed_per_quantity' ? '€ por venda' : 'Multiplicador'}
-                                  />
-                                )}
+                            <div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <Checkbox
+                                  id={`applies-partner-${index}`}
+                                  checked={rule.applies_to_partner}
+                                  onCheckedChange={(v) => updateRule(index, 'applies_to_partner', v)}
+                                />
+                                <Label htmlFor={`applies-partner-${index}`} className="text-white text-sm cursor-pointer">
+                                  Comissão a receber
+                                </Label>
                               </div>
-
-                              <div>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <Checkbox
-                                    id={`applies-partner-${index}`}
-                                    checked={rule.applies_to_partner}
-                                    onCheckedChange={(v) => updateRule(index, 'applies_to_partner', v)}
-                                  />
-                                  <Label htmlFor={`applies-partner-${index}`} className="text-white text-sm cursor-pointer">
-                                    Comissão Operadora
-                                  </Label>
-                                </div>
-                                {rule.applies_to_partner && (
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    value={rule.calculation_method === 'fixed_per_quantity' ? rule.partner_fixed_value : rule.partner_monthly_multiplier}
-                                    onChange={(e) => updateRule(
-                                      index,
-                                      rule.calculation_method === 'fixed_per_quantity' ? 'partner_fixed_value' : 'partner_monthly_multiplier',
-                                      parseFloat(e.target.value) || 0
-                                    )}
-                                    className="form-input"
-                                    placeholder={rule.calculation_method === 'fixed_per_quantity' ? '€ por venda' : 'Multiplicador'}
-                                  />
-                                )}
-                              </div>
+                              {rule.applies_to_partner && (
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  value={rule.calculation_method === 'fixed_per_quantity' ? rule.partner_fixed_value : rule.partner_monthly_multiplier}
+                                  onChange={(e) => updateRule(
+                                    index,
+                                    rule.calculation_method === 'fixed_per_quantity' ? 'partner_fixed_value' : 'partner_monthly_multiplier',
+                                    parseFloat(e.target.value) || 0
+                                  )}
+                                  className="form-input"
+                                  placeholder={rule.calculation_method === 'fixed_per_quantity' ? '€ por venda' : 'Multiplicador'}
+                                />
+                              )}
                             </div>
                           </div>
                         </div>

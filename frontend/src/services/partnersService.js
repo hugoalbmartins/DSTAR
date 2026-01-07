@@ -83,4 +83,23 @@ export const partnersService = {
       salesCount: salesData.length,
     };
   },
+
+  async getPartnersByOperator(operatorId, includeInactive = false) {
+    let query = supabase
+      .from('partners')
+      .select(`
+        *,
+        partner_operators!inner(operator_id)
+      `)
+      .eq('partner_operators.operator_id', operatorId);
+
+    if (!includeInactive) {
+      query = query.eq('active', true);
+    }
+
+    const { data, error } = await query.order('name', { ascending: true });
+
+    if (error) throw error;
+    return data;
+  },
 };

@@ -233,8 +233,8 @@ export default function Sales() {
       </Card>
 
       {/* Sales Table */}
-      <Card className="card-leiritrix overflow-hidden">
-        <div className="overflow-x-auto">
+      <Card className="card-leiritrix overflow-hidden flex flex-col" style={{maxHeight: 'calc(100vh - 280px)'}}>
+        <div className="overflow-x-auto overflow-y-auto flex-1">
           <table className="data-table" data-testid="sales-table">
             <thead>
               <tr>

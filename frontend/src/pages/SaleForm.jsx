@@ -36,7 +36,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { ArrowLeft, Save, Loader2, User, FileText, Zap, ArrowRight, MapPin } from "lucide-react";
+import { ArrowLeft, Save, Loader2, User, FileText, Zap, ArrowRight, MapPin, Sun } from "lucide-react";
 
 const CATEGORIES = [
   { value: "energia", label: "Energia" },
@@ -583,6 +583,7 @@ export default function SaleForm() {
   const showEnergyFields = formData.category === "energia";
   const showElectricityFields = formData.energy_type === "eletricidade" || formData.energy_type === "dual";
   const showGasFields = formData.energy_type === "gas" || formData.energy_type === "dual";
+  const showSolarFields = formData.category === "paineis_solares";
 
   if (loadingPartners) {
     return (
@@ -1181,7 +1182,7 @@ export default function SaleForm() {
                   </div>
                   <div>
                     <Label htmlFor="partner_commission" className="form-label">
-                      Comissão Operadora (€)
+                      Comissão a receber (€)
                       {commissionType === "automatic" && (
                         <span className="ml-2 text-xs text-green-400">Automático</span>
                       )}
@@ -1275,6 +1276,59 @@ export default function SaleForm() {
                     </div>
                   </>
                 )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {showSolarFields && (
+          <Card className="card-leiritrix mt-6">
+            <CardHeader className="border-b border-white/5 pb-4">
+              <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
+                <Sun size={20} className="text-[#c8f31d]" />
+                Detalhes de Painéis Solares
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <Label htmlFor="cpe" className="form-label">CPE</Label>
+                  <Input
+                    id="cpe"
+                    value={formData.cpe}
+                    onChange={(e) => handleChange("cpe", e.target.value)}
+                    className="form-input"
+                    placeholder="PT0002..."
+                  />
+                  <p className="text-white/40 text-xs mt-1">Opcional</p>
+                </div>
+                <div>
+                  <Label htmlFor="solar_power" className="form-label">Potência Instalada (kW)</Label>
+                  <Input
+                    id="solar_power"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.solar_power || ""}
+                    onChange={(e) => handleChange("solar_power", e.target.value ? parseFloat(e.target.value) : null)}
+                    className="form-input"
+                    placeholder="0.00"
+                  />
+                  <p className="text-white/40 text-xs mt-1">Opcional</p>
+                </div>
+                <div>
+                  <Label htmlFor="solar_panel_quantity" className="form-label">Quantidade de Painéis</Label>
+                  <Input
+                    id="solar_panel_quantity"
+                    type="number"
+                    min="0"
+                    value={formData.solar_panel_quantity || ""}
+                    onChange={(e) => handleChange("solar_panel_quantity", e.target.value ? parseInt(e.target.value) : null)}
+                    className="form-input"
+                    placeholder="0"
+                  />
+                  <p className="text-white/40 text-xs mt-1">Opcional</p>
+                </div>
               </div>
             </CardContent>
           </Card>
