@@ -73,12 +73,12 @@ export default function Sales() {
   const [operators, setOperators] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [searchType, setSearchType] = useState("");
+  const [searchType, setSearchType] = useState("none");
   const [searchText, setSearchText] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [partnerFilter, setPartnerFilter] = useState("");
-  const [operatorFilter, setOperatorFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [partnerFilter, setPartnerFilter] = useState("all");
+  const [operatorFilter, setOperatorFilter] = useState("all");
   const [saleDateFrom, setSaleDateFrom] = useState(null);
   const [saleDateTo, setSaleDateTo] = useState(null);
   const [activeDateFrom, setActiveDateFrom] = useState(null);
@@ -106,7 +106,7 @@ export default function Sales() {
 
       let filtered = salesData;
 
-      if (searchType && searchText) {
+      if (searchType && searchType !== "none" && searchText) {
         if (searchType === "nif") {
           filtered = filtered.filter(sale =>
             sale.client_nif?.includes(searchText)
@@ -179,7 +179,7 @@ export default function Sales() {
     if (categoryFilter && categoryFilter !== "all" && operatorFilter && operatorFilter !== "all") {
       const selectedOperator = operators.find(op => op.id === operatorFilter);
       if (selectedOperator && selectedOperator.category !== categoryFilter) {
-        setOperatorFilter("");
+        setOperatorFilter("all");
       }
     }
   }, [categoryFilter, operatorFilter, operators]);
@@ -199,12 +199,12 @@ export default function Sales() {
   };
 
   const clearFilters = () => {
-    setSearchType("");
+    setSearchType("none");
     setSearchText("");
-    setStatusFilter("");
-    setCategoryFilter("");
-    setPartnerFilter("");
-    setOperatorFilter("");
+    setStatusFilter("all");
+    setCategoryFilter("all");
+    setPartnerFilter("all");
+    setOperatorFilter("all");
     setSaleDateFrom(null);
     setSaleDateTo(null);
     setActiveDateFrom(null);
@@ -259,7 +259,7 @@ export default function Sales() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedSales = sortedSales.slice(startIndex, endIndex);
 
-  const hasFilters = searchType || searchText || statusFilter || categoryFilter || partnerFilter || operatorFilter || saleDateFrom || saleDateTo || activeDateFrom || activeDateTo;
+  const hasFilters = (searchType && searchType !== "none") || searchText || (statusFilter && statusFilter !== "all") || (categoryFilter && categoryFilter !== "all") || (partnerFilter && partnerFilter !== "all") || (operatorFilter && operatorFilter !== "all") || saleDateFrom || saleDateTo || activeDateFrom || activeDateTo;
 
   if (loading) {
     return (
@@ -322,22 +322,22 @@ export default function Sales() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
                   <label className="text-xs text-white/50 mb-1 block">Tipo de Pesquisa</label>
-                  <Select value={searchType} onValueChange={(value) => {
-                    setSearchType(value);
+                  <Select value={searchType || "none"} onValueChange={(value) => {
+                    setSearchType(value === "none" ? "" : value);
                     setSearchText("");
                   }}>
                     <SelectTrigger className="form-input h-9 text-sm">
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#082d32] border-white/10 z-50">
-                      <SelectItem value="" className="text-white hover:bg-white/10">Nenhum</SelectItem>
+                      <SelectItem value="none" className="text-white hover:bg-white/10">Nenhum</SelectItem>
                       <SelectItem value="nif" className="text-white hover:bg-white/10">NIF</SelectItem>
                       <SelectItem value="name" className="text-white hover:bg-white/10">Nome</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                {searchType && (
+                {searchType && searchType !== "none" && (
                   <div className="md:col-span-3">
                     <label className="text-xs text-white/50 mb-1 block">
                       {searchType === "nif" ? "NIF do Cliente" : "Nome do Cliente"}
@@ -357,7 +357,7 @@ export default function Sales() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
                   <label className="text-xs text-white/50 mb-1 block">Estado</label>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <Select value={statusFilter || "all"} onValueChange={setStatusFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="status-filter">
                       <SelectValue placeholder="Todos" />
                     </SelectTrigger>
@@ -374,7 +374,7 @@ export default function Sales() {
 
                 <div>
                   <label className="text-xs text-white/50 mb-1 block">Categoria</label>
-                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <Select value={categoryFilter || "all"} onValueChange={setCategoryFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="category-filter">
                       <SelectValue placeholder="Todas" />
                     </SelectTrigger>
@@ -391,7 +391,7 @@ export default function Sales() {
 
                 <div>
                   <label className="text-xs text-white/50 mb-1 block">Operadora</label>
-                  <Select value={operatorFilter} onValueChange={setOperatorFilter}>
+                  <Select value={operatorFilter || "all"} onValueChange={setOperatorFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="operator-filter">
                       <SelectValue placeholder="Todas" />
                     </SelectTrigger>
@@ -408,7 +408,7 @@ export default function Sales() {
 
                 <div>
                   <label className="text-xs text-white/50 mb-1 block">Parceiro</label>
-                  <Select value={partnerFilter} onValueChange={setPartnerFilter}>
+                  <Select value={partnerFilter || "all"} onValueChange={setPartnerFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="partner-filter">
                       <SelectValue placeholder="Todos" />
                     </SelectTrigger>
