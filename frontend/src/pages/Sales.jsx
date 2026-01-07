@@ -480,8 +480,8 @@ export default function Sales() {
       </div>
 
       {/* Sales Table */}
-      <Card className="card-leiritrix overflow-hidden flex flex-col" style={{maxHeight: 'calc(100vh - 280px)'}}>
-        <div className="overflow-x-auto overflow-y-auto flex-1">
+      <Card className="card-leiritrix overflow-hidden">
+        <div className="overflow-x-auto" style={{maxHeight: showFilters ? '500px' : '600px', overflowY: 'auto'}}>
           <table className="data-table" data-testid="sales-table">
             <thead>
               <tr>
