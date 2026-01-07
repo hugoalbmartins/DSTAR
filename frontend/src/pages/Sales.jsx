@@ -79,10 +79,9 @@ export default function Sales() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [partnerFilter, setPartnerFilter] = useState("all");
   const [operatorFilter, setOperatorFilter] = useState("all");
-  const [saleDateFrom, setSaleDateFrom] = useState(null);
-  const [saleDateTo, setSaleDateTo] = useState(null);
-  const [activeDateFrom, setActiveDateFrom] = useState(null);
-  const [activeDateTo, setActiveDateTo] = useState(null);
+  const [dateType, setDateType] = useState("none");
+  const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
 
   const [showFilters, setShowFilters] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -136,23 +135,13 @@ export default function Sales() {
         filtered = filtered.filter(sale => sale.operator_id === operatorFilter);
       }
 
-      if (saleDateFrom || saleDateTo) {
-        const endDate = saleDateTo || new Date();
+      if (dateType && dateType !== "none" && (dateFrom || dateTo)) {
+        const endDate = dateTo || new Date();
+        const dateField = dateType === "sale_date" ? "sale_date" : "active_date";
         filtered = filtered.filter(sale => {
-          if (!sale.sale_date) return false;
-          const date = new Date(sale.sale_date);
-          if (saleDateFrom && date < saleDateFrom) return false;
-          if (date > endDate) return false;
-          return true;
-        });
-      }
-
-      if (activeDateFrom || activeDateTo) {
-        const endDate = activeDateTo || new Date();
-        filtered = filtered.filter(sale => {
-          if (!sale.active_date) return false;
-          const date = new Date(sale.active_date);
-          if (activeDateFrom && date < activeDateFrom) return false;
+          if (!sale[dateField]) return false;
+          const date = new Date(sale[dateField]);
+          if (dateFrom && date < dateFrom) return false;
           if (date > endDate) return false;
           return true;
         });
@@ -165,7 +154,7 @@ export default function Sales() {
     } finally {
       setLoading(false);
     }
-  }, [searchType, searchText, statusFilter, categoryFilter, partnerFilter, operatorFilter, saleDateFrom, saleDateTo, activeDateFrom, activeDateTo]);
+  }, [searchType, searchText, statusFilter, categoryFilter, partnerFilter, operatorFilter, dateType, dateFrom, dateTo]);
 
   useEffect(() => {
     fetchData();
@@ -205,10 +194,9 @@ export default function Sales() {
     setCategoryFilter("all");
     setPartnerFilter("all");
     setOperatorFilter("all");
-    setSaleDateFrom(null);
-    setSaleDateTo(null);
-    setActiveDateFrom(null);
-    setActiveDateTo(null);
+    setDateType("none");
+    setDateFrom(null);
+    setDateTo(null);
     setCurrentPage(1);
   };
 
@@ -259,7 +247,7 @@ export default function Sales() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedSales = sortedSales.slice(startIndex, endIndex);
 
-  const hasFilters = (searchType && searchType !== "none") || searchText || (statusFilter && statusFilter !== "all") || (categoryFilter && categoryFilter !== "all") || (partnerFilter && partnerFilter !== "all") || (operatorFilter && operatorFilter !== "all") || saleDateFrom || saleDateTo || activeDateFrom || activeDateTo;
+  const hasFilters = (searchType && searchType !== "none") || searchText || (statusFilter && statusFilter !== "all") || (categoryFilter && categoryFilter !== "all") || (partnerFilter && partnerFilter !== "all") || (operatorFilter && operatorFilter !== "all") || (dateType && dateType !== "none") || dateFrom || dateTo;
 
   if (loading) {
     return (
@@ -425,54 +413,49 @@ export default function Sales() {
               </div>
 
               {/* Filtros de Data */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs text-white/50 mb-2 block">Data de Venda</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="text-xs text-white/40 mb-1 block">De</label>
-                      <DateSelect
-                        value={saleDateFrom}
-                        onChange={setSaleDateFrom}
-                        placeholder="Data inicial"
-                        className="h-9 text-sm w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs text-white/40 mb-1 block">Até</label>
-                      <DateSelect
-                        value={saleDateTo}
-                        onChange={setSaleDateTo}
-                        placeholder="Hoje"
-                        className="h-9 text-sm w-full"
-                      />
-                    </div>
-                  </div>
+                  <label className="text-xs text-white/50 mb-1 block">Tipo de Data</label>
+                  <Select value={dateType || "none"} onValueChange={(value) => {
+                    setDateType(value);
+                    if (value === "none") {
+                      setDateFrom(null);
+                      setDateTo(null);
+                    }
+                  }}>
+                    <SelectTrigger className="form-input h-9 text-sm">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#082d32] border-white/10 z-50">
+                      <SelectItem value="none" className="text-white hover:bg-white/10">Nenhuma</SelectItem>
+                      <SelectItem value="sale_date" className="text-white hover:bg-white/10">Data de Venda</SelectItem>
+                      <SelectItem value="active_date" className="text-white hover:bg-white/10">Data de Ativação</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <div>
-                  <label className="text-xs text-white/50 mb-2 block">Data de Ativação</label>
-                  <div className="grid grid-cols-2 gap-2">
+                {dateType && dateType !== "none" && (
+                  <>
                     <div>
-                      <label className="text-xs text-white/40 mb-1 block">De</label>
+                      <label className="text-xs text-white/50 mb-1 block">Data De</label>
                       <DateSelect
-                        value={activeDateFrom}
-                        onChange={setActiveDateFrom}
+                        value={dateFrom}
+                        onChange={setDateFrom}
                         placeholder="Data inicial"
                         className="h-9 text-sm w-full"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-white/40 mb-1 block">Até</label>
+                      <label className="text-xs text-white/50 mb-1 block">Data Até</label>
                       <DateSelect
-                        value={activeDateTo}
-                        onChange={setActiveDateTo}
+                        value={dateTo}
+                        onChange={setDateTo}
                         placeholder="Hoje"
                         className="h-9 text-sm w-full"
                       />
                     </div>
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
