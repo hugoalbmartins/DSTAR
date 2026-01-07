@@ -51,7 +51,7 @@ export default function CommissionWizard() {
   const [partners, setPartners] = useState([]);
 
   const [operatorId, setOperatorId] = useState(operatorIdFromQuery || "");
-  const [partnerId, setPartnerId] = useState("");
+  const [partnerId, setPartnerId] = useState("all");
   const [commissionType, setCommissionType] = useState("automatic");
   const [nifDifferentiation, setNifDifferentiation] = useState(false);
   const [allowedSaleTypes, setAllowedSaleTypes] = useState(['NI', 'MC', 'Refid']);
@@ -94,7 +94,7 @@ export default function CommissionWizard() {
       const rulesData = await commissionsService.getRules(id);
 
       setOperatorId(setting.operator_id);
-      setPartnerId(setting.partner_id || "");
+      setPartnerId(setting.partner_id || "all");
       setCommissionType(setting.commission_type);
       setNifDifferentiation(setting.nif_differentiation);
       setAllowedSaleTypes(setting.allowed_sale_types || []);
@@ -175,7 +175,7 @@ export default function CommissionWizard() {
     try {
       const settingData = {
         operator_id: operatorId,
-        partner_id: partnerId || null,
+        partner_id: partnerId && partnerId !== "all" ? partnerId : null,
         commission_type: commissionType,
         nif_differentiation: nifDifferentiation,
         allowed_sale_types: allowedSaleTypes
@@ -269,7 +269,7 @@ export default function CommissionWizard() {
                   <SelectValue placeholder="Todos os parceiros" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#082d32] border-white/10">
-                  <SelectItem value="" className="text-white hover:bg-white/10">
+                  <SelectItem value="all" className="text-white hover:bg-white/10">
                     Todos os parceiros
                   </SelectItem>
                   {partners.map((p) => (
