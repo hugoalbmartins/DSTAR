@@ -14,16 +14,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
-  Search, 
-  Plus, 
-  Eye, 
-  Edit2, 
+import { DateSelect } from "@/components/ui/date-select";
+import {
+  Search,
+  Plus,
+  Eye,
+  Edit2,
   Trash2,
   Zap,
   Phone,
   Sun,
-  X
+  X,
+  Filter
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -65,6 +67,11 @@ export default function Sales() {
   const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [partnerFilter, setPartnerFilter] = useState("");
+  const [saleDateFrom, setSaleDateFrom] = useState(null);
+  const [saleDateTo, setSaleDateTo] = useState(null);
+  const [activeDateFrom, setActiveDateFrom] = useState(null);
+  const [activeDateTo, setActiveDateTo] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
   const fetchData = useCallback(async () => {
@@ -80,12 +87,45 @@ export default function Sales() {
       const salesData = await salesService.getSales(null, filters);
 
       let filtered = salesData;
+
       if (search) {
-        filtered = salesData.filter(sale =>
+        filtered = filtered.filter(sale =>
           sale.client_name?.toLowerCase().includes(search.toLowerCase()) ||
           sale.client_email?.toLowerCase().includes(search.toLowerCase()) ||
           sale.client_phone?.includes(search)
         );
+      }
+
+      if (saleDateFrom) {
+        filtered = filtered.filter(sale => {
+          if (!sale.sale_date) return false;
+          const saleDate = new Date(sale.sale_date);
+          return saleDate >= saleDateFrom;
+        });
+      }
+
+      if (saleDateTo) {
+        filtered = filtered.filter(sale => {
+          if (!sale.sale_date) return false;
+          const saleDate = new Date(sale.sale_date);
+          return saleDate <= saleDateTo;
+        });
+      }
+
+      if (activeDateFrom) {
+        filtered = filtered.filter(sale => {
+          if (!sale.active_date) return false;
+          const activeDate = new Date(sale.active_date);
+          return activeDate >= activeDateFrom;
+        });
+      }
+
+      if (activeDateTo) {
+        filtered = filtered.filter(sale => {
+          if (!sale.active_date) return false;
+          const activeDate = new Date(sale.active_date);
+          return activeDate <= activeDateTo;
+        });
       }
 
       setSales(filtered);
@@ -95,7 +135,7 @@ export default function Sales() {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, categoryFilter, partnerFilter, search]);
+  }, [statusFilter, categoryFilter, partnerFilter, search, saleDateFrom, saleDateTo, activeDateFrom, activeDateTo]);
 
   useEffect(() => {
     fetchData();
@@ -125,9 +165,13 @@ export default function Sales() {
     setCategoryFilter("");
     setPartnerFilter("");
     setSearch("");
+    setSaleDateFrom(null);
+    setSaleDateTo(null);
+    setActiveDateFrom(null);
+    setActiveDateTo(null);
   };
 
-  const hasFilters = statusFilter || categoryFilter || partnerFilter || search;
+  const hasFilters = statusFilter || categoryFilter || partnerFilter || search || saleDateFrom || saleDateTo || activeDateFrom || activeDateTo;
 
   if (loading) {
     return (
@@ -153,84 +197,122 @@ export default function Sales() {
         </Link>
       </div>
 
-      {/* Filters */}
-      <Card className="card-leiritrix">
-        <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <form onSubmit={handleSearch} className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={18} />
-                <Input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Pesquisar por cliente, NIF ou parceiro..."
-                  className="form-input pl-10"
-                  data-testid="search-input"
+      {/* Filters - Compact Design */}
+      <div className="space-y-3">
+        {/* Main Search Bar */}
+        <div className="flex gap-2">
+          <form onSubmit={handleSearch} className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={16} />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Pesquisar cliente, NIF, email ou telefone..."
+                className="form-input pl-9 h-10 text-sm"
+                data-testid="search-input"
+              />
+            </div>
+          </form>
+
+          <Button
+            onClick={() => setShowFilters(!showFilters)}
+            variant="outline"
+            className="bg-white/5 border-white/10 text-white hover:bg-white/10 h-10 px-3"
+          >
+            <Filter size={16} />
+          </Button>
+
+          {hasFilters && (
+            <Button
+              onClick={clearFilters}
+              variant="outline"
+              className="bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white h-10 px-3"
+              data-testid="clear-filters-btn"
+            >
+              <X size={16} />
+            </Button>
+          )}
+        </div>
+
+        {/* Advanced Filters - Collapsible */}
+        {showFilters && (
+          <Card className="card-leiritrix border-[#c8f31d]/20">
+            <CardContent className="p-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="form-input h-9 text-sm" data-testid="status-filter">
+                    <SelectValue placeholder="Estado" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#082d32] border-white/10">
+                    <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+                    {Object.entries(STATUS_MAP).map(([key, status]) => (
+                      <SelectItem key={key} value={key} className="text-white hover:bg-white/10 text-sm">
+                        {status.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="form-input h-9 text-sm" data-testid="category-filter">
+                    <SelectValue placeholder="Categoria" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#082d32] border-white/10">
+                    <SelectItem value="all" className="text-white hover:bg-white/10">Todas</SelectItem>
+                    {Object.entries(CATEGORY_MAP).map(([key, cat]) => (
+                      <SelectItem key={key} value={key} className="text-white hover:bg-white/10 text-sm">
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={partnerFilter} onValueChange={setPartnerFilter}>
+                  <SelectTrigger className="form-input h-9 text-sm" data-testid="partner-filter">
+                    <SelectValue placeholder="Parceiro" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#082d32] border-white/10">
+                    <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+                    {partners.map((partner) => (
+                      <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10 text-sm">
+                        {partner.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <DateSelect
+                  value={saleDateFrom}
+                  onChange={setSaleDateFrom}
+                  placeholder="Venda de"
+                  className="h-9 text-sm"
+                />
+
+                <DateSelect
+                  value={saleDateTo}
+                  onChange={setSaleDateTo}
+                  placeholder="Venda até"
+                  className="h-9 text-sm"
+                />
+
+                <DateSelect
+                  value={activeDateFrom}
+                  onChange={setActiveDateFrom}
+                  placeholder="Ativação de"
+                  className="h-9 text-sm"
+                />
+
+                <DateSelect
+                  value={activeDateTo}
+                  onChange={setActiveDateTo}
+                  placeholder="Ativação até"
+                  className="h-9 text-sm"
                 />
               </div>
-            </form>
-
-            {/* Status Filter */}
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full lg:w-44 form-input" data-testid="status-filter">
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#082d32] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
-                {Object.entries(STATUS_MAP).map(([key, status]) => (
-                  <SelectItem key={key} value={key} className="text-white hover:bg-white/10">
-                    {status.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Category Filter */}
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-full lg:w-44 form-input" data-testid="category-filter">
-                <SelectValue placeholder="Categoria" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#082d32] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todas</SelectItem>
-                {Object.entries(CATEGORY_MAP).map(([key, cat]) => (
-                  <SelectItem key={key} value={key} className="text-white hover:bg-white/10">
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Partner Filter */}
-            <Select value={partnerFilter} onValueChange={setPartnerFilter}>
-              <SelectTrigger className="w-full lg:w-44 form-input" data-testid="partner-filter">
-                <SelectValue placeholder="Parceiro" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#082d32] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
-                {partners.map((partner) => (
-                  <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
-                    {partner.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Clear filters */}
-            {hasFilters && (
-              <Button
-                onClick={clearFilters}
-                variant="ghost"
-                className="text-white/70 hover:text-white"
-                data-testid="clear-filters-btn"
-              >
-                <X size={18} className="mr-1" />
-                Limpar
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {/* Sales Table */}
       <Card className="card-leiritrix overflow-hidden flex flex-col" style={{maxHeight: 'calc(100vh - 280px)'}}>

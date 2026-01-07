@@ -21,6 +21,8 @@ import {
   Filter,
   Loader2
 } from "lucide-react";
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
 
 const STATUS_MAP = {
   em_negociacao: { label: "Em Negociação", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
@@ -117,40 +119,53 @@ export default function Reports() {
     }
   };
 
-  const exportToCSV = () => {
+  const exportToExcel = () => {
     if (!report || !report.sales.length) {
       toast.error("Sem dados para exportar");
       return;
     }
 
-    const headers = [
-      "Cliente", "NIF", "Categoria", "Tipo", "Parceiro",
-      "Valor Contrato", "Comissão", "Estado", "Vendedor", "Data de Venda"
+    const worksheetData = [
+      [
+        "Cliente", "NIF", "Categoria", "Tipo", "Parceiro",
+        "Valor Contrato", "Comissão", "Estado", "Vendedor", "Data de Venda", "Data de Ativação"
+      ],
+      ...report.sales.map(sale => [
+        sale.client_name,
+        sale.client_nif || "",
+        CATEGORY_MAP[sale.category] || sale.category,
+        sale.sale_type || "",
+        sale.partner_name || "",
+        sale.contract_value || 0,
+        sale.commission || 0,
+        STATUS_MAP[sale.status]?.label || sale.status,
+        sale.seller_name || "",
+        sale.sale_date ? new Date(sale.sale_date).toLocaleDateString('pt-PT') : new Date(sale.created_at).toLocaleDateString('pt-PT'),
+        sale.active_date ? new Date(sale.active_date).toLocaleDateString('pt-PT') : ""
+      ])
     ];
 
-    const rows = report.sales.map(sale => [
-      sale.client_name,
-      sale.client_nif || "",
-      CATEGORY_MAP[sale.category] || sale.category,
-      sale.sale_type || "",
-      sale.partner_name || "",
-      sale.contract_value,
-      sale.commission || "",
-      STATUS_MAP[sale.status]?.label || sale.status,
-      sale.seller_name,
-      new Date(sale.sale_date || sale.created_at).toLocaleDateString('pt-PT')
-    ]);
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
 
-    const csvContent = [
-      headers.join(";"),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(";"))
-    ].join("\n");
+    const columnWidths = [
+      { wch: 25 },
+      { wch: 12 },
+      { wch: 18 },
+      { wch: 12 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 12 },
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 }
+    ];
+    worksheet['!cols'] = columnWidths;
 
-    const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `relatorio_vendas_${format(new Date(), "yyyy-MM-dd")}.csv`;
-    link.click();
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Vendas");
+
+    XLSX.writeFile(workbook, `relatorio_vendas_${format(new Date(), "yyyy-MM-dd")}.xlsx`);
 
     toast.success("Relatório exportado com sucesso");
   };
@@ -303,12 +318,12 @@ export default function Reports() {
           {/* Export Button */}
           <div className="flex justify-end">
             <Button
-              onClick={exportToCSV}
+              onClick={exportToExcel}
               className="btn-secondary flex items-center gap-2"
-              data-testid="export-csv-btn"
+              data-testid="export-excel-btn"
             >
               <Download size={18} />
-              Exportar CSV
+              Exportar Excel
             </Button>
           </div>
 
