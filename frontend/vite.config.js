@@ -16,6 +16,15 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: true,
+      strictPort: false,
+      hmr: {
+        clientPort: 3000,
+      },
+    },
+    preview: {
+      port: 3000,
+      host: true,
+      strictPort: false,
     },
     build: {
       outDir: 'dist',
