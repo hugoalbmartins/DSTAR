@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { salesService } from "@/services/salesService";
 import { partnersService } from "@/services/partnersService";
 import { usersService } from "@/services/usersService";
+import { operatorsService } from "@/services/operatorsService";
+import { commissionsService } from "@/services/commissionsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DateSelect } from "@/components/ui/date-select";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -126,10 +129,15 @@ export default function SaleDetail({ editMode = false }) {
   const [editCategory, setEditCategory] = useState("");
   const [editSaleType, setEditSaleType] = useState("");
   const [editPartnerId, setEditPartnerId] = useState("");
+  const [editOperatorId, setEditOperatorId] = useState("");
   const [editLoyaltyMonths, setEditLoyaltyMonths] = useState("");
   const [editCustomLoyaltyMonths, setEditCustomLoyaltyMonths] = useState("");
   const [partners, setPartners] = useState([]);
   const [sellers, setSellers] = useState([]);
+  const [operators, setOperators] = useState([]);
+  const [availableSaleTypes, setAvailableSaleTypes] = useState(SALE_TYPES);
+  const [allowCommissionOverride, setAllowCommissionOverride] = useState(false);
+  const [commissionType, setCommissionType] = useState("manual");
   const [isEditing, setIsEditing] = useState(editMode);
 
   const fetchSale = useCallback(async () => {
@@ -157,6 +165,7 @@ export default function SaleDetail({ editMode = false }) {
       setEditCategory(saleData.category || "");
       setEditSaleType(saleData.sale_type || "");
       setEditPartnerId(saleData.partner_id || "");
+      setEditOperatorId(saleData.operator_id || "");
 
       const loyaltyMonths = saleData.loyalty_months?.toString() || "0";
       if (["0", "12", "24", "36"].includes(loyaltyMonths)) {
@@ -199,11 +208,69 @@ export default function SaleDetail({ editMode = false }) {
     }
   };
 
+  const fetchOperatorsByPartner = async (partnerId) => {
+    if (!partnerId) {
+      setOperators([]);
+      return;
+    }
+    try {
+      const partner = await partnersService.getPartnerById(partnerId);
+      if (partner && partner.partner_operators) {
+        const operatorIds = partner.partner_operators.map(po => po.operator_id);
+        const allOperators = await operatorsService.getOperators();
+        const filteredOperators = allOperators.filter(op => operatorIds.includes(op.id));
+        setOperators(filteredOperators);
+      }
+    } catch (error) {
+      console.error("Error fetching operators:", error);
+    }
+  };
+
+  const checkCommissionType = async () => {
+    if (!editOperatorId || !editPartnerId) {
+      setCommissionType("manual");
+      return;
+    }
+    try {
+      const settings = await commissionsService.getOperatorSettings(editOperatorId, editPartnerId);
+      if (settings && settings.length > 0) {
+        const setting = settings.find(s => s.partner_id === editPartnerId) || settings[0];
+        setCommissionType(setting.commission_type);
+
+        if (setting.allowed_sale_types && setting.allowed_sale_types.length > 0) {
+          const filtered = SALE_TYPES.filter(st => setting.allowed_sale_types.includes(st.value));
+          setAvailableSaleTypes(filtered);
+        } else {
+          setAvailableSaleTypes(SALE_TYPES);
+        }
+      } else {
+        setCommissionType("manual");
+        setAvailableSaleTypes(SALE_TYPES);
+      }
+    } catch (error) {
+      console.error("Error checking commission type:", error);
+      setCommissionType("manual");
+      setAvailableSaleTypes(SALE_TYPES);
+    }
+  };
+
   useEffect(() => {
     fetchSale();
     fetchPartners();
     fetchSellers();
   }, [fetchSale]);
+
+  useEffect(() => {
+    if (editPartnerId && isEditing) {
+      fetchOperatorsByPartner(editPartnerId);
+    }
+  }, [editPartnerId, isEditing]);
+
+  useEffect(() => {
+    if (editOperatorId && editPartnerId && isEditing) {
+      checkCommissionType();
+    }
+  }, [editOperatorId, editPartnerId, isEditing]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -218,6 +285,7 @@ export default function SaleDetail({ editMode = false }) {
         category: editCategory,
         sale_type: editSaleType,
         partner_id: editPartnerId,
+        operator_id: editOperatorId,
         loyalty_months: finalLoyaltyMonths,
         active_date: editActiveDate ? editActiveDate.toISOString() : null,
         sale_date: editSaleDate ? editSaleDate.toISOString().split('T')[0] : null,
@@ -429,24 +497,11 @@ export default function SaleDetail({ editMode = false }) {
               </div>
 
               <div>
-                <Label className="form-label">Tipo de Venda</Label>
-                <Select value={editSaleType} onValueChange={setEditSaleType}>
-                  <SelectTrigger className="form-input" data-testid="edit-sale-type-select">
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
-                    {SALE_TYPES.map((type) => (
-                      <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
                 <Label className="form-label">Parceiro</Label>
-                <Select value={editPartnerId} onValueChange={setEditPartnerId}>
+                <Select value={editPartnerId} onValueChange={(value) => {
+                  setEditPartnerId(value);
+                  setEditOperatorId("");
+                }}>
                   <SelectTrigger className="form-input" data-testid="edit-partner-select">
                     <SelectValue placeholder="Selecione o parceiro" />
                   </SelectTrigger>
@@ -458,6 +513,43 @@ export default function SaleDetail({ editMode = false }) {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div>
+                <Label className="form-label">Operadora</Label>
+                <Select value={editOperatorId} onValueChange={setEditOperatorId} disabled={!editPartnerId}>
+                  <SelectTrigger className="form-input" data-testid="edit-operator-select">
+                    <SelectValue placeholder={editPartnerId ? "Selecione a operadora" : "Selecione primeiro o parceiro"} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#082d32] border-white/10">
+                    {operators.map((operator) => (
+                      <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10">
+                        {operator.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="form-label">Tipo de Venda</Label>
+                <Select value={editSaleType} onValueChange={setEditSaleType}>
+                  <SelectTrigger className="form-input" data-testid="edit-sale-type-select">
+                    <SelectValue placeholder="Selecione o tipo" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#082d32] border-white/10">
+                    {availableSaleTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {availableSaleTypes.length < SALE_TYPES.length && (
+                  <p className="text-white/40 text-xs mt-1">
+                    Apenas tipos permitidos para esta operadora
+                  </p>
+                )}
               </div>
 
               <div>
@@ -531,11 +623,28 @@ export default function SaleDetail({ editMode = false }) {
               {/* Commissions - editable by Admin always, by BO if operator allows */}
               {isAdminOrBackoffice && (user.role === 'admin' || sale?.operators?.commission_visible_to_bo) && (
                 <>
+                  {commissionType === 'automatic' && user.role === 'admin' && (
+                    <div className="md:col-span-2">
+                      <div className="flex items-center gap-3 bg-[#c8f31d]/10 border border-[#c8f31d]/30 rounded-lg p-3">
+                        <Checkbox
+                          id="allow-commission-override"
+                          checked={allowCommissionOverride}
+                          onCheckedChange={setAllowCommissionOverride}
+                        />
+                        <Label htmlFor="allow-commission-override" className="text-white cursor-pointer text-sm">
+                          Corrigir/alterar comissão (apenas administradores)
+                        </Label>
+                      </div>
+                    </div>
+                  )}
                   {sale.is_backoffice ? (
                     <div>
                       <Label className="form-label flex items-center gap-2">
                         <Euro size={14} className="text-[#c8f31d]" />
                         Comissão Backoffice (€)
+                        {commissionType === 'automatic' && !allowCommissionOverride && (
+                          <span className="text-xs text-white/50">(automático)</span>
+                        )}
                       </Label>
                       <Input
                         type="number"
@@ -546,6 +655,8 @@ export default function SaleDetail({ editMode = false }) {
                         className="form-input"
                         placeholder="0.00"
                         data-testid="edit-commission-backoffice-input"
+                        readOnly={commissionType === 'automatic' && !allowCommissionOverride}
+                        disabled={commissionType === 'automatic' && !allowCommissionOverride && user.role !== 'admin'}
                       />
                     </div>
                   ) : (
@@ -555,6 +666,9 @@ export default function SaleDetail({ editMode = false }) {
                           <Label className="form-label flex items-center gap-2">
                             <Euro size={14} className="text-[#c8f31d]" />
                             Comissão Vendedor (€)
+                            {commissionType === 'automatic' && !allowCommissionOverride && (
+                              <span className="text-xs text-white/50">(automático)</span>
+                            )}
                           </Label>
                           <Input
                             type="number"
@@ -565,6 +679,8 @@ export default function SaleDetail({ editMode = false }) {
                             className="form-input"
                             placeholder="0.00"
                             data-testid="edit-commission-seller-input"
+                            readOnly={commissionType === 'automatic' && !allowCommissionOverride}
+                            disabled={commissionType === 'automatic' && !allowCommissionOverride && user.role !== 'admin'}
                           />
                         </div>
                       )}
@@ -572,6 +688,9 @@ export default function SaleDetail({ editMode = false }) {
                         <Label className="form-label flex items-center gap-2">
                           <Euro size={14} className="text-[#c8f31d]" />
                           Comissão a receber (€)
+                          {commissionType === 'automatic' && !allowCommissionOverride && (
+                            <span className="text-xs text-white/50">(automático)</span>
+                          )}
                         </Label>
                         <Input
                           type="number"
@@ -582,6 +701,8 @@ export default function SaleDetail({ editMode = false }) {
                           className="form-input"
                           placeholder="0.00"
                           data-testid="edit-commission-partner-input"
+                          readOnly={commissionType === 'automatic' && !allowCommissionOverride}
+                          disabled={commissionType === 'automatic' && !allowCommissionOverride && user.role !== 'admin'}
                         />
                       </div>
                     </>

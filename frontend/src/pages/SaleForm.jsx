@@ -110,6 +110,7 @@ export default function SaleForm() {
   const [alertMessage, setAlertMessage] = useState("");
   const [commissionType, setCommissionType] = useState("automatic");
   const [calculatingCommission, setCalculatingCommission] = useState(false);
+  const [availableSaleTypes, setAvailableSaleTypes] = useState(SALE_TYPES);
 
   const [formData, setFormData] = useState({
     client_name: "",
@@ -269,15 +270,24 @@ export default function SaleForm() {
         const setting = settings.find(s => s.partner_id === formData.partner_id) || settings[0];
         setCommissionType(setting.commission_type);
 
+        if (setting.allowed_sale_types && setting.allowed_sale_types.length > 0) {
+          const filtered = SALE_TYPES.filter(st => setting.allowed_sale_types.includes(st.value));
+          setAvailableSaleTypes(filtered);
+        } else {
+          setAvailableSaleTypes(SALE_TYPES);
+        }
+
         if (setting.commission_type === "automatic") {
           calculateCommission();
         }
       } else {
         setCommissionType("manual");
+        setAvailableSaleTypes(SALE_TYPES);
       }
     } catch (error) {
       console.error("Error checking commission type:", error);
       setCommissionType("manual");
+      setAvailableSaleTypes(SALE_TYPES);
     }
   };
 
@@ -1025,13 +1035,20 @@ export default function SaleForm() {
 
               {showSaleType && (
                 <div className="md:col-span-2">
-                  <Label htmlFor="sale_type" className="form-label">Tipo de Venda</Label>
+                  <Label htmlFor="sale_type" className="form-label">
+                    Tipo de Venda
+                    {availableSaleTypes.length < SALE_TYPES.length && (
+                      <span className="ml-2 text-xs text-[#c8f31d]">
+                        (Filtrado por operadora)
+                      </span>
+                    )}
+                  </Label>
                   <Select value={formData.sale_type} onValueChange={(v) => handleChange("sale_type", v)}>
                     <SelectTrigger className="form-input" data-testid="sale-type-select">
                       <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#082d32] border-white/10">
-                      {SALE_TYPES.map((type) => (
+                      {availableSaleTypes.map((type) => (
                         <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
                           {type.label}
                         </SelectItem>
@@ -1286,6 +1303,7 @@ export default function SaleForm() {
                         className="form-input"
                         placeholder="0.00"
                         disabled={calculatingCommission}
+                        readOnly={commissionType === "automatic"}
                       />
                     </div>
                   )}
@@ -1306,6 +1324,7 @@ export default function SaleForm() {
                       className="form-input"
                       placeholder="0.00"
                       disabled={calculatingCommission}
+                      readOnly={commissionType === "automatic"}
                     />
                   </div>
                 </>
