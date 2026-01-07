@@ -2,7 +2,10 @@ import { supabase } from '@/lib/supabase';
 
 export const partnersService = {
   async getPartners(includeInactive = false) {
-    let query = supabase.from('partners').select('*');
+    let query = supabase.from('partners').select(`
+      *,
+      partner_operators(operator_id)
+    `);
 
     if (!includeInactive) {
       query = query.eq('active', true);

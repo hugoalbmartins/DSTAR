@@ -192,7 +192,7 @@ export default function SaleDetail({ editMode = false }) {
 
   const fetchPartners = async () => {
     try {
-      const partnersData = await partnersService.getAllPartners();
+      const partnersData = await partnersService.getPartners();
       setPartners(partnersData);
     } catch (error) {
       console.error("Error fetching partners:", error);
@@ -208,22 +208,20 @@ export default function SaleDetail({ editMode = false }) {
     }
   };
 
-  const fetchOperatorsByPartner = async (partnerId) => {
-    if (!partnerId) {
-      setOperators([]);
-      return;
-    }
+  const fetchOperators = async () => {
     try {
-      const partner = await partnersService.getPartnerById(partnerId);
-      if (partner && partner.partner_operators) {
-        const operatorIds = partner.partner_operators.map(po => po.operator_id);
-        const allOperators = await operatorsService.getOperators();
-        const filteredOperators = allOperators.filter(op => operatorIds.includes(op.id));
-        setOperators(filteredOperators);
-      }
+      const operatorsData = await operatorsService.getOperators();
+      setOperators(operatorsData);
     } catch (error) {
       console.error("Error fetching operators:", error);
     }
+  };
+
+  const getFilteredPartners = () => {
+    if (!editOperatorId) return partners;
+    return partners.filter(partner => {
+      return partner.partner_operators && partner.partner_operators.some(po => po.operator_id === editOperatorId);
+    });
   };
 
   const checkCommissionType = async () => {
@@ -258,13 +256,25 @@ export default function SaleDetail({ editMode = false }) {
     fetchSale();
     fetchPartners();
     fetchSellers();
+    fetchOperators();
   }, [fetchSale]);
 
   useEffect(() => {
-    if (editPartnerId && isEditing) {
-      fetchOperatorsByPartner(editPartnerId);
+    if (editOperatorId && isEditing) {
+      const filteredPartners = getFilteredPartners();
+      if (editPartnerId && !filteredPartners.some(p => p.id === editPartnerId)) {
+        setEditPartnerId("");
+      }
+
+      const operator = operators.find(op => op.id === editOperatorId);
+      if (operator?.allowed_sale_types && operator.allowed_sale_types.length > 0) {
+        const filtered = SALE_TYPES.filter(st => operator.allowed_sale_types.includes(st.value));
+        setAvailableSaleTypes(filtered);
+      } else {
+        setAvailableSaleTypes(SALE_TYPES);
+      }
     }
-  }, [editPartnerId, isEditing]);
+  }, [editOperatorId, operators, isEditing]);
 
   useEffect(() => {
     if (editOperatorId && editPartnerId && isEditing) {
@@ -497,18 +507,18 @@ export default function SaleDetail({ editMode = false }) {
               </div>
 
               <div>
-                <Label className="form-label">Parceiro</Label>
-                <Select value={editPartnerId} onValueChange={(value) => {
-                  setEditPartnerId(value);
-                  setEditOperatorId("");
+                <Label className="form-label">Operadora</Label>
+                <Select value={editOperatorId} onValueChange={(value) => {
+                  setEditOperatorId(value);
+                  setEditPartnerId("");
                 }}>
-                  <SelectTrigger className="form-input" data-testid="edit-partner-select">
-                    <SelectValue placeholder="Selecione o parceiro" />
+                  <SelectTrigger className="form-input" data-testid="edit-operator-select">
+                    <SelectValue placeholder="Selecione a operadora" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#082d32] border-white/10">
-                    {partners.map((partner) => (
-                      <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
-                        {partner.name}
+                    {operators.map((operator) => (
+                      <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10">
+                        {operator.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -516,15 +526,25 @@ export default function SaleDetail({ editMode = false }) {
               </div>
 
               <div>
-                <Label className="form-label">Operadora</Label>
-                <Select value={editOperatorId} onValueChange={setEditOperatorId} disabled={!editPartnerId}>
-                  <SelectTrigger className="form-input" data-testid="edit-operator-select">
-                    <SelectValue placeholder={editPartnerId ? "Selecione a operadora" : "Selecione primeiro o parceiro"} />
+                <Label className="form-label">Parceiro</Label>
+                <Select
+                  value={editPartnerId}
+                  onValueChange={setEditPartnerId}
+                  disabled={!editOperatorId}
+                >
+                  <SelectTrigger className="form-input" data-testid="edit-partner-select">
+                    <SelectValue placeholder={
+                      !editOperatorId
+                        ? "Selecione primeiro a operadora"
+                        : getFilteredPartners().length === 0
+                        ? "Nenhum parceiro com esta operadora"
+                        : "Selecione o parceiro"
+                    } />
                   </SelectTrigger>
                   <SelectContent className="bg-[#082d32] border-white/10">
-                    {operators.map((operator) => (
-                      <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10">
-                        {operator.name}
+                    {getFilteredPartners().map((partner) => (
+                      <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
+                        {partner.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

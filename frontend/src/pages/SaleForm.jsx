@@ -1062,31 +1062,6 @@ export default function SaleForm() {
                 </div>
               )}
 
-              {showSaleType && (
-                <div className="md:col-span-2">
-                  <Label htmlFor="sale_type" className="form-label">
-                    Tipo de Venda
-                    {availableSaleTypes.length < SALE_TYPES.length && (
-                      <span className="ml-2 text-xs text-[#c8f31d]">
-                        (Filtrado por operadora)
-                      </span>
-                    )}
-                  </Label>
-                  <Select value={formData.sale_type} onValueChange={(v) => handleChange("sale_type", v)}>
-                    <SelectTrigger className="form-input" data-testid="sale-type-select">
-                      <SelectValue placeholder="Selecione o tipo" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10">
-                      {availableSaleTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
               <div>
                 <Label htmlFor="operator_id" className="form-label">Operadora *</Label>
                 <Select
@@ -1152,6 +1127,31 @@ export default function SaleForm() {
                   </p>
                 )}
               </div>
+
+              {showSaleType && (
+                <div className="md:col-span-2">
+                  <Label htmlFor="sale_type" className="form-label">
+                    Tipo de Venda
+                    {availableSaleTypes.length < SALE_TYPES.length && (
+                      <span className="ml-2 text-xs text-[#c8f31d]">
+                        (Filtrado por operadora)
+                      </span>
+                    )}
+                  </Label>
+                  <Select value={formData.sale_type} onValueChange={(v) => handleChange("sale_type", v)}>
+                    <SelectTrigger className="form-input" data-testid="sale-type-select">
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#082d32] border-white/10">
+                      {availableSaleTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               {selectedOperator?.has_client_categories && clientCategories.length > 0 && (
                 <div>

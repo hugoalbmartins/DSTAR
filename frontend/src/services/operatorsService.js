@@ -29,7 +29,10 @@ export const operatorsService = {
 
       return operators.sort((a, b) => a.name.localeCompare(b.name));
     } else {
-      let query = supabase.from('operators').select('*');
+      let query = supabase.from('operators').select(`
+        *,
+        partner_operators(partner_id)
+      `);
 
       if (!includeInactive) {
         query = query.eq('active', true);
