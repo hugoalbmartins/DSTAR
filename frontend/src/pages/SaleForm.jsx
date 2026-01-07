@@ -6,6 +6,7 @@ import { partnersService } from "@/services/partnersService";
 import { operatorsService } from "@/services/operatorsService";
 import { usersService } from "@/services/usersService";
 import { commissionsService } from "@/services/commissionsService";
+import { operatorClientCategoriesService } from "@/services/operatorClientCategoriesService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,6 +94,8 @@ export default function SaleForm() {
   const [partners, setPartners] = useState([]);
   const [sellers, setSellers] = useState([]);
   const [operators, setOperators] = useState([]);
+  const [clientCategories, setClientCategories] = useState([]);
+  const [selectedOperator, setSelectedOperator] = useState(null);
   const [loadingPartners, setLoadingPartners] = useState(true);
   const [loadingOperators, setLoadingOperators] = useState(false);
 
@@ -120,6 +123,7 @@ export default function SaleForm() {
     sale_type: "",
     partner_id: "",
     operator_id: "",
+    client_category_id: "",
     seller_id: "none",
     contract_value: "",
     loyalty_months: "",
@@ -300,7 +304,8 @@ export default function SaleForm() {
         partnerId: formData.partner_id,
         saleType: formData.sale_type,
         clientNif: formData.client_nif,
-        loyaltyMonths: loyaltyMonths
+        loyaltyMonths: loyaltyMonths,
+        clientCategoryId: formData.client_category_id
       });
 
       if (!rule || rule.isManual) {
@@ -468,6 +473,25 @@ export default function SaleForm() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleOperatorChange = async (operatorId) => {
+    setFormData(prev => ({ ...prev, operator_id: operatorId, client_category_id: "" }));
+
+    const operator = operators.find(o => o.id === operatorId);
+    setSelectedOperator(operator);
+
+    if (operator?.has_client_categories) {
+      try {
+        const categories = await operatorClientCategoriesService.getCategories(operatorId);
+        setClientCategories(categories);
+      } catch (error) {
+        console.error("Error fetching client categories:", error);
+        setClientCategories([]);
+      }
+    } else {
+      setClientCategories([]);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -478,6 +502,11 @@ export default function SaleForm() {
 
     if (!formData.operator_id) {
       toast.error("Selecione uma operadora");
+      return;
+    }
+
+    if (selectedOperator?.has_client_categories && !formData.client_category_id) {
+      toast.error("Selecione a categoria de cliente");
       return;
     }
 
@@ -1026,7 +1055,7 @@ export default function SaleForm() {
                 <Label htmlFor="operator_id" className="form-label">Operadora *</Label>
                 <Select
                   value={formData.operator_id}
-                  onValueChange={(v) => handleChange("operator_id", v)}
+                  onValueChange={handleOperatorChange}
                   disabled={!formData.partner_id || loadingOperators || !formData.category || (formData.category === 'energia' && !formData.energy_type)}
                 >
                   <SelectTrigger className="form-input" data-testid="operator-select">
@@ -1058,6 +1087,28 @@ export default function SaleForm() {
                   </p>
                 )}
               </div>
+
+              {selectedOperator?.has_client_categories && clientCategories.length > 0 && (
+                <div>
+                  <Label htmlFor="client_category_id" className="form-label">Categoria de Cliente *</Label>
+                  <Select
+                    value={formData.client_category_id}
+                    onValueChange={(v) => handleChange("client_category_id", v)}
+                    disabled={!formData.operator_id}
+                  >
+                    <SelectTrigger className="form-input">
+                      <SelectValue placeholder="Selecione a categoria do cliente" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#082d32] border-white/10">
+                      {clientCategories.map((category) => (
+                        <SelectItem key={category.id} value={category.id} className="text-white hover:bg-white/10">
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               {sellers.length > 0 && (
                 <div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/App";
 import { operatorsService } from "@/services/operatorsService";
+import { operatorClientCategoriesService } from "@/services/operatorClientCategoriesService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,9 @@ import {
   Loader2,
   Zap,
   Phone,
-  Sun
+  Sun,
+  X,
+  Tags
 } from "lucide-react";
 
 const CATEGORY_OPTIONS = [
@@ -68,8 +71,12 @@ export default function Operators() {
   const [formData, setFormData] = useState({
     name: "",
     categories: [],
-    commission_visible_to_bo: false
+    commission_visible_to_bo: false,
+    has_client_categories: false
   });
+
+  const [clientCategories, setClientCategories] = useState([]);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -91,18 +98,36 @@ export default function Operators() {
     setFormData({
       name: "",
       categories: [],
-      commission_visible_to_bo: false
+      commission_visible_to_bo: false,
+      has_client_categories: false
     });
+    setClientCategories([]);
+    setNewCategoryName("");
     setModalOpen(true);
   };
 
-  const openEditModal = (operator) => {
+  const openEditModal = async (operator) => {
     setEditingOperator(operator);
     setFormData({
       name: operator.name || "",
       categories: operator.categories || [],
-      commission_visible_to_bo: operator.commission_visible_to_bo || false
+      commission_visible_to_bo: operator.commission_visible_to_bo || false,
+      has_client_categories: operator.has_client_categories || false
     });
+    setNewCategoryName("");
+
+    if (operator.has_client_categories) {
+      try {
+        const categories = await operatorClientCategoriesService.getCategories(operator.id);
+        setClientCategories(categories);
+      } catch (error) {
+        toast.error("Erro ao carregar categorias de cliente");
+        setClientCategories([]);
+      }
+    } else {
+      setClientCategories([]);
+    }
+
     setModalOpen(true);
   };
 
@@ -113,6 +138,35 @@ export default function Operators() {
         ? prev.categories.filter(c => c !== category)
         : [...prev.categories, category]
     }));
+  };
+
+  const handleAddClientCategory = () => {
+    const trimmedName = newCategoryName.trim();
+    if (!trimmedName) {
+      toast.error("Nome da categoria não pode estar vazio");
+      return;
+    }
+
+    if (clientCategories.some(cat => cat.name.toLowerCase() === trimmedName.toLowerCase())) {
+      toast.error("Já existe uma categoria com este nome");
+      return;
+    }
+
+    setClientCategories([...clientCategories, { name: trimmedName, isNew: true }]);
+    setNewCategoryName("");
+  };
+
+  const handleRemoveClientCategory = async (category) => {
+    if (category.id && editingOperator) {
+      try {
+        await operatorClientCategoriesService.deleteCategory(category.id);
+        toast.success("Categoria removida");
+      } catch (error) {
+        toast.error("Erro ao remover categoria");
+        return;
+      }
+    }
+    setClientCategories(clientCategories.filter(c => c !== category));
   };
 
   const handleSave = async () => {
@@ -126,20 +180,35 @@ export default function Operators() {
       return;
     }
 
+    if (formData.has_client_categories && clientCategories.length === 0) {
+      toast.error("Adicione pelo menos uma categoria de cliente");
+      return;
+    }
+
     setSaving(true);
     try {
+      let operatorId;
       if (editingOperator) {
         const updated = await operatorsService.updateOperator(editingOperator.id, formData);
+        operatorId = editingOperator.id;
         setOperators(operators.map(o => o.id === editingOperator.id ? updated : o));
-        toast.success("Operadora atualizada");
       } else {
         const created = await operatorsService.createOperator({
           ...formData,
           active: true
         });
+        operatorId = created.id;
         setOperators([...operators, created]);
-        toast.success("Operadora criada");
       }
+
+      if (formData.has_client_categories) {
+        const newCategories = clientCategories.filter(cat => cat.isNew);
+        for (const category of newCategories) {
+          await operatorClientCategoriesService.createCategory(operatorId, category.name);
+        }
+      }
+
+      toast.success(editingOperator ? "Operadora atualizada" : "Operadora criada");
       setModalOpen(false);
       fetchData();
     } catch (error) {
@@ -366,6 +435,75 @@ export default function Operators() {
                 />
               </div>
             )}
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
+                <div className="flex-1">
+                  <Label className="form-label mb-1">Categorias de Cliente</Label>
+                  <p className="text-white/50 text-xs">
+                    Permite definir diferentes categorias de cliente para esta operadora
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.has_client_categories}
+                  onCheckedChange={(checked) => {
+                    setFormData({ ...formData, has_client_categories: checked });
+                    if (!checked) setClientCategories([]);
+                  }}
+                />
+              </div>
+
+              {formData.has_client_categories && (
+                <div className="p-4 rounded-lg bg-[#0d474f] space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddClientCategory()}
+                      placeholder="Nome da categoria"
+                      className="form-input flex-1"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleAddClientCategory}
+                      className="btn-primary"
+                    >
+                      <Plus size={16} />
+                    </Button>
+                  </div>
+
+                  {clientCategories.length > 0 && (
+                    <div className="space-y-2">
+                      {clientCategories.map((category, index) => (
+                        <div
+                          key={category.id || index}
+                          className="flex items-center justify-between p-2 rounded bg-white/5"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Tags size={14} className="text-[#c8f31d]" />
+                            <span className="text-white text-sm">{category.name}</span>
+                            {category.isNew && (
+                              <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs">
+                                Nova
+                              </Badge>
+                            )}
+                          </div>
+                          <Button
+                            type="button"
+                            onClick={() => handleRemoveClientCategory(category)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-400 hover:bg-red-400/10 h-6 w-6 p-0"
+                          >
+                            <X size={14} />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button

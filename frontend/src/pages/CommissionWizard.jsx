@@ -4,6 +4,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { commissionsService } from "@/services/commissionsService";
 import { operatorsService } from "@/services/operatorsService";
 import { partnersService } from "@/services/partnersService";
+import { operatorClientCategoriesService } from "@/services/operatorClientCategoriesService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +50,8 @@ export default function CommissionWizard() {
   const [saving, setSaving] = useState(false);
   const [operators, setOperators] = useState([]);
   const [partners, setPartners] = useState([]);
+  const [clientCategories, setClientCategories] = useState([]);
+  const [selectedOperator, setSelectedOperator] = useState(null);
 
   const [operatorId, setOperatorId] = useState(operatorIdFromQuery || "");
   const [partnerId, setPartnerId] = useState("all");
@@ -74,11 +77,31 @@ export default function CommissionWizard() {
   useEffect(() => {
     if (operatorId) {
       fetchPartnersByOperator(operatorId);
+      fetchOperatorDetails(operatorId);
     } else {
       setPartners([]);
       setPartnerId("all");
+      setClientCategories([]);
+      setSelectedOperator(null);
     }
   }, [operatorId]);
+
+  const fetchOperatorDetails = async (opId) => {
+    try {
+      const operator = operators.find(o => o.id === opId);
+      setSelectedOperator(operator);
+
+      if (operator?.has_client_categories) {
+        const categories = await operatorClientCategoriesService.getCategories(opId);
+        setClientCategories(categories);
+      } else {
+        setClientCategories([]);
+      }
+    } catch (error) {
+      console.error("Error fetching operator details:", error);
+      setClientCategories([]);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -143,7 +166,8 @@ export default function CommissionWizard() {
       seller_fixed_value: 0,
       seller_monthly_multiplier: 0,
       partner_fixed_value: 0,
-      partner_monthly_multiplier: 0
+      partner_monthly_multiplier: 0,
+      client_category_id: null
     }]);
   };
 
@@ -448,6 +472,30 @@ export default function CommissionWizard() {
                               </SelectContent>
                             </Select>
                           </div>
+
+                          {selectedOperator?.has_client_categories && clientCategories.length > 0 && (
+                            <div>
+                              <Label className="form-label text-sm">Categoria de Cliente</Label>
+                              <Select
+                                value={rule.client_category_id || "all"}
+                                onValueChange={(v) => updateRule(index, 'client_category_id', v === "all" ? null : v)}
+                              >
+                                <SelectTrigger className="form-input">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-[#082d32] border-white/10">
+                                  <SelectItem value="all" className="text-white hover:bg-white/10">
+                                    Todas as Categorias
+                                  </SelectItem>
+                                  {clientCategories.map((cat) => (
+                                    <SelectItem key={cat.id} value={cat.id} className="text-white hover:bg-white/10">
+                                      {cat.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
 
                           {nifDifferentiation && (
                             <div>

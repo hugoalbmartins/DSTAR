@@ -171,7 +171,8 @@ export const commissionsService = {
       partnerId,
       saleType,
       clientNif,
-      loyaltyMonths
+      loyaltyMonths,
+      clientCategoryId
     } = params;
 
     const settings = await this.getOperatorSettings(operatorId, partnerId);
@@ -188,7 +189,7 @@ export const commissionsService = {
 
     const nifType = setting.nif_differentiation ? this.getNifType(clientNif) : 'all';
 
-    const applicableRules = rules.filter(rule => {
+    let applicableRules = rules.filter(rule => {
       if (rule.sale_type !== saleType) return false;
       if (rule.nif_type !== 'all' && rule.nif_type !== nifType) return false;
       if (rule.depends_on_loyalty && rule.loyalty_months !== loyaltyMonths) return false;
@@ -196,17 +197,36 @@ export const commissionsService = {
       return true;
     });
 
-    if (applicableRules.length === 0) {
-      const fallbackRules = rules.filter(rule => {
-        if (rule.sale_type !== saleType) return false;
-        if (rule.nif_type !== 'all') return false;
-        if (rule.depends_on_loyalty) return false;
-        return true;
-      });
+    if (clientCategoryId && applicableRules.length > 0) {
+      const categorySpecificRules = applicableRules.filter(rule =>
+        rule.client_category_id === clientCategoryId
+      );
 
-      return fallbackRules.length > 0 ? fallbackRules[0] : null;
+      if (categorySpecificRules.length > 0) {
+        return categorySpecificRules[0];
+      }
+
+      const generalCategoryRules = applicableRules.filter(rule =>
+        rule.client_category_id === null
+      );
+
+      if (generalCategoryRules.length > 0) {
+        return generalCategoryRules[0];
+      }
     }
 
-    return applicableRules[0];
+    if (applicableRules.length > 0) {
+      return applicableRules[0];
+    }
+
+    const fallbackRules = rules.filter(rule => {
+      if (rule.sale_type !== saleType) return false;
+      if (rule.nif_type !== 'all') return false;
+      if (rule.depends_on_loyalty) return false;
+      if (rule.client_category_id !== null) return false;
+      return true;
+    });
+
+    return fallbackRules.length > 0 ? fallbackRules[0] : null;
   }
 };
