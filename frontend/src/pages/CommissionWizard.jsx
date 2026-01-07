@@ -39,6 +39,11 @@ const SALE_TYPES = [
 
 const LOYALTY_PERIODS = [0, 12, 24, 36];
 
+const POWER_VALUES = [
+  "1.15", "2.3", "3.45", "4.6", "5.75", "6.9",
+  "10.35", "13.8", "17.25", "20.7", "27.6", "34.5", "41.4"
+];
+
 export default function CommissionWizard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -147,6 +152,23 @@ export default function CommissionWizard() {
       const setting = await commissionsService.getOperatorSettingById(id);
       const rulesData = await commissionsService.getRules(id);
 
+      for (const rule of rulesData) {
+        if (rule.commission_type === 'per_power') {
+          const powerValues = await commissionsService.getPowerCommissionValues(rule.id);
+          rule.power_values = powerValues || POWER_VALUES.map(power => ({
+            power_value: power,
+            seller_commission: 0,
+            partner_commission: 0
+          }));
+        } else {
+          rule.power_values = POWER_VALUES.map(power => ({
+            power_value: power,
+            seller_commission: 0,
+            partner_commission: 0
+          }));
+        }
+      }
+
       setOperatorId(setting.operator_id);
       setPartnerId(setting.partner_id || "all");
       setCommissionType(setting.commission_type);
@@ -161,10 +183,11 @@ export default function CommissionWizard() {
   };
 
   const addRule = () => {
-    setRules([...rules, {
+    const newRule = {
       sale_type: 'NI',
       nif_type: 'all',
       calculation_method: 'fixed_per_quantity',
+      commission_type: 'per_contract',
       depends_on_loyalty: false,
       loyalty_months: null,
       applies_to_seller: true,
@@ -175,8 +198,14 @@ export default function CommissionWizard() {
       partner_monthly_multiplier: 0,
       client_category_id: null,
       client_type_filter: 'all',
-      portfolio_filter: 'all'
-    }]);
+      portfolio_filter: 'all',
+      power_values: POWER_VALUES.map(power => ({
+        power_value: power,
+        seller_commission: 0,
+        partner_commission: 0
+      }))
+    };
+    setRules([...rules, newRule]);
   };
 
   const updateRule = (index, field, value) => {
@@ -198,6 +227,17 @@ export default function CommissionWizard() {
     }
 
     setRules(newRules);
+  };
+
+  const updatePowerValue = (ruleIndex, powerValue, field, value) => {
+    const newRules = [...rules];
+    const powerValues = [...newRules[ruleIndex].power_values];
+    const powerIndex = powerValues.findIndex(pv => pv.power_value === powerValue);
+    if (powerIndex !== -1) {
+      powerValues[powerIndex] = { ...powerValues[powerIndex], [field]: parseFloat(value) || 0 };
+      newRules[ruleIndex].power_values = powerValues;
+      setRules(newRules);
+    }
   };
 
   const removeRule = (index) => {
@@ -250,10 +290,16 @@ export default function CommissionWizard() {
 
       if (commissionType === 'automatic') {
         for (const rule of rules) {
-          await commissionsService.createRule({
-            ...rule,
+          const { power_values, ...ruleData } = rule;
+
+          const createdRule = await commissionsService.createRule({
+            ...ruleData,
             setting_id: settingId
           });
+
+          if (rule.commission_type === 'per_power' && rule.power_values && rule.power_values.length > 0) {
+            await commissionsService.createPowerCommissionValues(createdRule.id, rule.power_values);
+          }
         }
       }
 
@@ -583,24 +629,52 @@ export default function CommissionWizard() {
                           )}
 
                           <div className="md:col-span-2">
-                            <Label className="form-label text-sm">Método de Cálculo</Label>
+                            <Label className="form-label text-sm">Tipo de Comissão</Label>
                             <Select
-                              value={rule.calculation_method}
-                              onValueChange={(v) => updateRule(index, 'calculation_method', v)}
+                              value={rule.commission_type || 'per_contract'}
+                              onValueChange={(v) => updateRule(index, 'commission_type', v)}
                             >
                               <SelectTrigger className="form-input">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent className="bg-[#082d32] border-white/10">
-                                <SelectItem value="fixed_per_quantity" className="text-white hover:bg-white/10">
-                                  Valor Fixo por Quantidade
+                                <SelectItem value="per_contract" className="text-white hover:bg-white/10">
+                                  Por Quantidade de Contratos
                                 </SelectItem>
-                                <SelectItem value="monthly_multiple" className="text-white hover:bg-white/10">
-                                  Múltiplo de Mensalidade
+                                <SelectItem value="per_power" className="text-white hover:bg-white/10">
+                                  Por Potência Contratada
                                 </SelectItem>
                               </SelectContent>
                             </Select>
+                            <p className="text-white/40 text-xs mt-1">
+                              {rule.commission_type === 'per_power'
+                                ? 'Comissão individual por cada valor de potência'
+                                : 'Comissão por quantidade de contratos'
+                              }
+                            </p>
                           </div>
+
+                          {rule.commission_type === 'per_contract' && (
+                            <div className="md:col-span-2">
+                              <Label className="form-label text-sm">Método de Cálculo</Label>
+                              <Select
+                                value={rule.calculation_method}
+                                onValueChange={(v) => updateRule(index, 'calculation_method', v)}
+                              >
+                                <SelectTrigger className="form-input">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-[#082d32] border-white/10">
+                                  <SelectItem value="fixed_per_quantity" className="text-white hover:bg-white/10">
+                                    Valor Fixo por Quantidade
+                                  </SelectItem>
+                                  <SelectItem value="monthly_multiple" className="text-white hover:bg-white/10">
+                                    Múltiplo de Mensalidade
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
 
                           <div className="md:col-span-2">
                             <div className="flex items-center gap-3">
@@ -636,36 +710,75 @@ export default function CommissionWizard() {
                             </div>
                           )}
 
-                          <div className="md:col-span-2 pt-4 border-t border-white/10">
-                            <h5 className="text-white text-sm font-medium mb-3">Valores de Comissão</h5>
-                            <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <Checkbox
-                                  id={`applies-partner-${index}`}
-                                  checked={rule.applies_to_partner}
-                                  onCheckedChange={(v) => updateRule(index, 'applies_to_partner', v)}
-                                />
-                                <Label htmlFor={`applies-partner-${index}`} className="text-white text-sm cursor-pointer">
-                                  Comissão a receber
-                                </Label>
+                          {rule.commission_type === 'per_power' && rule.power_values && (
+                            <div className="md:col-span-2 pt-4 border-t border-white/10">
+                              <h5 className="text-white text-sm font-medium mb-3">Valores de Comissão por Potência</h5>
+                              <p className="text-white/40 text-xs mb-4">
+                                Defina o valor da comissão para cada potência em kVA
+                              </p>
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                  <thead>
+                                    <tr className="border-b border-white/10">
+                                      <th className="text-left text-white/70 font-medium pb-2 px-2">Potência (kVA)</th>
+                                      <th className="text-left text-white/70 font-medium pb-2 px-2">Comissão a Receber (€)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {rule.power_values.map((pv) => (
+                                      <tr key={pv.power_value} className="border-b border-white/5">
+                                        <td className="py-2 px-2 text-white">{pv.power_value}</td>
+                                        <td className="py-2 px-2">
+                                          <Input
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={pv.partner_commission}
+                                            onChange={(e) => updatePowerValue(index, pv.power_value, 'partner_commission', e.target.value)}
+                                            className="form-input"
+                                            placeholder="0.00"
+                                          />
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
                               </div>
-                              {rule.applies_to_partner && (
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  min="0"
-                                  value={rule.calculation_method === 'fixed_per_quantity' ? rule.partner_fixed_value : rule.partner_monthly_multiplier}
-                                  onChange={(e) => updateRule(
-                                    index,
-                                    rule.calculation_method === 'fixed_per_quantity' ? 'partner_fixed_value' : 'partner_monthly_multiplier',
-                                    parseFloat(e.target.value) || 0
-                                  )}
-                                  className="form-input"
-                                  placeholder={rule.calculation_method === 'fixed_per_quantity' ? '€ por venda' : 'Multiplicador'}
-                                />
-                              )}
                             </div>
-                          </div>
+                          )}
+
+                          {rule.commission_type === 'per_contract' && (
+                            <div className="md:col-span-2 pt-4 border-t border-white/10">
+                              <h5 className="text-white text-sm font-medium mb-3">Valores de Comissão</h5>
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Checkbox
+                                    id={`applies-partner-${index}`}
+                                    checked={rule.applies_to_partner}
+                                    onCheckedChange={(v) => updateRule(index, 'applies_to_partner', v)}
+                                  />
+                                  <Label htmlFor={`applies-partner-${index}`} className="text-white text-sm cursor-pointer">
+                                    Comissão a receber
+                                  </Label>
+                                </div>
+                                {rule.applies_to_partner && (
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={rule.calculation_method === 'fixed_per_quantity' ? rule.partner_fixed_value : rule.partner_monthly_multiplier}
+                                    onChange={(e) => updateRule(
+                                      index,
+                                      rule.calculation_method === 'fixed_per_quantity' ? 'partner_fixed_value' : 'partner_monthly_multiplier',
+                                      parseFloat(e.target.value) || 0
+                                    )}
+                                    className="form-input"
+                                    placeholder={rule.calculation_method === 'fixed_per_quantity' ? '€ por venda' : 'Multiplicador'}
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

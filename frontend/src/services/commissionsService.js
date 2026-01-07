@@ -114,17 +114,69 @@ export const commissionsService = {
     if (error) throw error;
   },
 
-  calculateCommission(params) {
+  async getPowerCommissionValues(ruleId) {
+    const { data, error } = await supabase
+      .from('power_commission_values')
+      .select('*')
+      .eq('rule_id', ruleId)
+      .order('power_value');
+
+    if (error) throw error;
+    return data;
+  },
+
+  async createPowerCommissionValues(ruleId, powerValues) {
+    const valuesToInsert = powerValues.map(pv => ({
+      rule_id: ruleId,
+      power_value: pv.power_value,
+      seller_commission: pv.seller_commission || 0,
+      partner_commission: pv.partner_commission || 0
+    }));
+
+    const { data, error } = await supabase
+      .from('power_commission_values')
+      .insert(valuesToInsert)
+      .select();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async deletePowerCommissionValuesByRuleId(ruleId) {
+    const { error } = await supabase
+      .from('power_commission_values')
+      .delete()
+      .eq('rule_id', ruleId);
+
+    if (error) throw error;
+  },
+
+  async calculateCommission(params) {
     const {
       rule,
       monthlyValue,
       previousMonthlyValue,
       newMonthlyValue,
       saleType,
-      quantity = 1
+      quantity = 1,
+      potencia
     } = params;
 
     if (!rule) return { seller: 0, partner: 0 };
+
+    if (rule.commission_type === 'per_power') {
+      if (!potencia) return { seller: 0, partner: 0 };
+
+      const powerValues = await this.getPowerCommissionValues(rule.id);
+      const powerCommission = powerValues.find(pv => pv.power_value === potencia);
+
+      if (!powerCommission) return { seller: 0, partner: 0 };
+
+      return {
+        seller: parseFloat((powerCommission.seller_commission || 0).toFixed(2)),
+        partner: parseFloat((powerCommission.partner_commission || 0).toFixed(2))
+      };
+    }
 
     let baseValue = 0;
 

@@ -254,6 +254,7 @@ export default function SaleForm() {
     formData.custom_loyalty_months,
     formData.previous_monthly_value,
     formData.new_monthly_value,
+    formData.potencia,
     commissionType
   ]);
 
@@ -317,13 +318,14 @@ export default function SaleForm() {
         return;
       }
 
-      const commissions = commissionsService.calculateCommission({
+      const commissions = await commissionsService.calculateCommission({
         rule,
         monthlyValue: parseFloat(formData.contract_value) || 0,
         previousMonthlyValue: parseFloat(formData.previous_monthly_value) || 0,
         newMonthlyValue: parseFloat(formData.new_monthly_value) || 0,
         saleType: formData.sale_type,
-        quantity: 1
+        quantity: 1,
+        potencia: formData.potencia
       });
 
       if (['Up_sell', 'Cross_sell'].includes(formData.sale_type)) {
