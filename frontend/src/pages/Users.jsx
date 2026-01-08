@@ -49,9 +49,9 @@ import {
 import { generatePassword } from "@/utils/passwordGenerator";
 
 const ROLES = [
-  { value: "admin", label: "Administrador", color: "bg-[#c8f31d] text-[#0d474f]" },
-  { value: "backoffice", label: "Backoffice", color: "bg-blue-500/20 text-blue-400 border border-blue-500/30" },
-  { value: "vendedor", label: "Vendedor", color: "bg-white/10 text-white/70" }
+  { value: "admin", label: "Administrador", color: "bg-blue-100 text-blue-700 border border-blue-200" },
+  { value: "backoffice", label: "Backoffice", color: "bg-purple-100 text-purple-700 border border-purple-200" },
+  { value: "vendedor", label: "Vendedor", color: "bg-gray-100 text-gray-700 border border-gray-200" }
 ];
 
 export default function Users() {
@@ -242,10 +242,10 @@ export default function Users() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Manrope']">Utilizadores</h1>
-          <p className="text-white/50 text-sm mt-1">Gerir utilizadores do sistema</p>
+          <h1 className="text-2xl font-bold text-gray-900 font-['Manrope']">Utilizadores</h1>
+          <p className="text-gray-600 text-sm mt-1">Gerir utilizadores do sistema</p>
         </div>
-        <Button 
+        <Button
           onClick={openCreateModal}
           className="btn-primary btn-primary-glow flex items-center gap-2"
           data-testid="new-user-btn"
@@ -266,16 +266,16 @@ export default function Users() {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${user.active ? 'bg-[#c8f31d]/20' : 'bg-white/10'}`}>
-                      <UsersIcon size={20} className={user.active ? 'text-[#c8f31d]' : 'text-white/40'} />
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${user.active ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                      <UsersIcon size={20} className={user.active ? 'text-blue-600' : 'text-gray-400'} />
                     </div>
                     <div>
-                      <p className="text-white font-medium">{user.name}</p>
-                      <p className="text-white/50 text-sm">{user.email}</p>
+                      <p className="text-gray-900 font-medium">{user.name}</p>
+                      <p className="text-gray-500 text-sm">{user.email}</p>
                     </div>
                   </div>
                   {!user.active && (
-                    <Badge className="bg-red-500/20 text-red-400 border border-red-500/30 text-xs">
+                    <Badge className="bg-red-100 text-red-700 border border-red-200 text-xs">
                       Inativo
                     </Badge>
                   )}
@@ -286,31 +286,31 @@ export default function Users() {
                     {roleInfo.label}
                   </Badge>
                   {isCurrentUser && (
-                    <Badge className="ml-2 bg-white/10 text-white/50 text-xs">
+                    <Badge className="ml-2 bg-gray-100 text-gray-600 border border-gray-200 text-xs">
                       Você
                     </Badge>
                   )}
                 </div>
 
-                <div className="flex gap-2 pt-4 border-t border-white/5">
+                <div className="flex gap-2 pt-4 border-t border-gray-200">
                   <Button
                     onClick={() => openEditModal(user)}
                     variant="ghost"
                     size="sm"
-                    className="flex-1 text-white/70 hover:text-[#c8f31d]"
+                    className="flex-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                     data-testid={`edit-user-${user.id}`}
                   >
                     <Edit2 size={16} className="mr-1" />
                     Editar
                   </Button>
-                  
+
                   {!isCurrentUser && (
                     <>
                       <Button
                         onClick={() => toggleUserActive(user.id)}
                         variant="ghost"
                         size="sm"
-                        className={`${user.active ? 'text-red-400 hover:bg-red-400/10' : 'text-green-400 hover:bg-green-400/10'}`}
+                        className={`${user.active ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50'}`}
                         data-testid={`toggle-user-${user.id}`}
                       >
                         {user.active ? <UserX size={16} /> : <UserCheck size={16} />}
@@ -319,7 +319,7 @@ export default function Users() {
                         onClick={() => setDeleteId(user.id)}
                         variant="ghost"
                         size="sm"
-                        className="text-white/70 hover:text-red-400"
+                        className="text-gray-600 hover:text-red-600 hover:bg-red-50"
                         data-testid={`delete-user-${user.id}`}
                       >
                         <Trash2 size={16} />
@@ -335,9 +335,9 @@ export default function Users() {
 
       {/* Create/Edit User Modal */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[#082d32] border-white/10">
+        <DialogContent className="bg-white border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-white font-['Manrope']">
+            <DialogTitle className="text-gray-900 font-['Manrope']">
               {editingUser ? "Editar Utilizador" : "Novo Utilizador"}
             </DialogTitle>
           </DialogHeader>
@@ -380,7 +380,7 @@ export default function Users() {
                   <button
                     type="button"
                     onClick={handleGeneratePassword}
-                    className="text-[#c8f31d] hover:text-[#d4f92e] transition-colors p-1"
+                    className="text-blue-600 hover:text-blue-700 transition-colors p-1"
                     title="Gerar password automática"
                   >
                     <RefreshCw size={18} />
@@ -388,14 +388,14 @@ export default function Users() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-white/50 hover:text-white transition-colors p-1"
+                    className="text-gray-600 hover:text-gray-900 transition-colors p-1"
                     title={showPassword ? "Ocultar password" : "Mostrar password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-white/40 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Min 8 caracteres: 1 maiúscula, 1 minúscula, 1 número, 1 especial
               </p>
             </div>
@@ -415,7 +415,7 @@ export default function Users() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors p-1"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900 transition-colors p-1"
                   title={showConfirmPassword ? "Ocultar password" : "Mostrar password"}
                 >
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -430,9 +430,9 @@ export default function Users() {
                 <SelectTrigger className="form-input mt-1" data-testid="user-role-select">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#082d32] border-white/10">
+                <SelectContent className="bg-white border-gray-200">
                   {ROLES.map((role) => (
-                    <SelectItem key={role.value} value={role.value} className="text-white hover:bg-white/10">
+                    <SelectItem key={role.value} value={role.value} className="text-gray-900 hover:bg-gray-100">
                       {role.label}
                     </SelectItem>
                   ))}
@@ -455,7 +455,7 @@ export default function Users() {
                     placeholder="0.00"
                     data-testid="user-commission-percentage-input"
                   />
-                  <p className="text-xs text-white/40 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     Percentagem sobre comissões de operadoras visíveis (0-100%)
                   </p>
                 </div>
@@ -471,7 +471,7 @@ export default function Users() {
                     placeholder="0.00"
                     data-testid="user-commission-threshold-input"
                   />
-                  <p className="text-xs text-white/40 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     Valor mínimo de comissões totais visíveis que precisa ser atingido para receber comissão
                   </p>
                 </div>
@@ -507,10 +507,10 @@ export default function Users() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent className="bg-[#082d32] border-white/10">
+        <AlertDialogContent className="bg-white border-gray-200">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Eliminar Utilizador</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
+            <AlertDialogTitle className="text-gray-900">Eliminar Utilizador</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600">
               Tem a certeza que pretende eliminar este utilizador? Esta ação não pode ser revertida.
             </AlertDialogDescription>
           </AlertDialogHeader>

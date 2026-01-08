@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import NotificationBell from "@/components/NotificationBell";
 
-const LOGO_URL = "/leiritrix.png";
+const LOGO_URL = "/cropped-logo_dolphinstar_horizontal-1_(1).jpg";
 
 export const Layout = () => {
   const { user, logout, isAdmin, isAdminOrBackoffice } = useAuth();
@@ -71,8 +71,8 @@ export const Layout = () => {
           <div className="p-6 border-b border-slate-700">
             <img
               src={LOGO_URL}
-              alt="CRM Leiritrix"
-              className="h-10 w-auto brightness-0 invert"
+              alt="CRM Dolphin+Star"
+              className="h-8 w-auto"
               data-testid="logo"
             />
           </div>

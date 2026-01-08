@@ -262,8 +262,8 @@ export default function Sales() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Manrope']">Vendas</h1>
-          <p className="text-white/50 text-sm mt-1">{sales.length} registos encontrados</p>
+          <h1 className="text-2xl font-bold text-gray-900 font-['Manrope']">Vendas</h1>
+          <p className="text-gray-600 text-sm mt-1">{sales.length} registos encontrados</p>
         </div>
         <Link to="/sales/new">
           <Button className="btn-primary btn-primary-glow flex items-center gap-2" data-testid="new-sale-btn">
@@ -279,7 +279,7 @@ export default function Sales() {
           <Button
             onClick={() => setShowFilters(!showFilters)}
             variant="outline"
-            className="bg-white/5 border-white/10 text-white hover:bg-white/10 h-10 px-4"
+            className="bg-white/5 border-white/10 text-gray-900 hover:bg-white/10 h-10 px-4"
           >
             <Filter size={16} className="mr-2" />
             Filtros
@@ -290,13 +290,13 @@ export default function Sales() {
               <Button
                 onClick={clearFilters}
                 variant="outline"
-                className="bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white h-10 px-4"
+                className="bg-white/5 border-white/10 text-gray-600 hover:bg-white/10 hover:text-gray-900 h-10 px-4"
                 data-testid="clear-filters-btn"
               >
                 <X size={16} className="mr-2" />
                 Limpar
               </Button>
-              <p className="text-white/50 text-sm">
+              <p className="text-gray-600 text-sm">
                 {sales.length} resultado{sales.length !== 1 ? 's' : ''}
               </p>
             </>
@@ -309,7 +309,7 @@ export default function Sales() {
               {/* Pesquisa por NIF ou Nome */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Tipo de Pesquisa</label>
+                  <label className="text-xs text-gray-600 mb-1 block">Tipo de Pesquisa</label>
                   <Select value={searchType || "none"} onValueChange={(value) => {
                     setSearchType(value === "none" ? "" : value);
                     setSearchText("");
@@ -317,17 +317,17 @@ export default function Sales() {
                     <SelectTrigger className="form-input h-9 text-sm">
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10 z-50">
-                      <SelectItem value="none" className="text-white hover:bg-white/10">Nenhum</SelectItem>
-                      <SelectItem value="nif" className="text-white hover:bg-white/10">NIF</SelectItem>
-                      <SelectItem value="name" className="text-white hover:bg-white/10">Nome</SelectItem>
+                    <SelectContent className="bg-white border-white/10 z-50">
+                      <SelectItem value="none" className="text-gray-900 hover:bg-white/10">Nenhum</SelectItem>
+                      <SelectItem value="nif" className="text-gray-900 hover:bg-white/10">NIF</SelectItem>
+                      <SelectItem value="name" className="text-gray-900 hover:bg-white/10">Nome</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {searchType && searchType !== "none" && (
                   <div className="md:col-span-3">
-                    <label className="text-xs text-white/50 mb-1 block">
+                    <label className="text-xs text-gray-600 mb-1 block">
                       {searchType === "nif" ? "NIF do Cliente" : "Nome do Cliente"}
                     </label>
                     <Input
@@ -344,15 +344,15 @@ export default function Sales() {
               {/* Filtros: Estado, Categoria, Operadora, Parceiro */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Estado</label>
+                  <label className="text-xs text-gray-600 mb-1 block">Estado</label>
                   <Select value={statusFilter || "all"} onValueChange={setStatusFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="status-filter">
                       <SelectValue placeholder="Todos" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10 z-50">
-                      <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+                    <SelectContent className="bg-white border-white/10 z-50">
+                      <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todos</SelectItem>
                       {Object.entries(STATUS_MAP).map(([key, status]) => (
-                        <SelectItem key={key} value={key} className="text-white hover:bg-white/10 text-sm">
+                        <SelectItem key={key} value={key} className="text-gray-900 hover:bg-white/10 text-sm">
                           {status.label}
                         </SelectItem>
                       ))}
@@ -361,15 +361,15 @@ export default function Sales() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Categoria</label>
+                  <label className="text-xs text-gray-600 mb-1 block">Categoria</label>
                   <Select value={categoryFilter || "all"} onValueChange={setCategoryFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="category-filter">
                       <SelectValue placeholder="Todas" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10 z-50">
-                      <SelectItem value="all" className="text-white hover:bg-white/10">Todas</SelectItem>
+                    <SelectContent className="bg-white border-white/10 z-50">
+                      <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todas</SelectItem>
                       {Object.entries(CATEGORY_MAP).map(([key, cat]) => (
-                        <SelectItem key={key} value={key} className="text-white hover:bg-white/10 text-sm">
+                        <SelectItem key={key} value={key} className="text-gray-900 hover:bg-white/10 text-sm">
                           {cat.label}
                         </SelectItem>
                       ))}
@@ -378,15 +378,15 @@ export default function Sales() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Operadora</label>
+                  <label className="text-xs text-gray-600 mb-1 block">Operadora</label>
                   <Select value={operatorFilter || "all"} onValueChange={setOperatorFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="operator-filter">
                       <SelectValue placeholder="Todas" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10 z-50 max-h-60">
-                      <SelectItem value="all" className="text-white hover:bg-white/10">Todas</SelectItem>
+                    <SelectContent className="bg-white border-white/10 z-50 max-h-60">
+                      <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todas</SelectItem>
                       {filteredOperators.map((operator) => (
-                        <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10 text-sm">
+                        <SelectItem key={operator.id} value={operator.id} className="text-gray-900 hover:bg-white/10 text-sm">
                           {operator.name}
                         </SelectItem>
                       ))}
@@ -395,15 +395,15 @@ export default function Sales() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Parceiro</label>
+                  <label className="text-xs text-gray-600 mb-1 block">Parceiro</label>
                   <Select value={partnerFilter || "all"} onValueChange={setPartnerFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="partner-filter">
                       <SelectValue placeholder="Todos" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10 z-50">
-                      <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+                    <SelectContent className="bg-white border-white/10 z-50">
+                      <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todos</SelectItem>
                       {partners.map((partner) => (
-                        <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10 text-sm">
+                        <SelectItem key={partner.id} value={partner.id} className="text-gray-900 hover:bg-white/10 text-sm">
                           {partner.name}
                         </SelectItem>
                       ))}
@@ -415,7 +415,7 @@ export default function Sales() {
               {/* Filtros de Data */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Tipo de Data</label>
+                  <label className="text-xs text-gray-600 mb-1 block">Tipo de Data</label>
                   <Select value={dateType || "none"} onValueChange={(value) => {
                     setDateType(value);
                     if (value === "none") {
@@ -426,10 +426,10 @@ export default function Sales() {
                     <SelectTrigger className="form-input h-9 text-sm">
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10 z-50">
-                      <SelectItem value="none" className="text-white hover:bg-white/10">Nenhuma</SelectItem>
-                      <SelectItem value="sale_date" className="text-white hover:bg-white/10">Data de Venda</SelectItem>
-                      <SelectItem value="active_date" className="text-white hover:bg-white/10">Data de Ativação</SelectItem>
+                    <SelectContent className="bg-white border-white/10 z-50">
+                      <SelectItem value="none" className="text-gray-900 hover:bg-white/10">Nenhuma</SelectItem>
+                      <SelectItem value="sale_date" className="text-gray-900 hover:bg-white/10">Data de Venda</SelectItem>
+                      <SelectItem value="active_date" className="text-gray-900 hover:bg-white/10">Data de Ativação</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -437,7 +437,7 @@ export default function Sales() {
                 {dateType && dateType !== "none" && (
                   <>
                     <div>
-                      <label className="text-xs text-white/50 mb-1 block">Data De</label>
+                      <label className="text-xs text-gray-600 mb-1 block">Data De</label>
                       <DatePickerPopup
                         value={dateFrom}
                         onChange={setDateFrom}
@@ -446,7 +446,7 @@ export default function Sales() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-white/50 mb-1 block">Data Até</label>
+                      <label className="text-xs text-gray-600 mb-1 block">Data Até</label>
                       <DatePickerPopup
                         value={dateTo}
                         onChange={setDateTo}
@@ -471,65 +471,65 @@ export default function Sales() {
                 <th>
                   <button
                     onClick={() => handleSort("client_name")}
-                    className="flex items-center gap-1 hover:text-[#c8f31d] transition-colors"
+                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
                   >
                     Cliente
-                    <ArrowUpDown size={14} className={sortColumn === "client_name" ? "text-[#c8f31d]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "client_name" ? "text-blue-600" : "text-gray-900/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("category")}
-                    className="flex items-center gap-1 hover:text-[#c8f31d] transition-colors"
+                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
                   >
                     Categoria
-                    <ArrowUpDown size={14} className={sortColumn === "category" ? "text-[#c8f31d]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "category" ? "text-blue-600" : "text-gray-900/40"} />
                   </button>
                 </th>
                 <th>Tipo</th>
                 <th>
                   <button
                     onClick={() => handleSort("partner_name")}
-                    className="flex items-center gap-1 hover:text-[#c8f31d] transition-colors"
+                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
                   >
                     Parceiro
-                    <ArrowUpDown size={14} className={sortColumn === "partner_name" ? "text-[#c8f31d]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "partner_name" ? "text-blue-600" : "text-gray-900/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("contract_value")}
-                    className="flex items-center gap-1 hover:text-[#c8f31d] transition-colors"
+                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
                   >
                     Valor
-                    <ArrowUpDown size={14} className={sortColumn === "contract_value" ? "text-[#c8f31d]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "contract_value" ? "text-blue-600" : "text-gray-900/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("commission")}
-                    className="flex items-center gap-1 hover:text-[#c8f31d] transition-colors"
+                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
                   >
                     Comissão
-                    <ArrowUpDown size={14} className={sortColumn === "commission" ? "text-[#c8f31d]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "commission" ? "text-blue-600" : "text-gray-900/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("status")}
-                    className="flex items-center gap-1 hover:text-[#c8f31d] transition-colors"
+                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
                   >
                     Estado
-                    <ArrowUpDown size={14} className={sortColumn === "status" ? "text-[#c8f31d]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "status" ? "text-blue-600" : "text-gray-900/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("sale_date")}
-                    className="flex items-center gap-1 hover:text-[#c8f31d] transition-colors"
+                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
                   >
                     Data de Venda
-                    <ArrowUpDown size={14} className={sortColumn === "sale_date" ? "text-[#c8f31d]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "sale_date" ? "text-blue-600" : "text-gray-900/40"} />
                   </button>
                 </th>
                 <th className="text-right">Ações</th>
@@ -548,25 +548,25 @@ export default function Sales() {
                         <div>
                           <p className="font-medium">{sale.client_name}</p>
                           {sale.client_nif && (
-                            <p className="text-white/50 text-sm font-mono">{sale.client_nif}</p>
+                            <p className="text-gray-600 text-sm font-mono">{sale.client_nif}</p>
                           )}
                         </div>
                       </td>
                       <td>
                         <div className="flex items-center gap-2">
-                          <CategoryIcon size={16} className="text-[#c8f31d]" />
-                          <span className="text-white/80">{category?.label}</span>
+                          <CategoryIcon size={16} className="text-blue-600" />
+                          <span className="text-gray-900/80">{category?.label}</span>
                         </div>
                       </td>
                       <td>
                         {sale.sale_type ? (
-                          <span className="text-white/60 text-sm">
+                          <span className="text-gray-900/60 text-sm">
                             {TYPE_MAP[sale.sale_type]}
                           </span>
                         ) : "-"}
                       </td>
-                      <td className="text-white/80">{sale.partner_name}</td>
-                      <td className="font-mono text-[#c8f31d]">
+                      <td className="text-gray-900/80">{sale.partner_name}</td>
+                      <td className="font-mono text-blue-600">
                         {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
                       </td>
                       <td className="font-mono">
@@ -576,11 +576,11 @@ export default function Sales() {
                             (user.role === 'backoffice' && sale.operators?.commission_visible_to_bo);
 
                           if (!shouldShowCommission) {
-                            return <span className="text-white/30">-</span>;
+                            return <span className="text-gray-900/30">-</span>;
                           }
 
                           if (sale.commission !== null && sale.commission !== undefined) {
-                            const colorClass = user.role === 'admin' ? 'text-[#c8f31d]' : 'text-green-400';
+                            const colorClass = user.role === 'admin' ? 'text-blue-600' : 'text-green-400';
                             return (
                               <span className={colorClass}>
                                 {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.commission)}
@@ -588,7 +588,7 @@ export default function Sales() {
                             );
                           }
 
-                          return <span className="text-white/30">-</span>;
+                          return <span className="text-gray-900/30">-</span>;
                         })()}
                       </td>
                       <td>
@@ -596,7 +596,7 @@ export default function Sales() {
                           {status?.label}
                         </Badge>
                       </td>
-                      <td className="text-white/60 text-sm">
+                      <td className="text-gray-900/60 text-sm">
                         {new Date(sale.sale_date || sale.created_at).toLocaleDateString('pt-PT')}
                       </td>
                       <td>
@@ -605,7 +605,7 @@ export default function Sales() {
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              className="text-white/60 hover:text-white"
+                              className="text-gray-900/60 hover:text-gray-900"
                               data-testid={`view-sale-${sale.id}`}
                             >
                               <Eye size={16} />
@@ -615,7 +615,7 @@ export default function Sales() {
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              className="text-white/60 hover:text-[#c8f31d]"
+                              className="text-gray-900/60 hover:text-blue-600"
                               data-testid={`edit-sale-${sale.id}`}
                             >
                               <Edit2 size={16} />
@@ -625,7 +625,7 @@ export default function Sales() {
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              className="text-white/60 hover:text-red-400"
+                              className="text-gray-900/60 hover:text-red-400"
                               onClick={() => setDeleteId(sale.id)}
                               data-testid={`delete-sale-${sale.id}`}
                             >
@@ -639,7 +639,7 @@ export default function Sales() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={9} className="text-center py-12 text-white/50">
+                  <td colSpan={9} className="text-center py-12 text-gray-600">
                     Nenhuma venda encontrada
                   </td>
                 </tr>
@@ -652,7 +652,7 @@ export default function Sales() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <p className="text-white/60 text-sm">
+          <p className="text-gray-900/60 text-sm">
             Página {currentPage} de {totalPages} ({sortedSales.length} vendas)
           </p>
           <div className="flex gap-2">
@@ -661,7 +661,7 @@ export default function Sales() {
               size="sm"
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="border-white/10 text-white hover:bg-white/5 disabled:opacity-30"
+              className="border-white/10 text-gray-900 hover:bg-white/5 disabled:opacity-30"
             >
               <ChevronLeft size={16} />
               Anterior
@@ -682,7 +682,7 @@ export default function Sales() {
                       className={
                         page === currentPage
                           ? "bg-[#c8f31d] text-[#082d32] hover:bg-[#c8f31d]/90"
-                          : "border-white/10 text-white hover:bg-white/5"
+                          : "border-white/10 text-gray-900 hover:bg-white/5"
                       }
                     >
                       {page}
@@ -692,7 +692,7 @@ export default function Sales() {
                   page === currentPage - 2 ||
                   page === currentPage + 2
                 ) {
-                  return <span key={page} className="text-white/40 px-2">...</span>;
+                  return <span key={page} className="text-gray-900/40 px-2">...</span>;
                 }
                 return null;
               })}
@@ -702,7 +702,7 @@ export default function Sales() {
               size="sm"
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="border-white/10 text-white hover:bg-white/5 disabled:opacity-30"
+              className="border-white/10 text-gray-900 hover:bg-white/5 disabled:opacity-30"
             >
               Seguinte
               <ChevronRight size={16} />
@@ -713,10 +713,10 @@ export default function Sales() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent className="bg-[#082d32] border-white/10">
+        <AlertDialogContent className="bg-white border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Eliminar Venda</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
+            <AlertDialogTitle className="text-gray-900">Eliminar Venda</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-900/60">
               Tem a certeza que pretende eliminar esta venda? Esta ação não pode ser revertida.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -724,7 +724,7 @@ export default function Sales() {
             <AlertDialogCancel className="btn-secondary">Cancelar</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-gray-900"
             >
               Eliminar
             </AlertDialogAction>

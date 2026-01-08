@@ -709,8 +709,8 @@ export default function SaleForm() {
       <div className="max-w-3xl mx-auto">
         <Card className="card-leiritrix">
           <CardContent className="p-8 text-center">
-            <p className="text-white/70 mb-4">Não existem parceiros registados.</p>
-            <p className="text-white/50 text-sm mb-6">É necessário criar pelo menos um parceiro antes de registar vendas.</p>
+            <p className="text-gray-900/70 mb-4">Não existem parceiros registados.</p>
+            <p className="text-gray-600 text-sm mb-6">É necessário criar pelo menos um parceiro antes de registar vendas.</p>
             <Button
               onClick={() => navigate("/partners")}
               className="btn-primary btn-primary-glow"
@@ -730,13 +730,13 @@ export default function SaleForm() {
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="text-white/70 hover:text-white"
+            className="text-gray-900/70 hover:text-gray-900"
           >
             <ArrowLeft size={20} />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-white font-['Manrope']">Nova Venda</h1>
-            <p className="text-white/50 text-sm mt-1">Insira o NIF do cliente para começar</p>
+            <h1 className="text-2xl font-bold text-gray-900 font-['Manrope']">Nova Venda</h1>
+            <p className="text-gray-600 text-sm mt-1">Insira o NIF do cliente para começar</p>
           </div>
         </div>
 
@@ -772,8 +772,8 @@ export default function SaleForm() {
         <Dialog open={showTypeDialog} onOpenChange={setShowTypeDialog}>
           <DialogContent className="bg-[#082d32] border-white/10 max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-white font-['Manrope'] text-xl">Cliente Existente</DialogTitle>
-              <DialogDescription className="text-white/70">
+              <DialogTitle className="text-gray-900 font-['Manrope'] text-xl">Cliente Existente</DialogTitle>
+              <DialogDescription className="text-gray-900/70">
                 Encontrámos {previousSales.length} venda(s) para este NIF. Que tipo de venda deseja registar?
               </DialogDescription>
             </DialogHeader>
@@ -786,37 +786,37 @@ export default function SaleForm() {
               </Button>
               <Button
                 onClick={() => handleSaleTypeSelection("MC")}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-gray-900 font-['Manrope'] font-semibold py-6"
               >
                 MC (Mudança de Casa)
               </Button>
               <Button
                 onClick={() => handleSaleTypeSelection("Refid")}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-gray-900 font-['Manrope'] font-semibold py-6"
               >
                 Refid (Refidelização)
               </Button>
               <Button
                 onClick={() => handleSaleTypeSelection("Refid_Acrescimo")}
-                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-purple-500 hover:bg-purple-600 text-gray-900 font-['Manrope'] font-semibold py-6"
               >
                 Refid com Acréscimo
               </Button>
               <Button
                 onClick={() => handleSaleTypeSelection("Refid_Decrescimo")}
-                className="w-full bg-purple-400 hover:bg-purple-500 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-purple-400 hover:bg-purple-500 text-gray-900 font-['Manrope'] font-semibold py-6"
               >
                 Refid com Decréscimo
               </Button>
               <Button
                 onClick={() => handleSaleTypeSelection("Up_sell")}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-green-600 hover:bg-green-700 text-gray-900 font-['Manrope'] font-semibold py-6"
               >
                 Up-sell
               </Button>
               <Button
                 onClick={() => handleSaleTypeSelection("Cross_sell")}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-gray-900 font-['Manrope'] font-semibold py-6"
               >
                 Cross-sell
               </Button>
@@ -827,11 +827,11 @@ export default function SaleForm() {
         <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
           <DialogContent className="bg-[#082d32] border-white/10 max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-white font-['Manrope'] text-xl flex items-center gap-2">
-                <MapPin className="text-[#c8f31d]" size={24} />
+              <DialogTitle className="text-gray-900 font-['Manrope'] text-xl flex items-center gap-2">
+                <MapPin className="text-blue-600" size={24} />
                 Selecione a Morada Original
               </DialogTitle>
-              <DialogDescription className="text-white/70">
+              <DialogDescription className="text-gray-900/70">
                 Escolha a morada da venda anterior que deseja processar
               </DialogDescription>
             </DialogHeader>
@@ -845,13 +845,13 @@ export default function SaleForm() {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="text-white font-['Manrope'] font-semibold">
+                        <p className="text-gray-900 font-['Manrope'] font-semibold">
                           {sale.street_address}
                         </p>
-                        <p className="text-white/60 text-sm">
+                        <p className="text-gray-600 text-sm">
                           {sale.postal_code} {sale.city}
                         </p>
-                        <div className="flex gap-4 mt-2 text-xs text-white/50">
+                        <div className="flex gap-4 mt-2 text-xs text-gray-600">
                           <span>{sale.operators?.name || "Sem operadora"}</span>
                           <span>{sale.category}</span>
                           {sale.loyalty_months > 0 && (
@@ -861,7 +861,7 @@ export default function SaleForm() {
                           )}
                         </div>
                       </div>
-                      <ArrowRight size={20} className="text-[#c8f31d]" />
+                      <ArrowRight size={20} className="text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -873,13 +873,13 @@ export default function SaleForm() {
         <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
           <AlertDialogContent className="bg-[#082d32] border-white/10">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-white font-['Manrope']">Atenção</AlertDialogTitle>
-              <AlertDialogDescription className="text-white/70">
+              <AlertDialogTitle className="text-gray-900 font-['Manrope']">Atenção</AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-900/70">
                 {alertMessage}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-white/10 text-white hover:bg-white/20">OK</AlertDialogCancel>
+              <AlertDialogCancel className="bg-white/10 text-gray-900 hover:bg-white/20">OK</AlertDialogCancel>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -930,22 +930,22 @@ export default function SaleForm() {
               solar_panel_quantity: ""
             });
           }}
-          className="text-white/70 hover:text-white"
+          className="text-gray-900/70 hover:text-gray-900"
           data-testid="back-btn"
         >
           <ArrowLeft size={20} />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Manrope']">Nova Venda</h1>
-          <p className="text-white/50 text-sm mt-1">NIF: {formData.client_nif}</p>
+          <h1 className="text-2xl font-bold text-gray-900 font-['Manrope']">Nova Venda</h1>
+          <p className="text-gray-600 text-sm mt-1">NIF: {formData.client_nif}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} data-testid="sale-form">
         <Card className="card-leiritrix">
           <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <User size={20} className="text-[#c8f31d]" />
+            <CardTitle className="text-gray-900 font-['Manrope'] text-lg flex items-center gap-2">
+              <User size={20} className="text-blue-600" />
               Dados do Cliente
             </CardTitle>
           </CardHeader>
@@ -1030,8 +1030,8 @@ export default function SaleForm() {
 
         <Card className="card-leiritrix mt-6">
           <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <FileText size={20} className="text-[#c8f31d]" />
+            <CardTitle className="text-gray-900 font-['Manrope'] text-lg flex items-center gap-2">
+              <FileText size={20} className="text-blue-600" />
               Dados do Contrato
             </CardTitle>
           </CardHeader>
@@ -1046,7 +1046,7 @@ export default function SaleForm() {
                   maxDate={new Date()}
                   data-testid="sale-date-select"
                 />
-                <p className="text-white/40 text-xs mt-1">
+                <p className="text-gray-900/40 text-xs mt-1">
                   Esta data será usada para contabilizar comissões e mensalidades no respetivo mês
                 </p>
               </div>
@@ -1075,7 +1075,7 @@ export default function SaleForm() {
                   </SelectTrigger>
                   <SelectContent className="bg-[#082d32] border-white/10">
                     {CATEGORIES.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-white/10">
+                      <SelectItem key={cat.value} value={cat.value} className="text-gray-900 hover:bg-white/10">
                         {cat.label}
                       </SelectItem>
                     ))}
@@ -1086,7 +1086,7 @@ export default function SaleForm() {
               {showEnergyFields && (
                 <div className="md:col-span-2 p-4 bg-[#c8f31d]/5 border border-[#c8f31d]/20 rounded-lg">
                   <Label htmlFor="energy_type" className="form-label flex items-center gap-2">
-                    <Zap size={16} className="text-[#c8f31d]" />
+                    <Zap size={16} className="text-blue-600" />
                     Tipo de Energia * (selecione para ver as operadoras disponíveis)
                   </Label>
                   <Select value={formData.energy_type} onValueChange={(v) => handleChange("energy_type", v)}>
@@ -1095,7 +1095,7 @@ export default function SaleForm() {
                     </SelectTrigger>
                     <SelectContent className="bg-[#082d32] border-white/10">
                       {ENERGY_TYPES.map((type) => (
-                        <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
+                        <SelectItem key={type.value} value={type.value} className="text-gray-900 hover:bg-white/10">
                           {type.label}
                         </SelectItem>
                       ))}
@@ -1126,7 +1126,7 @@ export default function SaleForm() {
                   </SelectTrigger>
                   <SelectContent className="bg-[#082d32] border-white/10">
                     {getFilteredOperators().map((operator) => (
-                      <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10">
+                      <SelectItem key={operator.id} value={operator.id} className="text-gray-900 hover:bg-white/10">
                         {operator.name}
                       </SelectItem>
                     ))}
@@ -1157,7 +1157,7 @@ export default function SaleForm() {
                   </SelectTrigger>
                   <SelectContent className="bg-[#082d32] border-white/10">
                     {getFilteredPartners().map((partner) => (
-                      <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
+                      <SelectItem key={partner.id} value={partner.id} className="text-gray-900 hover:bg-white/10">
                         {partner.name}
                       </SelectItem>
                     ))}
@@ -1175,7 +1175,7 @@ export default function SaleForm() {
                   <Label htmlFor="sale_type" className="form-label">
                     Tipo de Venda
                     {availableSaleTypes.length < SALE_TYPES.length && (
-                      <span className="ml-2 text-xs text-[#c8f31d]">
+                      <span className="ml-2 text-xs text-blue-600">
                         (Filtrado por operadora)
                       </span>
                     )}
@@ -1186,7 +1186,7 @@ export default function SaleForm() {
                     </SelectTrigger>
                     <SelectContent className="bg-[#082d32] border-white/10">
                       {availableSaleTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
+                        <SelectItem key={type.value} value={type.value} className="text-gray-900 hover:bg-white/10">
                           {type.label}
                         </SelectItem>
                       ))}
@@ -1208,7 +1208,7 @@ export default function SaleForm() {
                     </SelectTrigger>
                     <SelectContent className="bg-[#082d32] border-white/10">
                       {clientCategories.map((category) => (
-                        <SelectItem key={category.id} value={category.id} className="text-white hover:bg-white/10">
+                        <SelectItem key={category.id} value={category.id} className="text-gray-900 hover:bg-white/10">
                           {category.name}
                         </SelectItem>
                       ))}
@@ -1232,10 +1232,10 @@ export default function SaleForm() {
                     <SelectValue placeholder="Selecione o tipo de cliente" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#082d32] border-white/10">
-                    <SelectItem value="residencial" className="text-white hover:bg-white/10">
+                    <SelectItem value="residencial" className="text-gray-900 hover:bg-white/10">
                       Residencial
                     </SelectItem>
-                    <SelectItem value="empresarial" className="text-white hover:bg-white/10">
+                    <SelectItem value="empresarial" className="text-gray-900 hover:bg-white/10">
                       Empresarial
                     </SelectItem>
                   </SelectContent>
@@ -1253,13 +1253,13 @@ export default function SaleForm() {
                       <SelectValue placeholder="Selecione o encarteiramento" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#082d32] border-white/10">
-                      <SelectItem value="novo" className="text-white hover:bg-white/10">
+                      <SelectItem value="novo" className="text-gray-900 hover:bg-white/10">
                         Novo
                       </SelectItem>
-                      <SelectItem value="cliente_carteira" className="text-white hover:bg-white/10">
+                      <SelectItem value="cliente_carteira" className="text-gray-900 hover:bg-white/10">
                         Cliente de Carteira
                       </SelectItem>
-                      <SelectItem value="fora_carteira" className="text-white hover:bg-white/10">
+                      <SelectItem value="fora_carteira" className="text-gray-900 hover:bg-white/10">
                         Fora de Carteira
                       </SelectItem>
                     </SelectContent>
@@ -1275,11 +1275,11 @@ export default function SaleForm() {
                       <SelectValue placeholder="Selecione o vendedor" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#082d32] border-white/10">
-                      <SelectItem value="none" className="text-white hover:bg-white/10">
+                      <SelectItem value="none" className="text-gray-900 hover:bg-white/10">
                         Nenhum
                       </SelectItem>
                       {sellers.map((seller) => (
-                        <SelectItem key={seller.id} value={seller.id} className="text-white hover:bg-white/10">
+                        <SelectItem key={seller.id} value={seller.id} className="text-gray-900 hover:bg-white/10">
                           {seller.name}
                         </SelectItem>
                       ))}
@@ -1346,7 +1346,7 @@ export default function SaleForm() {
                   </SelectTrigger>
                   <SelectContent className="bg-[#082d32] border-white/10">
                     {LOYALTY_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value} className="text-white hover:bg-white/10">
+                      <SelectItem key={option.value} value={option.value} className="text-gray-900 hover:bg-white/10">
                         {option.label}
                       </SelectItem>
                     ))}
@@ -1422,8 +1422,8 @@ export default function SaleForm() {
         {showEnergyFields && formData.energy_type && (
           <Card className="card-leiritrix mt-6">
             <CardHeader className="border-b border-white/5 pb-4">
-              <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-                <Zap size={20} className="text-[#c8f31d]" />
+              <CardTitle className="text-gray-900 font-['Manrope'] text-lg flex items-center gap-2">
+                <Zap size={20} className="text-blue-600" />
                 Detalhes de Energia ({ENERGY_TYPE_MAP[formData.energy_type]})
               </CardTitle>
             </CardHeader>
@@ -1450,7 +1450,7 @@ export default function SaleForm() {
                         </SelectTrigger>
                         <SelectContent className="bg-[#082d32] border-white/10 max-h-60">
                           {POTENCIAS.map((pot) => (
-                            <SelectItem key={pot} value={pot} className="text-white hover:bg-white/10">
+                            <SelectItem key={pot} value={pot} className="text-gray-900 hover:bg-white/10">
                               {pot} {pot !== "Outra" && "kVA"}
                             </SelectItem>
                           ))}
@@ -1481,7 +1481,7 @@ export default function SaleForm() {
                         </SelectTrigger>
                         <SelectContent className="bg-[#082d32] border-white/10">
                           {ESCALOES_GAS.map((esc) => (
-                            <SelectItem key={esc} value={esc} className="text-white hover:bg-white/10">
+                            <SelectItem key={esc} value={esc} className="text-gray-900 hover:bg-white/10">
                               {esc}
                             </SelectItem>
                           ))}
@@ -1498,8 +1498,8 @@ export default function SaleForm() {
         {showSolarFields && (
           <Card className="card-leiritrix mt-6">
             <CardHeader className="border-b border-white/5 pb-4">
-              <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-                <Sun size={20} className="text-[#c8f31d]" />
+              <CardTitle className="text-gray-900 font-['Manrope'] text-lg flex items-center gap-2">
+                <Sun size={20} className="text-blue-600" />
                 Detalhes de Painéis Solares
               </CardTitle>
             </CardHeader>
@@ -1514,7 +1514,7 @@ export default function SaleForm() {
                     className="form-input"
                     placeholder="PT0002..."
                   />
-                  <p className="text-white/40 text-xs mt-1">Opcional</p>
+                  <p className="text-gray-900/40 text-xs mt-1">Opcional</p>
                 </div>
                 <div>
                   <Label htmlFor="solar_power" className="form-label">Potência Instalada (kW)</Label>
@@ -1528,7 +1528,7 @@ export default function SaleForm() {
                     className="form-input"
                     placeholder="0.00"
                   />
-                  <p className="text-white/40 text-xs mt-1">Opcional</p>
+                  <p className="text-gray-900/40 text-xs mt-1">Opcional</p>
                 </div>
                 <div>
                   <Label htmlFor="solar_panel_quantity" className="form-label">Quantidade de Painéis</Label>
@@ -1541,7 +1541,7 @@ export default function SaleForm() {
                     className="form-input"
                     placeholder="0"
                   />
-                  <p className="text-white/40 text-xs mt-1">Opcional</p>
+                  <p className="text-gray-900/40 text-xs mt-1">Opcional</p>
                 </div>
               </div>
             </CardContent>
@@ -1600,13 +1600,13 @@ export default function SaleForm() {
       <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
         <AlertDialogContent className="bg-[#082d32] border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white font-['Manrope']">Atenção</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70">
+            <AlertDialogTitle className="text-gray-900 font-['Manrope']">Atenção</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-900/70">
               {alertMessage}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/10 text-white hover:bg-white/20">OK</AlertDialogCancel>
+            <AlertDialogCancel className="bg-white/10 text-gray-900 hover:bg-white/20">OK</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -76,7 +76,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-6" data-testid="login-form">
           <div>
             <Label htmlFor="email" className="form-label flex items-center gap-2">
-              <Mail size={16} className="text-[#c8f31d]" />
+              <Mail size={16} className="text-blue-600" />
               Email
             </Label>
             <Input
@@ -92,7 +92,7 @@ export default function Login() {
 
           <div>
             <Label htmlFor="password" className="form-label flex items-center gap-2">
-              <Lock size={16} className="text-[#c8f31d]" />
+              <Lock size={16} className="text-blue-600" />
               Palavra-passe
             </Label>
             <Input

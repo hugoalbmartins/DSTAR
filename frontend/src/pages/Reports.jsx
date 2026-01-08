@@ -174,15 +174,15 @@ export default function Reports() {
     <div className="space-y-6" data-testid="reports-page">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white font-['Manrope']">Relatórios</h1>
-        <p className="text-white/50 text-sm mt-1">Gere relatórios de vendas com filtros personalizados</p>
+        <h1 className="text-2xl font-bold text-gray-900 font-['Manrope']">Relatórios</h1>
+        <p className="text-gray-600 text-sm mt-1">Gere relatórios de vendas com filtros personalizados</p>
       </div>
 
       {/* Filters */}
       <Card className="card-leiritrix">
         <CardHeader className="border-b border-white/5 pb-4">
-          <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-            <Filter size={20} className="text-[#c8f31d]" />
+          <CardTitle className="text-gray-900 font-['Manrope'] text-lg flex items-center gap-2">
+            <Filter size={20} className="text-blue-600" />
             Filtros
           </CardTitle>
         </CardHeader>
@@ -208,9 +208,9 @@ export default function Reports() {
                 <SelectValue placeholder="Categoria" />
               </SelectTrigger>
               <SelectContent className="bg-[#082d32] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todas</SelectItem>
+                <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todas</SelectItem>
                 {Object.entries(CATEGORY_MAP).map(([key, label]) => (
-                  <SelectItem key={key} value={key} className="text-white hover:bg-white/10">
+                  <SelectItem key={key} value={key} className="text-gray-900 hover:bg-white/10">
                     {label}
                   </SelectItem>
                 ))}
@@ -223,9 +223,9 @@ export default function Reports() {
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent className="bg-[#082d32] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+                <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todos</SelectItem>
                 {Object.entries(STATUS_MAP).map(([key, s]) => (
-                  <SelectItem key={key} value={key} className="text-white hover:bg-white/10">
+                  <SelectItem key={key} value={key} className="text-gray-900 hover:bg-white/10">
                     {s.label}
                   </SelectItem>
                 ))}
@@ -238,9 +238,9 @@ export default function Reports() {
                 <SelectValue placeholder="Parceiro" />
               </SelectTrigger>
               <SelectContent className="bg-[#082d32] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+                <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todos</SelectItem>
                 {partners.map((partner) => (
-                  <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
+                  <SelectItem key={partner.id} value={partner.id} className="text-gray-900 hover:bg-white/10">
                     {partner.name}
                   </SelectItem>
                 ))}
@@ -253,9 +253,9 @@ export default function Reports() {
                 <SelectValue placeholder="Vendedor" />
               </SelectTrigger>
               <SelectContent className="bg-[#082d32] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+                <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todos</SelectItem>
                 {sellers.map((seller) => (
-                  <SelectItem key={seller.id} value={seller.id} className="text-white hover:bg-white/10">
+                  <SelectItem key={seller.id} value={seller.id} className="text-gray-900 hover:bg-white/10">
                     {seller.name}
                   </SelectItem>
                 ))}
@@ -353,13 +353,13 @@ export default function Reports() {
                             <div>
                               <p className="font-medium">{sale.client_name}</p>
                               {sale.client_nif && (
-                                <p className="text-white/50 text-sm font-mono">{sale.client_nif}</p>
+                                <p className="text-gray-600 text-sm font-mono">{sale.client_nif}</p>
                               )}
                             </div>
                           </td>
-                          <td className="text-white/80">{CATEGORY_MAP[sale.category]}</td>
-                          <td className="text-white/80">{sale.partner_name}</td>
-                          <td className="font-mono text-[#c8f31d]">
+                          <td className="text-gray-900/80">{CATEGORY_MAP[sale.category]}</td>
+                          <td className="text-gray-900/80">{sale.partner_name}</td>
+                          <td className="font-mono text-blue-600">
                             {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
                           </td>
                           <td className="font-mono">
@@ -368,7 +368,7 @@ export default function Reports() {
                                 {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.commission)}
                               </span>
                             ) : (
-                              <span className="text-white/30">-</span>
+                              <span className="text-gray-900/30">-</span>
                             )}
                           </td>
                           <td>
@@ -376,8 +376,8 @@ export default function Reports() {
                               {statusInfo?.label}
                             </Badge>
                           </td>
-                          <td className="text-white/80">{sale.seller_name}</td>
-                          <td className="text-white/60 text-sm">
+                          <td className="text-gray-900/80">{sale.seller_name}</td>
+                          <td className="text-gray-900/60 text-sm">
                             {new Date(sale.created_at).toLocaleDateString('pt-PT')}
                           </td>
                         </tr>
@@ -385,7 +385,7 @@ export default function Reports() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan={8} className="text-center py-12 text-white/50">
+                      <td colSpan={8} className="text-center py-12 text-gray-600">
                         Nenhuma venda encontrada com os filtros selecionados
                       </td>
                     </tr>

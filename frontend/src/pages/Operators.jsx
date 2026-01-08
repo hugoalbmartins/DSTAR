@@ -307,8 +307,8 @@ export default function Operators() {
     <div className="space-y-6" data-testid="operators-page">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Manrope']">Operadoras</h1>
-          <p className="text-white/50 text-sm mt-1">Gerir operadoras e suas categorias</p>
+          <h1 className="text-2xl font-bold text-gray-900 font-['Manrope']">Operadoras</h1>
+          <p className="text-gray-600 text-sm mt-1">Gerir operadoras e suas categorias</p>
         </div>
         <Button
           onClick={openCreateModal}
@@ -327,11 +327,11 @@ export default function Operators() {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${operator.active ? 'bg-[#c8f31d]/20' : 'bg-white/10'}`}>
-                      <Radio size={20} className={operator.active ? 'text-[#c8f31d]' : 'text-white/40'} />
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${operator.active ? 'bg-blue-100' : 'bg-white/10'}`}>
+                      <Radio size={20} className={operator.active ? 'text-blue-600' : 'text-gray-500'} />
                     </div>
                     <div>
-                      <p className="text-white font-medium">{operator.name}</p>
+                      <p className="text-gray-900 font-medium">{operator.name}</p>
                       {!operator.active && (
                         <Badge className="bg-red-500/20 text-red-400 border border-red-500/30 text-xs mt-1">
                           Inativa
@@ -343,20 +343,20 @@ export default function Operators() {
 
                 <div className="space-y-3 mb-4">
                   <div>
-                    <p className="text-white/50 text-xs mb-2">Categorias</p>
+                    <p className="text-gray-600 text-xs mb-2">Categorias</p>
                     <div className="flex flex-wrap gap-1">
                       {operator.categories && operator.categories.length > 0 ? (
                         operator.categories.map((cat) => {
                           const Icon = getCategoryIcon(cat);
                           return (
-                            <Badge key={cat} className="bg-[#c8f31d]/20 text-[#c8f31d] border border-[#c8f31d]/30 text-xs">
+                            <Badge key={cat} className="bg-blue-100 text-blue-600 border border-[#c8f31d]/30 text-xs">
                               <Icon size={12} className="mr-1" />
                               {getCategoryLabel(cat)}
                             </Badge>
                           );
                         })
                       ) : (
-                        <span className="text-white/40 text-xs">Sem categorias</span>
+                        <span className="text-gray-500 text-xs">Sem categorias</span>
                       )}
                     </div>
                   </div>
@@ -367,7 +367,7 @@ export default function Operators() {
                         {isAdmin ? "Comissões Visíveis BO" : "Com comissão a contabilizar"}
                       </Badge>
                     ) : (
-                      <Badge className="bg-white/10 text-white/60 border border-white/10 text-xs">
+                      <Badge className="bg-white/10 text-gray-900/60 border border-white/10 text-xs">
                         {isAdmin ? "Comissões Ocultas BO" : "Sem comissão a contabilizar"}
                       </Badge>
                     )}
@@ -379,7 +379,7 @@ export default function Operators() {
                     onClick={() => openEditModal(operator)}
                     variant="ghost"
                     size="sm"
-                    className="flex-1 text-white/70 hover:text-[#c8f31d]"
+                    className="flex-1 text-gray-600 hover:text-blue-600"
                     data-testid={`edit-operator-${operator.id}`}
                   >
                     <Edit2 size={16} className="mr-1" />
@@ -398,7 +398,7 @@ export default function Operators() {
                     onClick={() => setDeleteId(operator.id)}
                     variant="ghost"
                     size="sm"
-                    className="text-white/70 hover:text-red-400"
+                    className="text-gray-600 hover:text-red-400"
                     data-testid={`delete-operator-${operator.id}`}
                   >
                     <Trash2 size={16} />
@@ -410,8 +410,8 @@ export default function Operators() {
         ) : (
           <Card className="card-leiritrix col-span-full">
             <CardContent className="p-8 text-center">
-              <Radio size={48} className="mx-auto text-white/20 mb-4" />
-              <p className="text-white/50">Nenhuma operadora registada</p>
+              <Radio size={48} className="mx-auto text-gray-900/20 mb-4" />
+              <p className="text-gray-600">Nenhuma operadora registada</p>
               <Button
                 onClick={openCreateModal}
                 className="btn-primary btn-primary-glow mt-4"
@@ -424,9 +424,9 @@ export default function Operators() {
       </div>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[#082d32] border-white/10 max-w-lg">
+        <DialogContent className="bg-white border-white/10 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-white font-['Manrope']">
+            <DialogTitle className="text-gray-900 font-['Manrope']">
               {editingOperator ? "Editar Operadora" : "Nova Operadora"}
             </DialogTitle>
           </DialogHeader>
@@ -458,10 +458,10 @@ export default function Operators() {
                         checked={formData.categories.includes(category.value)}
                         onCheckedChange={() => handleCategoryToggle(category.value)}
                       />
-                      <Icon size={16} className="text-[#c8f31d]" />
+                      <Icon size={16} className="text-blue-600" />
                       <Label
                         htmlFor={category.value}
-                        className="text-white text-sm cursor-pointer flex-1"
+                        className="text-gray-900 text-sm cursor-pointer flex-1"
                       >
                         {category.label}
                       </Label>
@@ -473,7 +473,7 @@ export default function Operators() {
 
             <div>
               <Label className="form-label mb-3">Tipos de Venda Permitidos</Label>
-              <p className="text-white/50 text-xs mb-3">
+              <p className="text-gray-600 text-xs mb-3">
                 Selecione os tipos de venda disponíveis para esta operadora. Se nenhum for selecionado, todos os tipos estarão disponíveis.
               </p>
               <div className="grid grid-cols-1 gap-2">
@@ -490,7 +490,7 @@ export default function Operators() {
                     />
                     <Label
                       htmlFor={`sale-type-${type.value}`}
-                      className="text-white text-sm cursor-pointer flex-1"
+                      className="text-gray-900 text-sm cursor-pointer flex-1"
                     >
                       {type.label}
                     </Label>
@@ -503,7 +503,7 @@ export default function Operators() {
               <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
                 <div className="flex-1">
                   <Label className="form-label mb-1">Comissões Visíveis para Backoffice</Label>
-                  <p className="text-white/50 text-xs">
+                  <p className="text-gray-600 text-xs">
                     Se ativo, os utilizadores de backoffice podem ver e registar comissões nas vendas desta operadora
                   </p>
                 </div>
@@ -520,7 +520,7 @@ export default function Operators() {
               <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
                 <div className="flex-1">
                   <Label className="form-label mb-1">Categorias de Cliente</Label>
-                  <p className="text-white/50 text-xs">
+                  <p className="text-gray-600 text-xs">
                     Permite definir diferentes categorias de cliente para esta operadora
                   </p>
                 </div>
@@ -560,8 +560,8 @@ export default function Operators() {
                           className="flex items-center justify-between p-2 rounded bg-white/5"
                         >
                           <div className="flex items-center gap-2">
-                            <Tags size={14} className="text-[#c8f31d]" />
-                            <span className="text-white text-sm">{category.name}</span>
+                            <Tags size={14} className="text-blue-600" />
+                            <span className="text-gray-900 text-sm">{category.name}</span>
                             {category.isNew && (
                               <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs">
                                 Nova
@@ -613,10 +613,10 @@ export default function Operators() {
       </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent className="bg-[#082d32] border-white/10">
+        <AlertDialogContent className="bg-white border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Eliminar Operadora</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
+            <AlertDialogTitle className="text-gray-900">Eliminar Operadora</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-900/60">
               Tem a certeza que pretende eliminar esta operadora? Esta ação não pode ser revertida.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -624,7 +624,7 @@ export default function Operators() {
             <AlertDialogCancel className="btn-secondary">Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-gray-900"
             >
               Eliminar
             </AlertDialogAction>

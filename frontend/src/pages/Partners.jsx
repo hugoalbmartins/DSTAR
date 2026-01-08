@@ -314,8 +314,8 @@ export default function Partners() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Manrope']">Parceiros</h1>
-          <p className="text-white/50 text-sm mt-1">Gerir parceiros de negócio</p>
+          <h1 className="text-2xl font-bold text-gray-900 font-['Manrope']">Parceiros</h1>
+          <p className="text-gray-600 text-sm mt-1">Gerir parceiros de negócio</p>
         </div>
         <Button 
           onClick={openCreateModal}
@@ -335,11 +335,11 @@ export default function Partners() {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${partner.active ? 'bg-[#c8f31d]/20' : 'bg-white/10'}`}>
-                      <Building2 size={20} className={partner.active ? 'text-[#c8f31d]' : 'text-white/40'} />
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${partner.active ? 'bg-blue-100' : 'bg-white/10'}`}>
+                      <Building2 size={20} className={partner.active ? 'text-blue-600' : 'text-gray-500'} />
                     </div>
                     <div>
-                      <p className="text-white font-medium">{partner.name}</p>
+                      <p className="text-gray-900 font-medium">{partner.name}</p>
                       {!partner.active && (
                         <Badge className="bg-red-500/20 text-red-400 border border-red-500/30 text-xs mt-1">
                           Inativo
@@ -351,19 +351,19 @@ export default function Partners() {
 
                 <div className="space-y-2 text-sm">
                   {partner.contact_person && (
-                    <div className="flex items-center gap-2 text-white/70">
+                    <div className="flex items-center gap-2 text-gray-600">
                       <User size={14} />
                       <span>{partner.contact_person}</span>
                     </div>
                   )}
                   {partner.email && (
-                    <div className="flex items-center gap-2 text-white/70">
+                    <div className="flex items-center gap-2 text-gray-600">
                       <Mail size={14} />
                       <span>{partner.email}</span>
                     </div>
                   )}
                   {partner.phone && (
-                    <div className="flex items-center gap-2 text-white/70">
+                    <div className="flex items-center gap-2 text-gray-600">
                       <Phone size={14} />
                       <span>{partner.phone}</span>
                     </div>
@@ -375,7 +375,7 @@ export default function Partners() {
                     onClick={() => openOperatorsModal(partner)}
                     variant="ghost"
                     size="sm"
-                    className="w-full text-[#c8f31d] hover:bg-[#c8f31d]/10 justify-start"
+                    className="w-full text-blue-600 hover:bg-[#c8f31d]/10 justify-start"
                     data-testid={`operators-partner-${partner.id}`}
                   >
                     <Radio size={16} className="mr-2" />
@@ -386,7 +386,7 @@ export default function Partners() {
                       onClick={() => openEditModal(partner)}
                       variant="ghost"
                       size="sm"
-                      className="flex-1 text-white/70 hover:text-[#c8f31d]"
+                      className="flex-1 text-gray-600 hover:text-blue-600"
                       data-testid={`edit-partner-${partner.id}`}
                     >
                       <Edit2 size={16} className="mr-1" />
@@ -405,7 +405,7 @@ export default function Partners() {
                       onClick={() => setDeleteId(partner.id)}
                       variant="ghost"
                       size="sm"
-                      className="text-white/70 hover:text-red-400"
+                      className="text-gray-600 hover:text-red-400"
                       data-testid={`delete-partner-${partner.id}`}
                     >
                       <Trash2 size={16} />
@@ -418,8 +418,8 @@ export default function Partners() {
         ) : (
           <Card className="card-leiritrix col-span-full">
             <CardContent className="p-8 text-center">
-              <Building2 size={48} className="mx-auto text-white/20 mb-4" />
-              <p className="text-white/50">Nenhum parceiro registado</p>
+              <Building2 size={48} className="mx-auto text-gray-900/20 mb-4" />
+              <p className="text-gray-600">Nenhum parceiro registado</p>
               <Button 
                 onClick={openCreateModal}
                 className="btn-primary btn-primary-glow mt-4"
@@ -433,9 +433,9 @@ export default function Partners() {
 
       {/* Create/Edit Modal */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[#082d32] border-white/10">
+        <DialogContent className="bg-white border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-white font-['Manrope']">
+            <DialogTitle className="text-gray-900 font-['Manrope']">
               {editingPartner ? "Editar Parceiro" : "Novo Parceiro"}
             </DialogTitle>
           </DialogHeader>
@@ -511,10 +511,10 @@ export default function Partners() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent className="bg-[#082d32] border-white/10">
+        <AlertDialogContent className="bg-white border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Eliminar Parceiro</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
+            <AlertDialogTitle className="text-gray-900">Eliminar Parceiro</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-900/60">
               Tem a certeza que pretende eliminar este parceiro? Se tiver vendas associadas, será apenas desativado.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -522,7 +522,7 @@ export default function Partners() {
             <AlertDialogCancel className="btn-secondary">Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-gray-900"
             >
               Eliminar
             </AlertDialogAction>
@@ -532,15 +532,15 @@ export default function Partners() {
 
       {/* Operators Modal */}
       <Dialog open={operatorsModalOpen} onOpenChange={setOperatorsModalOpen}>
-        <DialogContent className="bg-[#082d32] border-white/10 max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-white border-white/10 max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white font-['Manrope']">
+            <DialogTitle className="text-gray-900 font-['Manrope']">
               Operadoras - {selectedPartner?.name}
             </DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <div className="flex justify-between items-center mb-4">
-              <p className="text-white/50 text-sm">
+              <p className="text-gray-600 text-sm">
                 {operators.length} operadora{operators.length !== 1 ? 's' : ''} associada{operators.length !== 1 ? 's' : ''}
               </p>
               <Button
@@ -556,7 +556,7 @@ export default function Partners() {
             {/* Associated Operators */}
             {operators.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-white font-medium mb-3 text-sm">Operadoras Associadas</h3>
+                <h3 className="text-gray-900 font-medium mb-3 text-sm">Operadoras Associadas</h3>
                 <div className="space-y-2">
                   {operators.map((operator) => (
                     <Card key={operator.id} className="card-leiritrix">
@@ -568,17 +568,17 @@ export default function Partners() {
                               onCheckedChange={() => handleToggleOperatorAssociation(operator)}
                               className="border-[#c8f31d]"
                             />
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${operator.active ? 'bg-[#c8f31d]/20' : 'bg-white/10'}`}>
-                              <Radio size={16} className={operator.active ? 'text-[#c8f31d]' : 'text-white/40'} />
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${operator.active ? 'bg-blue-100' : 'bg-white/10'}`}>
+                              <Radio size={16} className={operator.active ? 'text-blue-600' : 'text-gray-500'} />
                             </div>
                             <div className="flex-1">
-                              <p className="text-white font-medium">{operator.name}</p>
+                              <p className="text-gray-900 font-medium">{operator.name}</p>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {operator.categories && operator.categories.map((cat) => {
                                   const option = CATEGORY_OPTIONS.find(opt => opt.value === cat);
                                   const Icon = option?.icon || Radio;
                                   return (
-                                    <Badge key={cat} className="bg-[#c8f31d]/20 text-[#c8f31d] border border-[#c8f31d]/30 text-xs">
+                                    <Badge key={cat} className="bg-blue-100 text-blue-600 border border-[#c8f31d]/30 text-xs">
                                       <Icon size={10} className="mr-1" />
                                       {option?.label.split(' - ')[1] || cat}
                                     </Badge>
@@ -591,7 +591,7 @@ export default function Partners() {
                             onClick={() => openEditOperatorModal(operator)}
                             variant="ghost"
                             size="sm"
-                            className="text-white/70 hover:text-[#c8f31d]"
+                            className="text-gray-600 hover:text-blue-600"
                           >
                             <Edit2 size={16} />
                           </Button>
@@ -606,7 +606,7 @@ export default function Partners() {
             {/* Available Operators */}
             {availableOperators.length > 0 && (
               <div>
-                <h3 className="text-white font-medium mb-3 text-sm">Operadoras Disponíveis</h3>
+                <h3 className="text-gray-900 font-medium mb-3 text-sm">Operadoras Disponíveis</h3>
                 <div className="space-y-2">
                   {availableOperators
                     .slice((currentPage - 1) * operatorsPerPage, currentPage * operatorsPerPage)
@@ -619,17 +619,17 @@ export default function Partners() {
                               onCheckedChange={() => handleToggleOperatorAssociation(operator)}
                               className="border-white/30"
                             />
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${operator.active ? 'bg-[#c8f31d]/20' : 'bg-white/10'}`}>
-                              <Radio size={16} className={operator.active ? 'text-[#c8f31d]' : 'text-white/40'} />
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${operator.active ? 'bg-blue-100' : 'bg-white/10'}`}>
+                              <Radio size={16} className={operator.active ? 'text-blue-600' : 'text-gray-500'} />
                             </div>
                             <div className="flex-1">
-                              <p className="text-white font-medium">{operator.name}</p>
+                              <p className="text-gray-900 font-medium">{operator.name}</p>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {operator.categories && operator.categories.map((cat) => {
                                   const option = CATEGORY_OPTIONS.find(opt => opt.value === cat);
                                   const Icon = option?.icon || Radio;
                                   return (
-                                    <Badge key={cat} className="bg-white/10 text-white/70 border border-white/20 text-xs">
+                                    <Badge key={cat} className="bg-white/10 text-gray-600 border border-white/20 text-xs">
                                       <Icon size={10} className="mr-1" />
                                       {option?.label.split(' - ')[1] || cat}
                                     </Badge>
@@ -651,11 +651,11 @@ export default function Partners() {
                       disabled={currentPage === 1}
                       size="sm"
                       variant="ghost"
-                      className="text-white/70"
+                      className="text-gray-600"
                     >
                       Anterior
                     </Button>
-                    <span className="text-white/70 text-sm">
+                    <span className="text-gray-600 text-sm">
                       Página {currentPage} de {Math.ceil(availableOperators.length / operatorsPerPage)}
                     </span>
                     <Button
@@ -663,7 +663,7 @@ export default function Partners() {
                       disabled={currentPage >= Math.ceil(availableOperators.length / operatorsPerPage)}
                       size="sm"
                       variant="ghost"
-                      className="text-white/70"
+                      className="text-gray-600"
                     >
                       Próxima
                     </Button>
@@ -673,8 +673,8 @@ export default function Partners() {
             )}
 
             {operators.length === 0 && availableOperators.length === 0 && (
-              <div className="text-center py-8 text-white/50">
-                <Radio size={48} className="mx-auto mb-2 text-white/20" />
+              <div className="text-center py-8 text-gray-600">
+                <Radio size={48} className="mx-auto mb-2 text-gray-900/20" />
                 <p>Nenhuma operadora disponível</p>
               </div>
             )}
@@ -692,9 +692,9 @@ export default function Partners() {
 
       {/* Create/Edit Operator Modal */}
       <Dialog open={operatorModalOpen} onOpenChange={setOperatorModalOpen}>
-        <DialogContent className="bg-[#082d32] border-white/10">
+        <DialogContent className="bg-white border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-white font-['Manrope']">
+            <DialogTitle className="text-gray-900 font-['Manrope']">
               {editingOperator ? "Editar Operadora" : "Nova Operadora"}
             </DialogTitle>
           </DialogHeader>
@@ -725,10 +725,10 @@ export default function Partners() {
                         checked={operatorFormData.categories.includes(category.value)}
                         onCheckedChange={() => handleOperatorCategoryToggle(category.value)}
                       />
-                      <Icon size={16} className="text-[#c8f31d]" />
+                      <Icon size={16} className="text-blue-600" />
                       <Label
                         htmlFor={`partner-${category.value}`}
-                        className="text-white text-sm cursor-pointer flex-1"
+                        className="text-gray-900 text-sm cursor-pointer flex-1"
                       >
                         {category.label}
                       </Label>
@@ -742,7 +742,7 @@ export default function Partners() {
               <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
                 <div className="flex-1">
                   <Label className="form-label mb-1">Comissões Visíveis para Backoffice</Label>
-                  <p className="text-white/50 text-xs">
+                  <p className="text-gray-600 text-xs">
                     Se ativo, os utilizadores de backoffice podem ver e registar comissões nas vendas desta operadora
                   </p>
                 </div>
@@ -783,10 +783,10 @@ export default function Partners() {
 
       {/* Delete Operator Confirmation */}
       <AlertDialog open={!!operatorDeleteId} onOpenChange={() => setOperatorDeleteId(null)}>
-        <AlertDialogContent className="bg-[#082d32] border-white/10">
+        <AlertDialogContent className="bg-white border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Eliminar Operadora</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
+            <AlertDialogTitle className="text-gray-900">Eliminar Operadora</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-900/60">
               Tem a certeza que pretende eliminar esta operadora? Esta ação não pode ser revertida.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -794,7 +794,7 @@ export default function Partners() {
             <AlertDialogCancel className="btn-secondary">Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteOperator}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-gray-900"
             >
               Eliminar
             </AlertDialogAction>
