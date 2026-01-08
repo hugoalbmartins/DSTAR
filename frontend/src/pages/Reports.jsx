@@ -6,7 +6,7 @@ import { partnersService } from "@/services/partnersService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DateSelect } from "@/components/ui/date-select";
+import { DatePickerPopup } from "@/components/ui/date-picker-popup";
 import {
   Select,
   SelectContent,
@@ -188,19 +188,25 @@ export default function Reports() {
         </CardHeader>
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <DateSelect
-              value={startDate}
-              onChange={setStartDate}
-              placeholder="Data início"
-              data-testid="start-date-picker"
-            />
+            <div>
+              <label className="text-xs text-gray-600 mb-1 block">Data Início</label>
+              <DatePickerPopup
+                value={startDate}
+                onChange={setStartDate}
+                placeholder="Data início"
+                data-testid="start-date-picker"
+              />
+            </div>
 
-            <DateSelect
-              value={endDate}
-              onChange={setEndDate}
-              placeholder="Data fim"
-              data-testid="end-date-picker"
-            />
+            <div>
+              <label className="text-xs text-gray-600 mb-1 block">Data Fim</label>
+              <DatePickerPopup
+                value={endDate}
+                onChange={setEndDate}
+                placeholder="Data fim"
+                data-testid="end-date-picker"
+              />
+            </div>
 
             {/* Category */}
             <Select value={category} onValueChange={setCategory}>

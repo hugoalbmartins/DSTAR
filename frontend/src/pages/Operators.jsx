@@ -327,13 +327,13 @@ export default function Operators() {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${operator.active ? 'bg-blue-100' : 'bg-white/10'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${operator.active ? 'bg-blue-100' : 'bg-gray-100'}`}>
                       <Radio size={20} className={operator.active ? 'text-blue-600' : 'text-gray-500'} />
                     </div>
                     <div>
                       <p className="text-gray-900 font-medium">{operator.name}</p>
                       {!operator.active && (
-                        <Badge className="bg-red-500/20 text-red-400 border border-red-500/30 text-xs mt-1">
+                        <Badge className="bg-red-100 text-red-700 border border-red-200 text-xs mt-1">
                           Inativa
                         </Badge>
                       )}
@@ -349,7 +349,7 @@ export default function Operators() {
                         operator.categories.map((cat) => {
                           const Icon = getCategoryIcon(cat);
                           return (
-                            <Badge key={cat} className="bg-blue-100 text-blue-600 border border-[#c8f31d]/30 text-xs">
+                            <Badge key={cat} className="bg-blue-100 text-blue-600 border border-blue-200 text-xs">
                               <Icon size={12} className="mr-1" />
                               {getCategoryLabel(cat)}
                             </Badge>
@@ -363,11 +363,11 @@ export default function Operators() {
 
                   <div>
                     {operator.commission_visible_to_bo ? (
-                      <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 text-xs">
+                      <Badge className="bg-green-100 text-green-700 border border-green-200 text-xs">
                         {isAdmin ? "Comissões Visíveis BO" : "Com comissão a contabilizar"}
                       </Badge>
                     ) : (
-                      <Badge className="bg-white/10 text-gray-900/60 border border-white/10 text-xs">
+                      <Badge className="bg-gray-100 text-gray-600 border border-gray-200 text-xs">
                         {isAdmin ? "Comissões Ocultas BO" : "Sem comissão a contabilizar"}
                       </Badge>
                     )}
@@ -389,7 +389,7 @@ export default function Operators() {
                     onClick={() => toggleActive(operator.id)}
                     variant="ghost"
                     size="sm"
-                    className={`${operator.active ? 'text-red-400 hover:bg-red-400/10' : 'text-green-400 hover:bg-green-400/10'}`}
+                    className={`${operator.active ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50'}`}
                     data-testid={`toggle-operator-${operator.id}`}
                   >
                     {operator.active ? <PowerOff size={16} /> : <Power size={16} />}
@@ -398,7 +398,7 @@ export default function Operators() {
                     onClick={() => setDeleteId(operator.id)}
                     variant="ghost"
                     size="sm"
-                    className="text-gray-600 hover:text-red-400"
+                    className="text-gray-600 hover:text-red-600 hover:bg-red-50"
                     data-testid={`delete-operator-${operator.id}`}
                   >
                     <Trash2 size={16} />
@@ -450,7 +450,7 @@ export default function Operators() {
                   return (
                     <div
                       key={category.value}
-                      className="flex items-center space-x-2 p-3 rounded-lg bg-[#0d474f] hover:bg-[#0d474f]/80 cursor-pointer"
+                      className="flex items-center space-x-2 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
                       onClick={() => handleCategoryToggle(category.value)}
                     >
                       <Checkbox
@@ -480,7 +480,7 @@ export default function Operators() {
                 {SALE_TYPES.map((type) => (
                   <div
                     key={type.value}
-                    className="flex items-center space-x-2 p-2 rounded-lg bg-[#0d474f] hover:bg-[#0d474f]/80 cursor-pointer"
+                    className="flex items-center space-x-2 p-2 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleSaleTypeToggle(type.value)}
                   >
                     <Checkbox
@@ -500,7 +500,7 @@ export default function Operators() {
             </div>
 
             {isAdmin && (
-              <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50">
                 <div className="flex-1">
                   <Label className="form-label mb-1">Comissões Visíveis para Backoffice</Label>
                   <p className="text-gray-600 text-xs">
@@ -517,7 +517,7 @@ export default function Operators() {
             )}
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 rounded-lg bg-[#0d474f]">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50">
                 <div className="flex-1">
                   <Label className="form-label mb-1">Categorias de Cliente</Label>
                   <p className="text-gray-600 text-xs">
@@ -534,7 +534,7 @@ export default function Operators() {
               </div>
 
               {formData.has_client_categories && (
-                <div className="p-4 rounded-lg bg-[#0d474f] space-y-3">
+                <div className="p-4 rounded-lg bg-gray-50 space-y-3">
                   <div className="flex gap-2">
                     <Input
                       value={newCategoryName}
@@ -557,7 +557,7 @@ export default function Operators() {
                       {clientCategories.map((category, index) => (
                         <div
                           key={category.id || index}
-                          className="flex items-center justify-between p-2 rounded bg-white/5"
+                          className="flex items-center justify-between p-2 rounded bg-gray-100"
                         >
                           <div className="flex items-center gap-2">
                             <Tags size={14} className="text-blue-600" />
@@ -573,7 +573,7 @@ export default function Operators() {
                             onClick={() => handleRemoveClientCategory(category)}
                             variant="ghost"
                             size="sm"
-                            className="text-red-400 hover:bg-red-400/10 h-6 w-6 p-0"
+                            className="text-red-600 hover:bg-red-50 h-6 w-6 p-0"
                           >
                             <X size={14} />
                           </Button>
