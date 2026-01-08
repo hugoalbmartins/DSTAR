@@ -37,11 +37,11 @@ import {
 } from "recharts";
 
 const STATUS_MAP = {
-  em_negociacao: { label: "Em Negociação", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  perdido: { label: "Perdido", color: "bg-red-500/20 text-red-400 border-red-500/30" },
-  pendente: { label: "Pendente", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-  ativo: { label: "Ativo", color: "bg-green-500/20 text-green-400 border-green-500/30" },
-  anulado: { label: "Anulado", color: "bg-gray-500/20 text-gray-400 border-gray-500/30" }
+  em_negociacao: { label: "Em Negociação", color: "bg-blue-100 text-blue-700 border-blue-200" },
+  perdido: { label: "Perdido", color: "bg-red-100 text-red-700 border-red-200" },
+  pendente: { label: "Pendente", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
+  ativo: { label: "Ativo", color: "bg-green-100 text-green-700 border-green-200" },
+  anulado: { label: "Anulado", color: "bg-gray-100 text-gray-700 border-gray-200" }
 };
 
 const CATEGORY_ICONS = {
@@ -56,7 +56,7 @@ const CATEGORY_LABELS = {
   paineis_solares: "Painéis Solares"
 };
 
-const PIE_COLORS = ["#c8f31d", "#3b82f6", "#f59e0b"];
+const PIE_COLORS = ["#3b82f6", "#10b981", "#f59e0b"];
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -289,7 +289,7 @@ export default function Dashboard() {
   };
 
   const getPercentageColor = (value) => {
-    return value >= 0 ? 'text-green-400' : 'text-red-400';
+    return value >= 0 ? 'text-green-600' : 'text-red-600';
   };
 
   const months = [
@@ -317,7 +317,7 @@ export default function Dashboard() {
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-          className="bg-[#082d32]/50 border border-white/10 text-white text-sm px-3 py-1.5 rounded focus:outline-none focus:border-[#c8f31d]/50 transition-colors font-['Manrope']"
+          className="bg-white border border-gray-300 text-gray-900 text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all font-medium shadow-sm"
         >
           {months.map((month) => (
             <option key={month.value} value={month.value}>
@@ -328,7 +328,7 @@ export default function Dashboard() {
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-          className="bg-[#082d32]/50 border border-white/10 text-white text-sm px-3 py-1.5 rounded focus:outline-none focus:border-[#c8f31d]/50 transition-colors font-['Manrope']"
+          className="bg-white border border-gray-300 text-gray-900 text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all font-medium shadow-sm"
         >
           {years.map((year) => (
             <option key={year} value={year}>
@@ -356,8 +356,8 @@ export default function Dashboard() {
                   )}
                 </p>
               </div>
-              <div className="bg-blue-500/10 p-2 rounded-lg">
-                <Phone className="text-blue-400" size={20} />
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <Phone className="text-blue-600" size={24} />
               </div>
             </div>
           </CardContent>
@@ -382,8 +382,8 @@ export default function Dashboard() {
                         )}
                       </p>
                     </div>
-                    <div className="bg-purple-500/10 p-2 rounded-lg">
-                      <Users className="text-purple-400" size={20} />
+                    <div className="bg-purple-100 p-3 rounded-lg">
+                      <Users className="text-purple-600" size={24} />
                     </div>
                   </div>
                 </CardContent>
@@ -407,8 +407,8 @@ export default function Dashboard() {
                         )}
                       </p>
                     </div>
-                    <div className="bg-gray-500/10 p-2 rounded-lg">
-                      <EyeOff className="text-gray-400" size={20} />
+                    <div className="bg-gray-100 p-3 rounded-lg">
+                      <EyeOff className="text-gray-600" size={24} />
                     </div>
                   </div>
                 </CardContent>
@@ -421,7 +421,7 @@ export default function Dashboard() {
               <CardContent className="p-0">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <p className="metric-value font-mono text-xl text-[#c8f31d]">
+                    <p className="metric-value font-mono text-xl text-blue-600">
                       {formatCurrency(metrics?.backoffice_commission)}
                     </p>
                     <p className="metric-label">
@@ -433,8 +433,8 @@ export default function Dashboard() {
                       )}
                     </p>
                   </div>
-                  <div className="bg-[#c8f31d]/10 p-2 rounded-lg">
-                    <Euro className="text-[#c8f31d]" size={20} />
+                  <div className="bg-blue-100 p-3 rounded-lg">
+                    <Euro className="text-blue-600" size={24} />
                   </div>
                 </div>
               </CardContent>
@@ -456,8 +456,8 @@ export default function Dashboard() {
                       )}
                     </p>
                   </div>
-                  <div className="bg-yellow-500/10 p-2 rounded-lg">
-                    <Euro className="text-yellow-400" size={20} />
+                  <div className="bg-amber-100 p-3 rounded-lg">
+                    <Euro className="text-amber-600" size={24} />
                   </div>
                 </div>
               </CardContent>
@@ -496,7 +496,7 @@ export default function Dashboard() {
             <CardContent className="p-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p className="metric-value font-mono text-xl text-green-400">
+                  <p className="metric-value font-mono text-xl text-green-600">
                     {formatCurrency(metrics?.active_commissions)}
                   </p>
                   <p className="metric-label">
@@ -508,8 +508,8 @@ export default function Dashboard() {
                     )}
                   </p>
                 </div>
-                <div className="bg-green-500/10 p-2 rounded-lg">
-                  <CheckCircle className="text-green-400" size={20} />
+                <div className="bg-green-100 p-3 rounded-lg">
+                  <CheckCircle className="text-green-600" size={24} />
                 </div>
               </div>
             </CardContent>
@@ -524,7 +524,7 @@ export default function Dashboard() {
             <CardContent className="p-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p className="metric-value font-mono text-xl text-green-400">
+                  <p className="metric-value font-mono text-xl text-green-600">
                     {formatCurrency(metrics?.active_commissions)}
                   </p>
                   <p className="metric-label">
@@ -536,8 +536,8 @@ export default function Dashboard() {
                     )}
                   </p>
                 </div>
-                <div className="bg-green-500/10 p-2 rounded-lg">
-                  <CheckCircle className="text-green-400" size={20} />
+                <div className="bg-green-100 p-3 rounded-lg">
+                  <CheckCircle className="text-green-600" size={24} />
                 </div>
               </div>
             </CardContent>
@@ -549,8 +549,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Year-over-Year Line Chart */}
         <Card className="card-leiritrix lg:col-span-2" data-testid="monthly-chart">
-          <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg">
+          <CardHeader className="border-b border-gray-200 pb-4">
+            <CardTitle className="text-gray-800 font-['Manrope'] text-lg">
               Evolução de Vendas (Ano Corrente vs Ano Anterior)
             </CardTitle>
           </CardHeader>
@@ -558,15 +558,15 @@ export default function Dashboard() {
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={monthlyStats}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis
                     dataKey="month"
-                    tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 12 }}
-                    axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
+                    axisLine={{ stroke: '#e5e7eb' }}
                   />
                   <YAxis
-                    tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 12 }}
-                    axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
+                    axisLine={{ stroke: '#e5e7eb' }}
                   />
                   <Tooltip
                     content={({ active, payload }) => {
@@ -576,13 +576,13 @@ export default function Dashboard() {
                         const previous = data.anoAnterior || 0;
                         const change = previous > 0 ? ((current - previous) / previous * 100) : (current > 0 ? 100 : 0);
                         const changeText = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-                        const changeColor = change >= 0 ? '#4ade80' : '#f87171';
+                        const changeColor = change >= 0 ? '#16a34a' : '#dc2626';
 
                         return (
-                          <div className="bg-[#082d32] border border-[#c8f31d]/20 rounded p-3 text-white text-sm">
+                          <div className="bg-white border border-gray-200 rounded-lg p-3 text-gray-900 text-sm shadow-lg">
                             <p className="font-bold mb-2">{data.month}</p>
-                            <p className="text-[#c8f31d]">Ano Corrente: {current}</p>
-                            <p className="text-[#3b82f6]">Ano Anterior: {previous}</p>
+                            <p className="text-blue-600">Ano Corrente: {current}</p>
+                            <p className="text-purple-600">Ano Anterior: {previous}</p>
                             <p style={{ color: changeColor }} className="font-bold mt-1">
                               {changeText} {change >= 0 ? '↑' : '↓'}
                             </p>
@@ -599,20 +599,20 @@ export default function Dashboard() {
                   <Line
                     type="monotone"
                     dataKey="anoCorrente"
-                    stroke="#c8f31d"
+                    stroke="#3b82f6"
                     strokeWidth={3}
                     name="Ano Corrente"
-                    dot={{ fill: '#c8f31d', r: 4 }}
+                    dot={{ fill: '#3b82f6', r: 4 }}
                     activeDot={{ r: 6 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="anoAnterior"
-                    stroke="#3b82f6"
+                    stroke="#a855f7"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     name="Ano Anterior"
-                    dot={{ fill: '#3b82f6', r: 3 }}
+                    dot={{ fill: '#a855f7', r: 3 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -622,8 +622,8 @@ export default function Dashboard() {
 
         {/* Category Pie Chart */}
         <Card className="card-leiritrix" data-testid="category-chart">
-          <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg">
+          <CardHeader className="border-b border-gray-200 pb-4">
+            <CardTitle className="text-gray-800 font-['Manrope'] text-lg">
               Por Categoria
             </CardTitle>
           </CardHeader>
@@ -645,18 +645,19 @@ export default function Dashboard() {
                         <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#082d32', 
-                        border: '1px solid rgba(200,243,29,0.2)',
-                        borderRadius: '0.3rem',
-                        color: 'white'
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '0.5rem',
+                        color: '#1e293b',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                       }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex items-center justify-center h-full text-white/50">
+                <div className="flex items-center justify-center h-full text-gray-400">
                   Sem dados
                 </div>
               )}
@@ -665,8 +666,8 @@ export default function Dashboard() {
             {/* Total Sales */}
             {categoryData.length > 0 && (
               <div className="text-center mt-4 mb-2">
-                <p className="text-white/50 text-sm">Total de Vendas do Mês</p>
-                <p className="text-white text-2xl font-bold font-mono">
+                <p className="text-gray-500 text-sm">Total de Vendas do Mês</p>
+                <p className="text-gray-900 text-2xl font-bold font-mono">
                   {categoryData.reduce((sum, item) => sum + item.value, 0)}
                 </p>
               </div>
@@ -680,7 +681,7 @@ export default function Dashboard() {
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
                   />
-                  <span className="text-sm text-white/70">{item.name}: {item.value}</span>
+                  <span className="text-sm text-gray-600">{item.name}: {item.value}</span>
                 </div>
               ))}
             </div>
@@ -692,8 +693,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Summary */}
         <Card className="card-leiritrix" data-testid="status-summary">
-          <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg">
+          <CardHeader className="border-b border-gray-200 pb-4">
+            <CardTitle className="text-gray-800 font-['Manrope'] text-lg">
               Por Estado
             </CardTitle>
           </CardHeader>
@@ -706,7 +707,7 @@ export default function Dashboard() {
                     <span className={`badge ${status.color} border`}>
                       {status.label}
                     </span>
-                    <span className="text-white font-mono font-bold">{count}</span>
+                    <span className="text-gray-900 font-mono font-bold">{count}</span>
                   </div>
                 );
               })}
@@ -716,12 +717,12 @@ export default function Dashboard() {
 
         {/* Loyalty Alerts */}
         <Card className="card-leiritrix" data-testid="loyalty-alerts">
-          <CardHeader className="border-b border-white/5 pb-4 flex flex-row items-center justify-between">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <AlertTriangle className="text-[#c8f31d]" size={20} />
+          <CardHeader className="border-b border-gray-200 pb-4 flex flex-row items-center justify-between">
+            <CardTitle className="text-gray-800 font-['Manrope'] text-lg flex items-center gap-2">
+              <AlertTriangle className="text-amber-600" size={20} />
               Alertas de Fidelização
             </CardTitle>
-            <Badge className="bg-[#c8f31d] text-[#0d474f]">
+            <Badge className="bg-amber-100 text-amber-700 border border-amber-200 font-semibold">
               {alerts.length}
             </Badge>
           </CardHeader>
@@ -731,25 +732,25 @@ export default function Dashboard() {
                 {alerts.slice(0, 5).map((alert) => {
                   const CategoryIcon = CATEGORY_ICONS[alert.category] || Zap;
                   return (
-                    <Link 
-                      key={alert.id} 
+                    <Link
+                      key={alert.id}
                       to={`/sales/${alert.id}`}
                       className="alert-item block"
                       data-testid={`alert-${alert.id}`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-3">
-                          <CategoryIcon className="text-[#c8f31d] mt-0.5" size={18} />
+                          <CategoryIcon className="text-blue-600 mt-0.5" size={18} />
                           <div>
-                            <p className="text-white font-medium">{alert.client_name}</p>
-                            <p className="text-white/50 text-sm">{alert.partner_name}</p>
+                            <p className="text-gray-900 font-medium">{alert.client_name}</p>
+                            <p className="text-gray-500 text-sm">{alert.partner_name}</p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-[#c8f31d] font-mono font-bold">
+                          <p className="text-amber-600 font-mono font-bold">
                             {alert.days_until_end} dias
                           </p>
-                          <p className="text-white/40 text-xs flex items-center gap-1 justify-end">
+                          <p className="text-gray-400 text-xs flex items-center gap-1 justify-end">
                             <Calendar size={12} />
                             {new Date(alert.loyalty_end_date).toLocaleDateString('pt-PT')}
                           </p>
@@ -760,15 +761,15 @@ export default function Dashboard() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-8 text-white/50">
+              <div className="text-center py-8 text-gray-400">
                 <AlertTriangle size={32} className="mx-auto mb-2 opacity-50" />
                 <p>Sem alertas de fidelização</p>
               </div>
             )}
-            
+
             {alerts.length > 5 && (
               <Link to="/sales?filter=alerts">
-                <Button variant="ghost" className="w-full mt-4 text-[#c8f31d] hover:bg-[#c8f31d]/10">
+                <Button variant="ghost" className="w-full mt-4 text-blue-600 hover:bg-blue-50">
                   Ver todos ({alerts.length})
                   <ArrowRight size={16} className="ml-2" />
                 </Button>

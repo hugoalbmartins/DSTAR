@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -17,35 +17,38 @@ code {
 
 @layer base {
     :root {
-        --background: 187 72% 18%;
-        --foreground: 0 0% 100%;
-        --card: 187 72% 11%;
-        --card-foreground: 0 0% 100%;
-        --popover: 187 72% 11%;
-        --popover-foreground: 0 0% 100%;
-        --primary: 74 88% 53%;
-        --primary-foreground: 187 72% 18%;
-        --secondary: 187 72% 14%;
-        --secondary-foreground: 0 0% 100%;
-        --muted: 187 72% 14%;
-        --muted-foreground: 215 16% 57%;
-        --accent: 74 88% 53%;
-        --accent-foreground: 187 72% 18%;
-        --destructive: 0 84.2% 60.2%;
+        --background: 0 0% 98%;
+        --foreground: 222 47% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222 47% 11%;
+        --primary: 217 91% 60%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 210 40% 96%;
+        --secondary-foreground: 222 47% 11%;
+        --muted: 210 40% 96%;
+        --muted-foreground: 215 16% 47%;
+        --accent: 217 91% 60%;
+        --accent-foreground: 0 0% 100%;
+        --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 100%;
-        --border: 74 88% 53% / 0.1;
-        --input: 187 72% 14%;
-        --ring: 74 88% 53%;
-        --chart-1: 74 88% 53%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.3rem;
-        
-        --leiritrix-teal: #0d474f;
-        --leiritrix-teal-dark: #082d32;
-        --leiritrix-lime: #c8f31d;
+        --border: 214 32% 91%;
+        --input: 214 32% 91%;
+        --ring: 217 91% 60%;
+        --chart-1: 217 91% 60%;
+        --chart-2: 142 76% 36%;
+        --chart-3: 47 96% 53%;
+        --chart-4: 280 87% 65%;
+        --chart-5: 12 76% 61%;
+        --radius: 0.5rem;
+
+        --sidebar-bg: 222 47% 11%;
+        --sidebar-hover: 217 91% 60%;
+        --sidebar-active: 217 91% 60%;
+        --success: 142 76% 36%;
+        --warning: 38 92% 50%;
+        --info: 199 89% 48%;
     }
 }
 
@@ -55,13 +58,15 @@ code {
     }
     body {
         @apply bg-background text-foreground;
-        background-color: #0d474f;
+        background-color: #fafbfc;
     }
-    
+
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Manrope', sans-serif;
+        font-weight: 700;
+        color: hsl(var(--foreground));
     }
-    
+
     .font-mono {
         font-family: 'JetBrains Mono', monospace;
     }
@@ -74,16 +79,16 @@ code {
 }
 
 ::-webkit-scrollbar-track {
-    background: #082d32;
+    background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #c8f31d33;
+    background: #cbd5e1;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #c8f31d66;
+    background: #94a3b8;
 }
 
 /* Custom animations */
@@ -116,63 +121,105 @@ code {
 
 /* Status badges */
 .status-ativo {
-    @apply bg-green-500/20 text-green-400 border border-green-500/30;
+    @apply bg-green-100 text-green-700 border border-green-200 font-medium;
 }
 
 .status-pendente {
-    @apply bg-yellow-500/20 text-yellow-400 border border-yellow-500/30;
+    @apply bg-yellow-100 text-yellow-700 border border-yellow-200 font-medium;
 }
 
 .status-perdido {
-    @apply bg-red-500/20 text-red-400 border border-red-500/30;
+    @apply bg-red-100 text-red-700 border border-red-200 font-medium;
 }
 
 .status-em_negociacao {
-    @apply bg-blue-500/20 text-blue-400 border border-blue-500/30;
+    @apply bg-blue-100 text-blue-700 border border-blue-200 font-medium;
 }
 
 .status-anulado {
-    @apply bg-gray-500/20 text-gray-400 border border-gray-500/30;
+    @apply bg-gray-100 text-gray-700 border border-gray-200 font-medium;
 }
 
 /* Card styles */
 .card-leiritrix {
-    background-color: #082d32;
-    border: 1px solid rgba(200, 243, 29, 0.1);
-    box-shadow: 0 4px 20px -2px rgba(13, 71, 79, 0.5);
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
 }
 
-/* Button glow effect */
+.card-leiritrix:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* KPI Card */
+.kpi-card {
+    @apply card-leiritrix rounded-lg p-6;
+    border-left: 4px solid hsl(var(--primary));
+}
+
+.kpi-card-success {
+    border-left-color: hsl(var(--success));
+}
+
+.kpi-card-warning {
+    border-left-color: hsl(var(--warning));
+}
+
+.kpi-card-danger {
+    border-left-color: hsl(var(--destructive));
+}
+
+/* Button styles */
+.btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium;
+}
+
 .btn-primary-glow {
-    box-shadow: 0 0 10px rgba(200, 243, 29, 0.3);
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
     transition: box-shadow 0.2s ease;
 }
 
 .btn-primary-glow:hover {
-    box-shadow: 0 0 20px rgba(200, 243, 29, 0.5);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+}
+
+.btn-secondary {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-medium;
 }
 
 /* Alert card with left border */
 .alert-card {
-    border-left: 4px solid #c8f31d;
+    border-left: 4px solid hsl(var(--primary));
+    background-color: hsl(var(--muted));
 }
 
 /* Glass effect */
 .glass {
     backdrop-filter: blur(12px);
-    background: rgba(8, 45, 50, 0.8);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 /* Table row hover */
 .table-row-hover:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(59, 130, 246, 0.05);
 }
 
 /* Input focus styles */
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: #c8f31d;
-    box-shadow: 0 0 0 2px rgba(200, 243, 29, 0.2);
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Form styles */
+.form-label {
+    @apply text-sm font-medium text-gray-700 mb-1.5;
+}
+
+.form-input {
+    @apply bg-white border-gray-300 text-gray-900 placeholder:text-gray-400;
 }
 
 @layer base {

@@ -44,9 +44,9 @@ export const Layout = () => {
 
   const getRoleBadge = (role) => {
     const badges = {
-      admin: { text: "Admin", class: "bg-[#c8f31d] text-[#0d474f]" },
-      backoffice: { text: "Backoffice", class: "bg-blue-500/20 text-blue-400 border border-blue-500/30" },
-      vendedor: { text: "Vendedor", class: "bg-white/10 text-white/70" }
+      admin: { text: "Admin", class: "bg-blue-100 text-blue-700 border border-blue-200" },
+      backoffice: { text: "Backoffice", class: "bg-purple-100 text-purple-700 border border-purple-200" },
+      vendedor: { text: "Vendedor", class: "bg-gray-100 text-gray-700 border border-gray-200" }
     };
     return badges[role] || badges.vendedor;
   };
@@ -54,11 +54,11 @@ export const Layout = () => {
   const badge = getRoleBadge(user?.role);
 
   return (
-    <div className="min-h-screen bg-[#0d474f]">
+    <div className="min-h-screen bg-gray-50">
       {/* Mobile menu button */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-[#082d32] text-white"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-slate-800 text-white shadow-lg"
         data-testid="mobile-menu-btn"
       >
         {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
@@ -68,11 +68,11 @@ export const Layout = () => {
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''} lg:translate-x-0`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-[#c8f31d]/10">
-            <img 
-              src={LOGO_URL} 
-              alt="CRM Leiritrix" 
-              className="h-10 w-auto"
+          <div className="p-6 border-b border-slate-700">
+            <img
+              src={LOGO_URL}
+              alt="CRM Leiritrix"
+              className="h-10 w-auto brightness-0 invert"
               data-testid="logo"
             />
           </div>
@@ -90,17 +90,17 @@ export const Layout = () => {
                   data-testid={`nav-${item.name.toLowerCase().replace(/\s/g, '-')}`}
                 >
                   <item.icon size={20} />
-                  <span className="font-medium">{item.name}</span>
+                  <span>{item.name}</span>
                 </Link>
               );
             })}
           </nav>
 
           {/* User info */}
-          <div className="p-4 border-t border-[#c8f31d]/10">
+          <div className="p-4 border-t border-slate-700">
             <div className="mb-4">
-              <p className="text-white font-medium truncate">{user?.name}</p>
-              <p className="text-white/50 text-sm truncate">{user?.email}</p>
+              <p className="text-white font-semibold truncate text-sm">{user?.name}</p>
+              <p className="text-slate-400 text-xs truncate mt-0.5">{user?.email}</p>
               <span className={`inline-block mt-2 px-2 py-0.5 rounded text-xs font-medium ${badge.class}`}>
                 {badge.text}
               </span>
@@ -108,7 +108,7 @@ export const Layout = () => {
             <Button
               onClick={logout}
               variant="ghost"
-              className="w-full justify-start text-white/70 hover:text-white hover:bg-white/5"
+              className="w-full justify-start text-slate-400 hover:text-white hover:bg-slate-700/50"
               data-testid="logout-btn"
             >
               <LogOut size={18} className="mr-2" />
@@ -123,7 +123,7 @@ export const Layout = () => {
         {/* Top bar */}
         <div className="top-bar px-6 py-4 flex items-center justify-between">
           <div className="lg:hidden w-8"></div>
-          <h1 className="text-xl font-bold text-white font-['Manrope']">
+          <h1 className="text-xl font-bold text-slate-800">
             {navigation.find(item => isActive(item.href))?.name || "CRM Leiritrix"}
           </h1>
           <div className="flex items-center gap-4">
@@ -139,7 +139,7 @@ export const Layout = () => {
 
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-30"
           onClick={() => setSidebarOpen(false)}
         />
