@@ -480,7 +480,7 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-status-select">
                     <SelectValue placeholder="Selecione o estado" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {STATUSES.map((s) => (
                       <SelectItem key={s.value} value={s.value} className="text-white hover:bg-white/10">
                         {s.label}
@@ -496,7 +496,7 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-category-select">
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {CATEGORIES.map((cat) => (
                       <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-white/10">
                         {cat.label}
@@ -515,7 +515,7 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-operator-select">
                     <SelectValue placeholder="Selecione a operadora" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {operators.map((operator) => (
                       <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10">
                         {operator.name}
@@ -541,7 +541,7 @@ export default function SaleDetail({ editMode = false }) {
                         : "Selecione o parceiro"
                     } />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {getFilteredPartners().map((partner) => (
                       <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
                         {partner.name}
@@ -557,7 +557,7 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-sale-type-select">
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {availableSaleTypes.map((type) => (
                       <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
                         {type.label}
@@ -578,7 +578,7 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-loyalty-select">
                     <SelectValue placeholder="Selecione o prazo" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {LOYALTY_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value} className="text-white hover:bg-white/10">
                         {option.label}

@@ -135,7 +135,7 @@ export default function CommissionSettings() {
                 <SelectTrigger className="form-input">
                   <SelectValue placeholder="Selecione uma operadora" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#082d32] border-white/10">
+                <SelectContent className="bg-white border-gray-200">
                   {operators.map((op) => (
                     <SelectItem key={op.id} value={op.id} className="text-white hover:bg-white/10">
                       {op.name}

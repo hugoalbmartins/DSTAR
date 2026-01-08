@@ -207,7 +207,7 @@ export default function Reports() {
               <SelectTrigger className="form-input" data-testid="report-category-filter">
                 <SelectValue placeholder="Categoria" />
               </SelectTrigger>
-              <SelectContent className="bg-[#082d32] border-white/10">
+              <SelectContent className="bg-white border-gray-200">
                 <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todas</SelectItem>
                 {Object.entries(CATEGORY_MAP).map(([key, label]) => (
                   <SelectItem key={key} value={key} className="text-gray-900 hover:bg-white/10">
@@ -222,7 +222,7 @@ export default function Reports() {
               <SelectTrigger className="form-input" data-testid="report-status-filter">
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
-              <SelectContent className="bg-[#082d32] border-white/10">
+              <SelectContent className="bg-white border-gray-200">
                 <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todos</SelectItem>
                 {Object.entries(STATUS_MAP).map(([key, s]) => (
                   <SelectItem key={key} value={key} className="text-gray-900 hover:bg-white/10">
@@ -237,7 +237,7 @@ export default function Reports() {
               <SelectTrigger className="form-input" data-testid="report-partner-filter">
                 <SelectValue placeholder="Parceiro" />
               </SelectTrigger>
-              <SelectContent className="bg-[#082d32] border-white/10">
+              <SelectContent className="bg-white border-gray-200">
                 <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todos</SelectItem>
                 {partners.map((partner) => (
                   <SelectItem key={partner.id} value={partner.id} className="text-gray-900 hover:bg-white/10">
@@ -252,7 +252,7 @@ export default function Reports() {
               <SelectTrigger className="form-input" data-testid="report-seller-filter">
                 <SelectValue placeholder="Vendedor" />
               </SelectTrigger>
-              <SelectContent className="bg-[#082d32] border-white/10">
+              <SelectContent className="bg-white border-gray-200">
                 <SelectItem value="all" className="text-gray-900 hover:bg-white/10">Todos</SelectItem>
                 {sellers.map((seller) => (
                   <SelectItem key={seller.id} value={seller.id} className="text-gray-900 hover:bg-white/10">

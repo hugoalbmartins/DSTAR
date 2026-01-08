@@ -35,6 +35,8 @@
     margin-left: 260px;
     min-height: 100vh;
     background-color: #fafbfc;
+    max-width: calc(90vw - 260px);
+    width: 100%;
 }
 
 /* Top bar */
@@ -258,6 +260,7 @@
 
     .main-content {
         margin-left: 0;
+        max-width: 100%;
     }
 }
 

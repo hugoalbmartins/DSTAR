@@ -770,7 +770,7 @@ export default function SaleForm() {
         </Card>
 
         <Dialog open={showTypeDialog} onOpenChange={setShowTypeDialog}>
-          <DialogContent className="bg-[#082d32] border-white/10 max-w-md">
+          <DialogContent className="bg-white border-gray-200 max-w-md">
             <DialogHeader>
               <DialogTitle className="text-gray-900 font-['Manrope'] text-xl">Cliente Existente</DialogTitle>
               <DialogDescription className="text-gray-900/70">
@@ -825,7 +825,7 @@ export default function SaleForm() {
         </Dialog>
 
         <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
-          <DialogContent className="bg-[#082d32] border-white/10 max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="bg-white border-gray-200 max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-gray-900 font-['Manrope'] text-xl flex items-center gap-2">
                 <MapPin className="text-blue-600" size={24} />
@@ -871,7 +871,7 @@ export default function SaleForm() {
         </Dialog>
 
         <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-          <AlertDialogContent className="bg-[#082d32] border-white/10">
+          <AlertDialogContent className="bg-white border-gray-200">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-gray-900 font-['Manrope']">Atenção</AlertDialogTitle>
               <AlertDialogDescription className="text-gray-900/70">
@@ -1073,7 +1073,7 @@ export default function SaleForm() {
                   <SelectTrigger className="form-input" data-testid="category-select">
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {CATEGORIES.map((cat) => (
                       <SelectItem key={cat.value} value={cat.value} className="text-gray-900 hover:bg-white/10">
                         {cat.label}
@@ -1093,7 +1093,7 @@ export default function SaleForm() {
                     <SelectTrigger className="form-input mt-2" data-testid="energy-type-select">
                       <SelectValue placeholder="Selecione o tipo de energia" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10">
+                    <SelectContent className="bg-white border-gray-200">
                       {ENERGY_TYPES.map((type) => (
                         <SelectItem key={type.value} value={type.value} className="text-gray-900 hover:bg-white/10">
                           {type.label}
@@ -1124,7 +1124,7 @@ export default function SaleForm() {
                         : "Selecione a operadora"
                     } />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {getFilteredOperators().map((operator) => (
                       <SelectItem key={operator.id} value={operator.id} className="text-gray-900 hover:bg-white/10">
                         {operator.name}
@@ -1155,7 +1155,7 @@ export default function SaleForm() {
                         : "Selecione o parceiro"
                     } />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {getFilteredPartners().map((partner) => (
                       <SelectItem key={partner.id} value={partner.id} className="text-gray-900 hover:bg-white/10">
                         {partner.name}
@@ -1184,7 +1184,7 @@ export default function SaleForm() {
                     <SelectTrigger className="form-input" data-testid="sale-type-select">
                       <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10">
+                    <SelectContent className="bg-white border-gray-200">
                       {availableSaleTypes.map((type) => (
                         <SelectItem key={type.value} value={type.value} className="text-gray-900 hover:bg-white/10">
                           {type.label}
@@ -1206,7 +1206,7 @@ export default function SaleForm() {
                     <SelectTrigger className="form-input">
                       <SelectValue placeholder="Selecione a categoria do cliente" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10">
+                    <SelectContent className="bg-white border-gray-200">
                       {clientCategories.map((category) => (
                         <SelectItem key={category.id} value={category.id} className="text-gray-900 hover:bg-white/10">
                           {category.name}
@@ -1231,7 +1231,7 @@ export default function SaleForm() {
                   <SelectTrigger className="form-input" data-testid="client-type-select">
                     <SelectValue placeholder="Selecione o tipo de cliente" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     <SelectItem value="residencial" className="text-gray-900 hover:bg-white/10">
                       Residencial
                     </SelectItem>
@@ -1252,7 +1252,7 @@ export default function SaleForm() {
                     <SelectTrigger className="form-input" data-testid="portfolio-status-select">
                       <SelectValue placeholder="Selecione o encarteiramento" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10">
+                    <SelectContent className="bg-white border-gray-200">
                       <SelectItem value="novo" className="text-gray-900 hover:bg-white/10">
                         Novo
                       </SelectItem>
@@ -1274,7 +1274,7 @@ export default function SaleForm() {
                     <SelectTrigger className="form-input" data-testid="seller-select">
                       <SelectValue placeholder="Selecione o vendedor" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#082d32] border-white/10">
+                    <SelectContent className="bg-white border-gray-200">
                       <SelectItem value="none" className="text-gray-900 hover:bg-white/10">
                         Nenhum
                       </SelectItem>
@@ -1344,7 +1344,7 @@ export default function SaleForm() {
                   <SelectTrigger className="form-input">
                     <SelectValue placeholder="Selecione o prazo" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#082d32] border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {LOYALTY_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value} className="text-gray-900 hover:bg-white/10">
                         {option.label}
@@ -1448,7 +1448,7 @@ export default function SaleForm() {
                         <SelectTrigger className="form-input" data-testid="potencia-select">
                           <SelectValue placeholder="Selecione a potência" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#082d32] border-white/10 max-h-60">
+                        <SelectContent className="bg-white border-gray-200 max-h-60">
                           {POTENCIAS.map((pot) => (
                             <SelectItem key={pot} value={pot} className="text-gray-900 hover:bg-white/10">
                               {pot} {pot !== "Outra" && "kVA"}
@@ -1479,7 +1479,7 @@ export default function SaleForm() {
                         <SelectTrigger className="form-input" data-testid="escalao-select">
                           <SelectValue placeholder="Selecione o escalão" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#082d32] border-white/10">
+                        <SelectContent className="bg-white border-gray-200">
                           {ESCALOES_GAS.map((esc) => (
                             <SelectItem key={esc} value={esc} className="text-gray-900 hover:bg-white/10">
                               {esc}
@@ -1598,7 +1598,7 @@ export default function SaleForm() {
       </form>
 
       <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-        <AlertDialogContent className="bg-[#082d32] border-white/10">
+        <AlertDialogContent className="bg-white border-gray-200">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-gray-900 font-['Manrope']">Atenção</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-900/70">
