@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Loader2, Lock, Mail } from "lucide-react";
 import { authService } from "@/services/authService";
 
-const LOGO_URL = "/leiritrix.png";
+const LOGO_URL = "/cropped-logo_dolphinstar_horizontal-1_(1).jpg";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -58,10 +58,10 @@ export default function Login() {
       <div className="login-card animate-fade-in">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <img 
-            src={LOGO_URL} 
-            alt="CRM Leiritrix" 
-            className="h-12"
+          <img
+            src={LOGO_URL}
+            alt="CRM Leiritrix"
+            className="h-16"
             data-testid="login-logo"
           />
         </div>
