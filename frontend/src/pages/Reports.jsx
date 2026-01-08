@@ -297,13 +297,13 @@ export default function Reports() {
         <>
           {/* Summary */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="metric-card" data-testid="report-total-count">
+            <Card className="metric-card border-l-4 border-l-blue-600" data-testid="report-total-count">
               <CardContent className="p-0">
                 <p className="metric-value">{report.total_sales}</p>
                 <p className="metric-label">Total de Vendas</p>
               </CardContent>
             </Card>
-            <Card className="metric-card" data-testid="report-total-value">
+            <Card className="metric-card border-l-4 border-l-purple-600" data-testid="report-total-value">
               <CardContent className="p-0">
                 <p className="metric-value font-mono">
                   {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(report.total_value)}
@@ -311,7 +311,7 @@ export default function Reports() {
                 <p className="metric-label">Valor Total</p>
               </CardContent>
             </Card>
-            <Card className="metric-card" data-testid="report-total-commission">
+            <Card className="metric-card border-l-4 border-l-green-600" data-testid="report-total-commission">
               <CardContent className="p-0">
                 <p className="metric-value font-mono text-green-400">
                   {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(report.total_commission)}

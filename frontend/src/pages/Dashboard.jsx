@@ -340,7 +340,7 @@ export default function Dashboard() {
 
       {/* Metrics Grid - Main KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
-        <Card className="metric-card w-full" data-testid="metric-mensalidades">
+        <Card className="metric-card w-full border-l-4 border-l-blue-600" data-testid="metric-mensalidades">
           <CardContent className="p-0">
             <div className="flex items-start justify-between">
               <div className="flex-1">
@@ -366,7 +366,7 @@ export default function Dashboard() {
         {user.role === 'admin' ? (
           <>
             {hasSellers && (
-              <Card className="metric-card w-full" data-testid="metric-seller-commissions">
+              <Card className="metric-card w-full border-l-4 border-l-purple-600" data-testid="metric-seller-commissions">
                 <CardContent className="p-0">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -391,7 +391,7 @@ export default function Dashboard() {
             )}
 
             {hasHiddenOperators && (
-              <Card className="metric-card w-full" data-testid="metric-non-visible-commissions">
+              <Card className="metric-card w-full border-l-4 border-l-gray-600" data-testid="metric-non-visible-commissions">
                 <CardContent className="p-0">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -417,7 +417,7 @@ export default function Dashboard() {
           </>
         ) : user.role === 'backoffice' ? (
           <>
-            <Card className="metric-card w-full" data-testid="metric-backoffice-commission">
+            <Card className="metric-card w-full border-l-4 border-l-blue-600" data-testid="metric-backoffice-commission">
               <CardContent className="p-0">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -440,7 +440,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="metric-card w-full" data-testid="metric-partner-commissions">
+            <Card className="metric-card w-full border-l-4 border-l-amber-600" data-testid="metric-partner-commissions">
               <CardContent className="p-0">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -469,7 +469,7 @@ export default function Dashboard() {
       {/* Second row for admin - partner and active commissions */}
       {user.role === 'admin' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-fr">
-          <Card className="metric-card w-full" data-testid="metric-partner-commissions">
+          <Card className="metric-card w-full border-l-4 border-l-yellow-500" data-testid="metric-partner-commissions">
             <CardContent className="p-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -492,7 +492,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="metric-card w-full" data-testid="metric-active-commissions">
+          <Card className="metric-card w-full border-l-4 border-l-green-600" data-testid="metric-active-commissions">
             <CardContent className="p-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -520,7 +520,7 @@ export default function Dashboard() {
       {/* Active commissions for backoffice */}
       {user.role === 'backoffice' && (
         <div className="grid grid-cols-1 gap-4">
-          <Card className="metric-card w-full" data-testid="metric-active-commissions">
+          <Card className="metric-card w-full border-l-4 border-l-green-600" data-testid="metric-active-commissions">
             <CardContent className="p-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -548,9 +548,10 @@ export default function Dashboard() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Year-over-Year Line Chart */}
-        <Card className="card-leiritrix lg:col-span-2" data-testid="monthly-chart">
+        <Card className="card-leiritrix lg:col-span-2 border-l-4 border-l-blue-600" data-testid="monthly-chart">
           <CardHeader className="border-b border-gray-200 pb-4">
-            <CardTitle className="text-gray-800 font-['Manrope'] text-lg">
+            <CardTitle className="text-gray-800 font-['Manrope'] text-lg flex items-center gap-2">
+              <TrendingUp className="text-blue-600" size={20} />
               Evolução de Vendas (Ano Corrente vs Ano Anterior)
             </CardTitle>
           </CardHeader>
@@ -621,9 +622,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Category Pie Chart */}
-        <Card className="card-leiritrix" data-testid="category-chart">
+        <Card className="card-leiritrix border-l-4 border-l-green-600" data-testid="category-chart">
           <CardHeader className="border-b border-gray-200 pb-4">
-            <CardTitle className="text-gray-800 font-['Manrope'] text-lg">
+            <CardTitle className="text-gray-800 font-['Manrope'] text-lg flex items-center gap-2">
+              <ShoppingCart className="text-green-600" size={20} />
               Por Categoria
             </CardTitle>
           </CardHeader>
@@ -692,9 +694,10 @@ export default function Dashboard() {
       {/* Status Summary and Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Summary */}
-        <Card className="card-leiritrix" data-testid="status-summary">
+        <Card className="card-leiritrix border-l-4 border-l-purple-600" data-testid="status-summary">
           <CardHeader className="border-b border-gray-200 pb-4">
-            <CardTitle className="text-gray-800 font-['Manrope'] text-lg">
+            <CardTitle className="text-gray-800 font-['Manrope'] text-lg flex items-center gap-2">
+              <CheckCircle className="text-purple-600" size={20} />
               Por Estado
             </CardTitle>
           </CardHeader>
@@ -716,7 +719,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Loyalty Alerts */}
-        <Card className="card-leiritrix" data-testid="loyalty-alerts">
+        <Card className="card-leiritrix border-l-4 border-l-amber-600" data-testid="loyalty-alerts">
           <CardHeader className="border-b border-gray-200 pb-4 flex flex-row items-center justify-between">
             <CardTitle className="text-gray-800 font-['Manrope'] text-lg flex items-center gap-2">
               <AlertTriangle className="text-amber-600" size={20} />

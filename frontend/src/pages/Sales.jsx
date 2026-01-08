@@ -304,7 +304,7 @@ export default function Sales() {
         </div>
 
         {showFilters && (
-          <Card className="card-leiritrix border-[#c8f31d]/20">
+          <Card className="card-leiritrix border-l-4 border-l-blue-600">
             <CardContent className="p-4 space-y-4">
               {/* Pesquisa por NIF ou Nome */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -463,7 +463,7 @@ export default function Sales() {
       </div>
 
       {/* Sales Table */}
-      <Card className="card-leiritrix overflow-hidden">
+      <Card className="card-leiritrix overflow-hidden border-l-4 border-l-green-600">
         <div className="overflow-x-auto" style={{maxHeight: showFilters ? '500px' : '600px', overflowY: 'auto'}}>
           <table className="data-table" data-testid="sales-table">
             <thead>

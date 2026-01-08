@@ -331,7 +331,7 @@ export default function Partners() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {partners.length > 0 ? (
           partners.map((partner) => (
-            <Card key={partner.id} className="card-leiritrix" data-testid={`partner-card-${partner.id}`}>
+            <Card key={partner.id} className="card-leiritrix border-l-4 border-l-blue-600" data-testid={`partner-card-${partner.id}`}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
