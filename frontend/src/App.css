@@ -1,13 +1,14 @@
 /* Sidebar styles */
 .sidebar {
-    background-color: #1e293b;
-    border-right: 1px solid #e2e8f0;
+    background: linear-gradient(180deg, #0a0e27 0%, #0d1b2a 100%);
+    border-right: 1px solid rgba(0, 180, 216, 0.1);
     min-height: 100vh;
     width: 260px;
     position: fixed;
     left: 0;
     top: 0;
     z-index: 40;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-item {
@@ -19,15 +20,15 @@
 }
 
 .sidebar-item:hover {
-    color: white;
-    background-color: rgba(59, 130, 246, 0.1);
+    color: #ffffff;
+    background-color: rgba(0, 180, 216, 0.15);
 }
 
 .sidebar-item.active {
-    background-color: #3b82f6;
-    color: white;
+    background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
+    color: #ffffff;
     font-weight: 600;
-    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+    box-shadow: 0 4px 14px 0 rgba(0, 180, 216, 0.4);
 }
 
 /* Main content area */
@@ -54,7 +55,7 @@
 .metric-card {
     background-color: white;
     border: 1px solid #e2e8f0;
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid #00b4d8;
     border-radius: 0.75rem;
     padding: 1.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-left-color 0.2s ease;
@@ -63,7 +64,7 @@
 
 .metric-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px 0 rgba(0, 180, 216, 0.15);
 }
 
 .metric-value {
@@ -125,8 +126,8 @@
 }
 
 .form-input:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #00b4d8;
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
     outline: none;
 }
 
@@ -144,7 +145,7 @@
 
 /* Buttons */
 .btn-primary {
-    background-color: #3b82f6;
+    background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
     color: white;
     font-weight: 600;
     font-size: 0.9375rem;
@@ -152,16 +153,19 @@
     border-radius: 0.5rem;
     border: none;
     cursor: pointer;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-    background-color: #2563eb;
+    background: linear-gradient(135deg, #0096c7 0%, #0077b6 100%);
+    box-shadow: 0 4px 14px 0 rgba(0, 180, 216, 0.4);
+    transform: translateY(-1px);
 }
 
 .btn-primary:disabled {
-    background-color: #94a3b8;
+    background: #94a3b8;
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .btn-secondary {
@@ -208,7 +212,7 @@
 /* Alert panel */
 .alert-item {
     background-color: white;
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid #00b4d8;
     padding: 1rem;
     margin-bottom: 0.75rem;
     border-radius: 0 0.5rem 0.5rem 0;
@@ -218,6 +222,7 @@
 
 .alert-item:hover {
     transform: translateX(4px);
+    box-shadow: 0 2px 8px 0 rgba(0, 180, 216, 0.15);
 }
 
 /* Login page */
@@ -226,17 +231,38 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0a0e27 0%, #0d1b2a 50%, #023047 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 180, 216, 0.1) 0%, transparent 70%);
+    animation: pulse 15s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
 }
 
 .login-card {
-    background-color: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 180, 216, 0.2);
+    border-radius: 1rem;
     padding: 2.5rem;
     width: 100%;
     max-width: 420px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 180, 216, 0.1);
+    position: relative;
+    z-index: 1;
 }
 
 /* Chart container */
@@ -270,7 +296,7 @@
     width: 40px;
     height: 40px;
     border: 3px solid #e2e8f0;
-    border-top-color: #3b82f6;
+    border-top-color: #00b4d8;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }

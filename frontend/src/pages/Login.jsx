@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Loader2, Lock, Mail } from "lucide-react";
 import { authService } from "@/services/authService";
 
-const LOGO_URL = "/cropped-logo_dolphinstar_horizontal-1_(1).jpg";
+const LOGO_URL = "/logo_dolphinstar_fundopreto_vertical.jpg";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -60,23 +60,23 @@ export default function Login() {
         <div className="flex justify-center mb-8">
           <img
             src={LOGO_URL}
-            alt="CRM Leiritrix"
-            className="h-16"
+            alt="CRM Dolphin+Star"
+            className="h-32 w-auto"
             data-testid="login-logo"
           />
         </div>
 
-        <h2 className="text-2xl font-bold text-white text-center mb-2 font-['Manrope']">
+        <h2 className="text-2xl font-bold text-slate-800 text-center mb-2 font-['Manrope']">
           Bem-vindo
         </h2>
-        <p className="text-white/50 text-center mb-8 text-sm">
+        <p className="text-slate-600 text-center mb-8 text-sm">
           Aceda à sua conta para continuar
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6" data-testid="login-form">
           <div>
             <Label htmlFor="email" className="form-label flex items-center gap-2">
-              <Mail size={16} className="text-blue-600" />
+              <Mail size={16} style={{ color: '#00b4d8' }} />
               Email
             </Label>
             <Input
@@ -92,7 +92,7 @@ export default function Login() {
 
           <div>
             <Label htmlFor="password" className="form-label flex items-center gap-2">
-              <Lock size={16} className="text-blue-600" />
+              <Lock size={16} style={{ color: '#00b4d8' }} />
               Palavra-passe
             </Label>
             <Input
