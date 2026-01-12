@@ -127,38 +127,93 @@ export default function Reports() {
 
     const worksheetData = [
       [
-        "Cliente", "NIF", "Categoria", "Tipo", "Parceiro",
-        "Valor Contrato", "Comissão", "Estado", "Vendedor", "Data de Venda", "Data de Ativação"
+        "Cliente", "NIF", "Email", "Telefone", "Tipo Cliente", "Encarteiramento",
+        "Morada", "Rua/Endereço", "Código Postal", "Cidade",
+        "Categoria", "Operadora", "Tipo Venda", "Parceiro", "Vendedor",
+        "Valor Contrato", "Comissão Vendedor", "Comissão Parceiro", "Comissão Backoffice", "Comissão Total",
+        "Estado", "Fidelização (meses)", "Data de Venda", "Data de Ativação", "Fim Fidelização",
+        "REQ", "CPE", "Potência (kVA)", "CUI", "Escalão",
+        "Potência Solar (kW)", "Quantidade Painéis", "Notas", "ID", "Data Criação"
       ],
       ...report.sales.map(sale => [
         sale.client_name,
         sale.client_nif || "",
+        sale.client_email || "",
+        sale.client_phone || "",
+        sale.client_type === 'residencial' ? 'Residencial' : sale.client_type === 'empresarial' ? 'Empresarial' : "",
+        sale.portfolio_status === 'novo' ? 'Novo' :
+          sale.portfolio_status === 'cliente_carteira' ? 'Cliente Carteira' :
+          sale.portfolio_status === 'fora_carteira' ? 'Fora Carteira' : "",
+        sale.client_address || "",
+        sale.street_address || "",
+        sale.postal_code || "",
+        sale.city || "",
         CATEGORY_MAP[sale.category] || sale.category,
+        sale.operators?.name || "",
         sale.sale_type || "",
-        sale.partner_name || "",
+        sale.partners?.name || sale.partner_name || "",
+        sale.seller_name || "",
         sale.contract_value || 0,
+        sale.commission_seller || 0,
+        sale.commission_partner || 0,
+        sale.commission_backoffice || 0,
         sale.commission || 0,
         STATUS_MAP[sale.status]?.label || sale.status,
-        sale.seller_name || "",
+        sale.loyalty_months || 0,
         sale.sale_date ? new Date(sale.sale_date).toLocaleDateString('pt-PT') : new Date(sale.created_at).toLocaleDateString('pt-PT'),
-        sale.active_date ? new Date(sale.active_date).toLocaleDateString('pt-PT') : ""
+        sale.active_date ? new Date(sale.active_date).toLocaleDateString('pt-PT') : "",
+        sale.loyalty_end_date ? new Date(sale.loyalty_end_date).toLocaleDateString('pt-PT') : "",
+        sale.req || "",
+        sale.cpe || "",
+        sale.potencia || "",
+        sale.cui || "",
+        sale.escalao || "",
+        sale.solar_power || "",
+        sale.solar_panel_quantity || "",
+        sale.notes || "",
+        sale.id.slice(0, 8),
+        new Date(sale.created_at).toLocaleDateString('pt-PT')
       ])
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
 
     const columnWidths = [
-      { wch: 25 },
-      { wch: 12 },
-      { wch: 18 },
-      { wch: 12 },
-      { wch: 20 },
-      { wch: 15 },
-      { wch: 12 },
-      { wch: 15 },
-      { wch: 20 },
-      { wch: 15 },
-      { wch: 15 }
+      { wch: 25 }, // Cliente
+      { wch: 12 }, // NIF
+      { wch: 25 }, // Email
+      { wch: 15 }, // Telefone
+      { wch: 15 }, // Tipo Cliente
+      { wch: 18 }, // Encarteiramento
+      { wch: 35 }, // Morada
+      { wch: 25 }, // Rua/Endereço
+      { wch: 12 }, // Código Postal
+      { wch: 15 }, // Cidade
+      { wch: 18 }, // Categoria
+      { wch: 20 }, // Operadora
+      { wch: 18 }, // Tipo Venda
+      { wch: 20 }, // Parceiro
+      { wch: 20 }, // Vendedor
+      { wch: 15 }, // Valor Contrato
+      { wch: 15 }, // Comissão Vendedor
+      { wch: 15 }, // Comissão Parceiro
+      { wch: 18 }, // Comissão Backoffice
+      { wch: 15 }, // Comissão Total
+      { wch: 15 }, // Estado
+      { wch: 18 }, // Fidelização
+      { wch: 15 }, // Data de Venda
+      { wch: 15 }, // Data de Ativação
+      { wch: 15 }, // Fim Fidelização
+      { wch: 15 }, // REQ
+      { wch: 15 }, // CPE
+      { wch: 15 }, // Potência
+      { wch: 15 }, // CUI
+      { wch: 12 }, // Escalão
+      { wch: 18 }, // Potência Solar
+      { wch: 18 }, // Quantidade Painéis
+      { wch: 30 }, // Notas
+      { wch: 10 }, // ID
+      { wch: 15 }  // Data Criação
     ];
     worksheet['!cols'] = columnWidths;
 

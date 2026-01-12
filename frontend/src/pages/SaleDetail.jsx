@@ -139,6 +139,8 @@ export default function SaleDetail({ editMode = false }) {
   const [allowCommissionOverride, setAllowCommissionOverride] = useState(false);
   const [commissionType, setCommissionType] = useState("manual");
   const [isEditing, setIsEditing] = useState(editMode);
+  const [editClientType, setEditClientType] = useState("");
+  const [editPortfolioStatus, setEditPortfolioStatus] = useState("");
 
   const fetchSale = useCallback(async () => {
     try {
@@ -166,6 +168,8 @@ export default function SaleDetail({ editMode = false }) {
       setEditSaleType(saleData.sale_type || "");
       setEditPartnerId(saleData.partner_id || "");
       setEditOperatorId(saleData.operator_id || "");
+      setEditClientType(saleData.client_type || "");
+      setEditPortfolioStatus(saleData.portfolio_status || "");
 
       const loyaltyMonths = saleData.loyalty_months?.toString() || "0";
       if (["0", "12", "24", "36"].includes(loyaltyMonths)) {
@@ -311,7 +315,9 @@ export default function SaleDetail({ editMode = false }) {
         cui: editCui || null,
         escalao: editEscalao || null,
         solar_power: editSolarPower ? parseFloat(editSolarPower) : null,
-        solar_panel_quantity: editSolarPanelQuantity ? parseInt(editSolarPanelQuantity) : null
+        solar_panel_quantity: editSolarPanelQuantity ? parseInt(editSolarPanelQuantity) : null,
+        client_type: editClientType || null,
+        portfolio_status: editClientType === 'empresarial' ? editPortfolioStatus : null
       };
 
       if (isAdminOrBackoffice && (user.role === 'admin' || sale?.operators?.commission_visible_to_bo)) {
@@ -752,6 +758,45 @@ export default function SaleDetail({ editMode = false }) {
               </div>
 
               <div>
+                <Label className="form-label">Tipo de Cliente</Label>
+                <Select value={editClientType} onValueChange={setEditClientType}>
+                  <SelectTrigger className="form-input">
+                    <SelectValue placeholder="Selecione o tipo" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1E293B] border-white/10">
+                    <SelectItem value="residencial" className="text-white hover:bg-white/10">
+                      Residencial
+                    </SelectItem>
+                    <SelectItem value="empresarial" className="text-white hover:bg-white/10">
+                      Empresarial
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {editClientType === 'empresarial' && (
+                <div>
+                  <Label className="form-label">Encarteiramento</Label>
+                  <Select value={editPortfolioStatus} onValueChange={setEditPortfolioStatus}>
+                    <SelectTrigger className="form-input">
+                      <SelectValue placeholder="Selecione o encarteiramento" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#1E293B] border-white/10">
+                      <SelectItem value="novo" className="text-white hover:bg-white/10">
+                        Novo
+                      </SelectItem>
+                      <SelectItem value="cliente_carteira" className="text-white hover:bg-white/10">
+                        Cliente Carteira
+                      </SelectItem>
+                      <SelectItem value="fora_carteira" className="text-white hover:bg-white/10">
+                        Fora Carteira
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <div>
                 <Label className="form-label">Valor do Contrato (€)</Label>
                 <Input
                   type="number"
@@ -924,6 +969,23 @@ export default function SaleDetail({ editMode = false }) {
                 <p className="text-white/60 text-sm mb-1">NIF</p>
                 <p className="text-white font-mono">{sale.client_nif || "-"}</p>
               </div>
+              <div>
+                <p className="text-white/60 text-sm mb-1">Tipo de Cliente</p>
+                <p className="text-white">
+                  {sale.client_type === 'residencial' ? 'Residencial' :
+                   sale.client_type === 'empresarial' ? 'Empresarial' : '-'}
+                </p>
+              </div>
+              {sale.client_type === 'empresarial' && (
+                <div>
+                  <p className="text-white/60 text-sm mb-1">Encarteiramento</p>
+                  <p className="text-white">
+                    {sale.portfolio_status === 'novo' ? 'Novo' :
+                     sale.portfolio_status === 'cliente_carteira' ? 'Cliente Carteira' :
+                     sale.portfolio_status === 'fora_carteira' ? 'Fora Carteira' : '-'}
+                  </p>
+                </div>
+              )}
               <div>
                 <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
                   <Mail size={14} /> Email
