@@ -97,8 +97,7 @@ export default function Users() {
     }
   };
 
-  const openCreateModal = () => {
-    setEditingUser(null);
+  const resetForm = () => {
     setFormData({
       name: "",
       email: "",
@@ -110,6 +109,11 @@ export default function Users() {
     });
     setShowPassword(false);
     setShowConfirmPassword(false);
+  };
+
+  const openCreateModal = () => {
+    setEditingUser(null);
+    resetForm();
     setModalOpen(true);
   };
 
@@ -178,11 +182,20 @@ export default function Users() {
       }
 
       setModalOpen(false);
+      resetForm();
     } catch (error) {
       const message = error.message || "Erro ao guardar utilizador";
       toast.error(message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleModalClose = (open) => {
+    setModalOpen(open);
+    if (!open) {
+      resetForm();
+      setEditingUser(null);
     }
   };
 
@@ -322,7 +335,7 @@ export default function Users() {
       </div>
 
       {/* Create/Edit User Modal */}
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+      <Dialog open={modalOpen} onOpenChange={handleModalClose}>
         <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
           <DialogHeader>
             <DialogTitle className="text-white font-['Manrope']">
@@ -337,6 +350,7 @@ export default function Users() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="form-input mt-1"
                 placeholder="Nome completo"
+                autoComplete="off"
                 data-testid="user-name-input"
               />
             </div>
@@ -348,6 +362,7 @@ export default function Users() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="form-input mt-1"
                 placeholder="email@leiritrix.pt"
+                autoComplete="off"
                 data-testid="user-email-input"
               />
             </div>
@@ -362,6 +377,7 @@ export default function Users() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="form-input pr-24"
                   placeholder={editingUser ? "Deixe vazio para manter a atual" : "Digite ou gere uma password"}
+                  autoComplete="new-password"
                   data-testid="user-password-input"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
@@ -398,6 +414,7 @@ export default function Users() {
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   className="form-input pr-10"
                   placeholder={editingUser ? "Deixe vazio para manter a atual" : "Confirme a password"}
+                  autoComplete="new-password"
                   data-testid="user-confirm-password-input"
                 />
                 <button
@@ -469,7 +486,7 @@ export default function Users() {
           <DialogFooter>
             <Button
               variant="ghost"
-              onClick={() => setModalOpen(false)}
+              onClick={() => handleModalClose(false)}
               className="btn-secondary"
             >
               Cancelar
