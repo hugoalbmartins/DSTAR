@@ -69,7 +69,7 @@ export const Layout = () => {
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''} lg:translate-x-0`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-slate-700/50 flex items-center justify-center">
+          <div className="p-6 border-b border-slate-700/50 flex items-center justify-center bg-gradient-to-b from-slate-900/50 to-transparent">
             <img
               src={LOGO_URL}
               alt="CRM Dolphin+Star"
