@@ -11,6 +11,10 @@ export const salesService = {
           id,
           name,
           commission_visible_to_bo
+        ),
+        partners:partner_id (
+          id,
+          name
         )
       `);
 

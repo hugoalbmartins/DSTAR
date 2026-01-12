@@ -388,21 +388,21 @@ export default function SaleDetail({ editMode = false }) {
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="text-slate-600 hover:text-slate-800"
+            className="text-white/60 hover:text-white"
             data-testid="back-btn"
           >
             <ArrowLeft size={20} />
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-slate-800 font-['Manrope']">
+              <h1 className="text-2xl font-bold text-white font-['Manrope']">
                 {sale.client_name}
               </h1>
               <Badge className={`${status?.color} border`}>
                 {status?.label}
               </Badge>
             </div>
-            <p className="text-slate-600 text-sm mt-1">
+            <p className="text-white/60 text-sm mt-1">
               ID: <span className="font-mono">{sale.id.slice(0, 8)}</span>
             </p>
           </div>
@@ -445,8 +445,8 @@ export default function SaleDetail({ editMode = false }) {
             <div className="flex items-center gap-4">
               <AlertTriangle className="text-cyan-600" size={24} />
               <div>
-                <p className="text-slate-800 font-medium">Fidelização a terminar</p>
-                <p className="text-slate-700 text-sm">
+                <p className="text-white font-medium">Fidelização a terminar</p>
+                <p className="text-white/80 text-sm">
                   Este contrato termina em <span className="text-cyan-600 font-bold">{daysUntilEnd} dias</span>.
                   Inicie a negociação para renovação.
                 </p>
@@ -466,8 +466,8 @@ export default function SaleDetail({ editMode = false }) {
       {/* Edit Form (if editing) */}
       {isEditing && (
         <Card className="card-leiritrix border-2 border-cyan-200">
-          <CardHeader className="border-b border-slate-200 pb-4">
-            <CardTitle className="text-slate-800 font-['Manrope'] text-lg flex items-center gap-2">
+          <CardHeader className="border-b border-white/10 pb-4">
+            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
               <Edit2 size={20} className="text-cyan-600" />
               Editar Venda
             </CardTitle>
@@ -480,9 +480,9 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-status-select">
                     <SelectValue placeholder="Selecione o estado" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200">
+                  <SelectContent className="bg-[#1E293B] border-white/10">
                     {STATUSES.map((s) => (
-                      <SelectItem key={s.value} value={s.value} className="text-slate-800 hover:bg-cyan-50">
+                      <SelectItem key={s.value} value={s.value} className="text-white hover:bg-white/10">
                         {s.label}
                       </SelectItem>
                     ))}
@@ -496,9 +496,9 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-category-select">
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200">
+                  <SelectContent className="bg-[#1E293B] border-white/10">
                     {CATEGORIES.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-slate-800 hover:bg-cyan-50">
+                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-white/10">
                         {cat.label}
                       </SelectItem>
                     ))}
@@ -515,9 +515,9 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-operator-select">
                     <SelectValue placeholder="Selecione a operadora" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200">
+                  <SelectContent className="bg-[#1E293B] border-white/10">
                     {operators.map((operator) => (
-                      <SelectItem key={operator.id} value={operator.id} className="text-slate-800 hover:bg-cyan-50">
+                      <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10">
                         {operator.name}
                       </SelectItem>
                     ))}
@@ -541,9 +541,9 @@ export default function SaleDetail({ editMode = false }) {
                         : "Selecione o parceiro"
                     } />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200">
+                  <SelectContent className="bg-[#1E293B] border-white/10">
                     {getFilteredPartners().map((partner) => (
-                      <SelectItem key={partner.id} value={partner.id} className="text-slate-800 hover:bg-cyan-50">
+                      <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
                         {partner.name}
                       </SelectItem>
                     ))}
@@ -557,16 +557,16 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-sale-type-select">
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200">
+                  <SelectContent className="bg-[#1E293B] border-white/10">
                     {availableSaleTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value} className="text-slate-800 hover:bg-cyan-50">
+                      <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
                         {type.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 {availableSaleTypes.length < SALE_TYPES.length && (
-                  <p className="text-slate-500 text-xs mt-1">
+                  <p className="text-white/50 text-xs mt-1">
                     Apenas tipos permitidos para esta operadora
                   </p>
                 )}
@@ -578,9 +578,9 @@ export default function SaleDetail({ editMode = false }) {
                   <SelectTrigger className="form-input" data-testid="edit-loyalty-select">
                     <SelectValue placeholder="Selecione o prazo" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200">
+                  <SelectContent className="bg-[#1E293B] border-white/10">
                     {LOYALTY_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value} className="text-slate-800 hover:bg-cyan-50">
+                      <SelectItem key={option.value} value={option.value} className="text-white hover:bg-white/10">
                         {option.label}
                       </SelectItem>
                     ))}
@@ -611,7 +611,7 @@ export default function SaleDetail({ editMode = false }) {
                   maxDate={new Date()}
                   data-testid="edit-sale-date"
                 />
-                <p className="text-slate-500 text-xs mt-1">
+                <p className="text-white/50 text-xs mt-1">
                   Data usada para contabilização mensal
                 </p>
               </div>
@@ -651,7 +651,7 @@ export default function SaleDetail({ editMode = false }) {
                           checked={allowCommissionOverride}
                           onCheckedChange={setAllowCommissionOverride}
                         />
-                        <Label htmlFor="allow-commission-override" className="text-slate-700 cursor-pointer text-sm">
+                        <Label htmlFor="allow-commission-override" className="text-white/80 cursor-pointer text-sm">
                           Corrigir/alterar comissão (apenas administradores)
                         </Label>
                       </div>
@@ -663,7 +663,7 @@ export default function SaleDetail({ editMode = false }) {
                         <Euro size={14} className="text-cyan-600" />
                         Comissão Backoffice (€)
                         {commissionType === 'automatic' && !allowCommissionOverride && (
-                          <span className="text-xs text-slate-500">(automático)</span>
+                          <span className="text-xs text-white/50">(automático)</span>
                         )}
                       </Label>
                       <Input
@@ -687,7 +687,7 @@ export default function SaleDetail({ editMode = false }) {
                             <Euro size={14} className="text-cyan-600" />
                             Comissão Vendedor (€)
                             {commissionType === 'automatic' && !allowCommissionOverride && (
-                              <span className="text-xs text-slate-500">(automático)</span>
+                              <span className="text-xs text-white/50">(automático)</span>
                             )}
                           </Label>
                           <Input
@@ -709,7 +709,7 @@ export default function SaleDetail({ editMode = false }) {
                           <Euro size={14} className="text-cyan-600" />
                           Comissão a receber (€)
                           {commissionType === 'automatic' && !allowCommissionOverride && (
-                            <span className="text-xs text-slate-500">(automático)</span>
+                            <span className="text-xs text-white/50">(automático)</span>
                           )}
                         </Label>
                         <Input
@@ -731,8 +731,8 @@ export default function SaleDetail({ editMode = false }) {
               )}
               {user.role === 'backoffice' && sale?.operators && !sale.operators.commission_visible_to_bo && (
                 <div className="md:col-span-2">
-                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                    <p className="text-slate-700 text-sm flex items-center gap-2">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <p className="text-white/80 text-sm flex items-center gap-2">
                       <AlertTriangle size={16} />
                       Operadora sem comissão a contabilizar
                     </p>
@@ -908,8 +908,8 @@ export default function SaleDetail({ editMode = false }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Client Info */}
         <Card className="card-leiritrix lg:col-span-2">
-          <CardHeader className="border-b border-slate-200 pb-4">
-            <CardTitle className="text-slate-800 font-['Manrope'] text-lg flex items-center gap-2">
+          <CardHeader className="border-b border-white/10 pb-4">
+            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
               <User size={20} className="text-cyan-600" />
               Dados do Cliente
             </CardTitle>
@@ -917,30 +917,30 @@ export default function SaleDetail({ editMode = false }) {
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <p className="text-slate-600 text-sm mb-1">Nome</p>
-                <p className="text-slate-800 font-medium">{sale.client_name}</p>
+                <p className="text-white/60 text-sm mb-1">Nome</p>
+                <p className="text-white font-medium">{sale.client_name}</p>
               </div>
               <div>
-                <p className="text-slate-600 text-sm mb-1">NIF</p>
-                <p className="text-slate-800 font-mono">{sale.client_nif || "-"}</p>
+                <p className="text-white/60 text-sm mb-1">NIF</p>
+                <p className="text-white font-mono">{sale.client_nif || "-"}</p>
               </div>
               <div>
-                <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
+                <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
                   <Mail size={14} /> Email
                 </p>
-                <p className="text-slate-800">{sale.client_email || "-"}</p>
+                <p className="text-white">{sale.client_email || "-"}</p>
               </div>
               <div>
-                <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
+                <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
                   <Phone size={14} /> Telefone
                 </p>
-                <p className="text-slate-800">{sale.client_phone || "-"}</p>
+                <p className="text-white">{sale.client_phone || "-"}</p>
               </div>
               <div className="md:col-span-2">
-                <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
+                <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
                   <MapPin size={14} /> Morada
                 </p>
-                <p className="text-slate-800">{sale.client_address || "-"}</p>
+                <p className="text-white">{sale.client_address || "-"}</p>
               </div>
             </div>
           </CardContent>
@@ -948,8 +948,8 @@ export default function SaleDetail({ editMode = false }) {
 
         {/* Values & Commission */}
         <Card className="card-leiritrix">
-          <CardHeader className="border-b border-slate-200 pb-4">
-            <CardTitle className="text-slate-800 font-['Manrope'] text-lg flex items-center gap-2">
+          <CardHeader className="border-b border-white/10 pb-4">
+            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
               <Euro size={20} className="text-cyan-600" />
               Valores
             </CardTitle>
@@ -958,7 +958,7 @@ export default function SaleDetail({ editMode = false }) {
             {/* Mensalidade - apenas para Telecomunicações */}
             {isTelecom && (
               <div>
-                <p className="text-slate-600 text-sm mb-1">Mensalidade Contratada</p>
+                <p className="text-white/60 text-sm mb-1">Mensalidade Contratada</p>
                 <p className="text-2xl font-bold text-cyan-600 font-mono">
                   {formatCurrency(sale.contract_value)}
                 </p>
@@ -970,39 +970,39 @@ export default function SaleDetail({ editMode = false }) {
               <>
                 {sale.is_backoffice ? (
                   <div>
-                    <p className="text-slate-600 text-sm mb-1">Comissão Backoffice</p>
+                    <p className="text-white/60 text-sm mb-1">Comissão Backoffice</p>
                     {sale.commission_backoffice !== null && sale.commission_backoffice !== undefined ? (
                       <p className="text-2xl font-bold text-cyan-600 font-mono">
                         {formatCurrency(sale.commission_backoffice)}
                       </p>
                     ) : (
-                      <p className="text-slate-400">Não definida</p>
+                      <p className="text-white/40">Não definida</p>
                     )}
                   </div>
                 ) : (
                   <>
                     <div>
-                      <p className="text-slate-600 text-sm mb-1">Comissão Vendedor</p>
+                      <p className="text-white/60 text-sm mb-1">Comissão Vendedor</p>
                       {sale.commission_seller !== null && sale.commission_seller !== undefined ? (
                         <p className="text-2xl font-bold text-green-600 font-mono">
                           {formatCurrency(sale.commission_seller)}
                         </p>
                       ) : (
-                        <p className="text-slate-400">Não definida</p>
+                        <p className="text-white/40">Não definida</p>
                       )}
                     </div>
                     <div>
-                      <p className="text-slate-600 text-sm mb-1">Comissão a receber</p>
+                      <p className="text-white/60 text-sm mb-1">Comissão a receber</p>
                       {sale.commission_partner !== null && sale.commission_partner !== undefined ? (
                         <p className="text-2xl font-bold text-green-600 font-mono">
                           {formatCurrency(sale.commission_partner)}
                         </p>
                       ) : (
-                        <p className="text-slate-400">Não definida</p>
+                        <p className="text-white/40">Não definida</p>
                       )}
                     </div>
-                    <div className="pt-2 border-t border-slate-200">
-                      <p className="text-slate-600 text-sm mb-1">Comissão Total</p>
+                    <div className="pt-2 border-t border-white/10">
+                      <p className="text-white/60 text-sm mb-1">Comissão Total</p>
                       <p className="text-xl font-bold text-cyan-600 font-mono">
                         {formatCurrency((sale.commission_seller || 0) + (sale.commission_partner || 0))}
                       </p>
@@ -1011,8 +1011,8 @@ export default function SaleDetail({ editMode = false }) {
                 )}
               </>
             ) : (
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <p className="text-slate-700 text-sm flex items-center gap-2">
+              <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                <p className="text-white/80 text-sm flex items-center gap-2">
                   <AlertTriangle size={16} />
                   Operadora sem comissão a contabilizar
                 </p>
@@ -1024,8 +1024,8 @@ export default function SaleDetail({ editMode = false }) {
 
       {/* Contract Details */}
       <Card className="card-leiritrix">
-        <CardHeader className="border-b border-slate-200 pb-4">
-          <CardTitle className="text-slate-800 font-['Manrope'] text-lg flex items-center gap-2">
+        <CardHeader className="border-b border-white/10 pb-4">
+          <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
             <FileText size={20} className="text-cyan-600" />
             Detalhes do Contrato
           </CardTitle>
@@ -1033,55 +1033,55 @@ export default function SaleDetail({ editMode = false }) {
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
-              <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
+              <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
                 <CalendarIcon size={14} /> Data de Venda
               </p>
-              <p className="text-slate-800">
+              <p className="text-white">
                 {sale.sale_date ? new Date(sale.sale_date).toLocaleDateString('pt-PT') : "-"}
               </p>
             </div>
             <div>
-              <p className="text-slate-600 text-sm mb-1">Categoria</p>
+              <p className="text-white/60 text-sm mb-1">Categoria</p>
               <div className="flex items-center gap-2">
                 <CategoryIcon size={18} className="text-cyan-600" />
-                <p className="text-slate-800">{category?.label}</p>
+                <p className="text-white">{category?.label}</p>
               </div>
             </div>
             <div>
-              <p className="text-slate-600 text-sm mb-1">Tipo</p>
-              <p className="text-slate-800">{TYPE_MAP[sale.sale_type] || "-"}</p>
+              <p className="text-white/60 text-sm mb-1">Tipo</p>
+              <p className="text-white">{TYPE_MAP[sale.sale_type] || "-"}</p>
             </div>
             <div>
-              <p className="text-slate-600 text-sm mb-1">Parceiro</p>
-              <p className="text-slate-800">{sale.partner_name}</p>
+              <p className="text-white/60 text-sm mb-1">Parceiro</p>
+              <p className="text-white">{sale.partner_name}</p>
             </div>
             <div>
-              <p className="text-slate-600 text-sm mb-1">Vendedor</p>
-              <p className="text-slate-800">{sale.seller_name}</p>
+              <p className="text-white/60 text-sm mb-1">Vendedor</p>
+              <p className="text-white">{sale.seller_name}</p>
             </div>
             <div>
-              <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
+              <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
                 <Clock size={14} /> Prazo Fidelização
               </p>
-              <p className="text-slate-800">{sale.loyalty_months ? `${sale.loyalty_months} meses` : "-"}</p>
+              <p className="text-white">{sale.loyalty_months ? `${sale.loyalty_months} meses` : "-"}</p>
             </div>
             <div>
-              <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
+              <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
                 <CalendarIcon size={14} /> Data de Ativação
               </p>
-              <p className="text-slate-800">
+              <p className="text-white">
                 {sale.active_date ? new Date(sale.active_date).toLocaleDateString('pt-PT') : "-"}
               </p>
             </div>
             <div>
-              <p className="text-slate-600 text-sm mb-1">Fim da Fidelização</p>
-              <p className="text-slate-800">
+              <p className="text-white/60 text-sm mb-1">Fim da Fidelização</p>
+              <p className="text-white">
                 {sale.loyalty_end_date ? new Date(sale.loyalty_end_date).toLocaleDateString('pt-PT') : "-"}
               </p>
             </div>
             <div>
-              <p className="text-slate-600 text-sm mb-1">Data de Criação</p>
-              <p className="text-slate-800">
+              <p className="text-white/60 text-sm mb-1">Data de Criação</p>
+              <p className="text-white">
                 {new Date(sale.created_at).toLocaleDateString('pt-PT')}
               </p>
             </div>
@@ -1089,45 +1089,45 @@ export default function SaleDetail({ editMode = false }) {
             {/* Telecom REQ */}
             {isTelecom && sale.req && (
               <div>
-                <p className="text-slate-600 text-sm mb-1">REQ</p>
-                <p className="text-slate-800 font-mono">{sale.req}</p>
+                <p className="text-white/60 text-sm mb-1">REQ</p>
+                <p className="text-white font-mono">{sale.req}</p>
               </div>
             )}
           </div>
 
           {/* Energy Details */}
           {isEnergy && sale.energy_type && (
-            <div className="mt-6 pt-6 border-t border-slate-200">
-              <h4 className="text-slate-800 font-medium mb-4 flex items-center gap-2">
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <h4 className="text-white font-medium mb-4 flex items-center gap-2">
                 <Zap size={16} className="text-cyan-600" />
                 Dados de Energia
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div>
-                  <p className="text-slate-600 text-sm mb-1">Tipo de Energia</p>
-                  <p className="text-slate-800">{ENERGY_TYPE_MAP[sale.energy_type]}</p>
+                  <p className="text-white/60 text-sm mb-1">Tipo de Energia</p>
+                  <p className="text-white">{ENERGY_TYPE_MAP[sale.energy_type]}</p>
                 </div>
                 {(sale.energy_type === "eletricidade" || sale.energy_type === "dual") && (
                   <>
                     <div>
-                      <p className="text-slate-600 text-sm mb-1">CPE</p>
-                      <p className="text-slate-800 font-mono">{sale.cpe || "-"}</p>
+                      <p className="text-white/60 text-sm mb-1">CPE</p>
+                      <p className="text-white font-mono">{sale.cpe || "-"}</p>
                     </div>
                     <div>
-                      <p className="text-slate-600 text-sm mb-1">Potência</p>
-                      <p className="text-slate-800">{sale.potencia ? `${sale.potencia} kVA` : "-"}</p>
+                      <p className="text-white/60 text-sm mb-1">Potência</p>
+                      <p className="text-white">{sale.potencia ? `${sale.potencia} kVA` : "-"}</p>
                     </div>
                   </>
                 )}
                 {(sale.energy_type === "gas" || sale.energy_type === "dual") && (
                   <>
                     <div>
-                      <p className="text-slate-600 text-sm mb-1">CUI</p>
-                      <p className="text-slate-800 font-mono">{sale.cui || "-"}</p>
+                      <p className="text-white/60 text-sm mb-1">CUI</p>
+                      <p className="text-white font-mono">{sale.cui || "-"}</p>
                     </div>
                     <div>
-                      <p className="text-slate-600 text-sm mb-1">Escalão</p>
-                      <p className="text-slate-800">{sale.escalao || "-"}</p>
+                      <p className="text-white/60 text-sm mb-1">Escalão</p>
+                      <p className="text-white">{sale.escalao || "-"}</p>
                     </div>
                   </>
                 )}
@@ -1136,9 +1136,9 @@ export default function SaleDetail({ editMode = false }) {
           )}
 
           {sale.notes && (
-            <div className="mt-6 pt-6 border-t border-slate-200">
-              <p className="text-slate-600 text-sm mb-2">Notas</p>
-              <p className="text-slate-700 whitespace-pre-wrap">{sale.notes}</p>
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <p className="text-white/60 text-sm mb-2">Notas</p>
+              <p className="text-white/80 whitespace-pre-wrap">{sale.notes}</p>
             </div>
           )}
         </CardContent>

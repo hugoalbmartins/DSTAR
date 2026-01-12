@@ -565,7 +565,7 @@ export default function Sales() {
                           </span>
                         ) : "-"}
                       </td>
-                      <td className="text-white/80">{sale.partner_name}</td>
+                      <td className="text-white/80">{sale.partners?.name || sale.partner_name || "-"}</td>
                       <td className="font-mono text-[#0BA5D9]">
                         {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
                       </td>
