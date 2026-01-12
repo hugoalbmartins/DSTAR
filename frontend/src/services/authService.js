@@ -36,41 +36,37 @@ export const authService = {
   },
 
   async signUp(email, password, userData) {
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const { data: { session } } = await supabase.auth.getSession();
 
-    if (authError) throw authError;
-
-    if (authData.user) {
-      const insertData = {
-        id: authData.user.id,
-        email: userData.email,
-        name: userData.name,
-        role: userData.role || 'vendedor',
-        active: true,
-        must_change_password: userData.must_change_password || false,
-      };
-
-      if (userData.commission_percentage !== undefined) {
-        insertData.commission_percentage = userData.commission_percentage;
-      }
-      if (userData.commission_threshold !== undefined) {
-        insertData.commission_threshold = userData.commission_threshold;
-      }
-
-      const { data: profileData, error: profileError } = await supabase
-        .from('users')
-        .insert([insertData])
-        .select()
-        .single();
-
-      if (profileError) throw profileError;
-      return { user: profileData, session: authData.session };
+    if (!session) {
+      throw new Error('Não autenticado');
     }
 
-    throw new Error('Failed to create user');
+    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-user`;
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        name: userData.name,
+        role: userData.role || 'vendedor',
+        commission_percentage: userData.commission_percentage,
+        commission_threshold: userData.commission_threshold,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Erro ao criar utilizador');
+    }
+
+    return { user: result.user };
   },
 
   async signOut() {

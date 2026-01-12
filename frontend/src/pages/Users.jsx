@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/App";
 import { usersService } from "@/services/usersService";
 import { authService } from "@/services/authService";
-import { supabase } from "@/lib/supabase";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -161,8 +160,6 @@ export default function Users() {
         setUsers(users.map(u => u.id === editingUser.id ? updated : u));
         toast.success("Utilizador atualizado com sucesso");
       } else {
-        const { data: { session: adminSession } } = await supabase.auth.getSession();
-
         const { user: newUser } = await authService.signUp(
           formData.email,
           formData.password,
@@ -175,15 +172,6 @@ export default function Users() {
             commission_threshold: formData.role === 'backoffice' ? formData.commission_threshold : 0
           }
         );
-
-        await supabase.auth.signOut();
-
-        if (adminSession) {
-          await supabase.auth.setSession({
-            access_token: adminSession.access_token,
-            refresh_token: adminSession.refresh_token
-          });
-        }
 
         await fetchUsers();
         toast.success(`Utilizador ${formData.name} criado com sucesso`);
