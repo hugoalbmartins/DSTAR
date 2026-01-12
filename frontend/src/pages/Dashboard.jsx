@@ -245,7 +245,15 @@ export default function Dashboard() {
         );
 
         return !hasRefidRenewal;
-      });
+      }).map(sale => {
+        const endDate = new Date(sale.loyalty_end_date);
+        const now = new Date();
+        const daysUntilEnd = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+        return {
+          ...sale,
+          days_until_end: daysUntilEnd
+        };
+      }).sort((a, b) => a.days_until_end - b.days_until_end);
 
       setMetrics({
         sales_this_month: currentMonthSales.length,
@@ -743,7 +751,7 @@ export default function Dashboard() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-3">
-                          <CategoryIcon className="text-blue-600 mt-0.5" size={18} />
+                          <CategoryIcon className="text-[#0BA5D9] mt-0.5" size={18} />
                           <div>
                             <p className="text-white font-medium">{alert.client_name}</p>
                             <p className="text-white/50 text-sm">{alert.partner_name}</p>
@@ -772,7 +780,7 @@ export default function Dashboard() {
 
             {alerts.length > 5 && (
               <Link to="/sales?filter=alerts">
-                <Button variant="ghost" className="w-full mt-4 text-blue-600 hover:bg-white/5">
+                <Button variant="ghost" className="w-full mt-4 text-[#0BA5D9] hover:bg-white/5">
                   Ver todos ({alerts.length})
                   <ArrowRight size={16} className="ml-2" />
                 </Button>

@@ -471,65 +471,65 @@ export default function Sales() {
                 <th>
                   <button
                     onClick={() => handleSort("client_name")}
-                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Cliente
-                    <ArrowUpDown size={14} className={sortColumn === "client_name" ? "text-blue-600" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "client_name" ? "text-[#0BA5D9]" : "text-white/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("category")}
-                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Categoria
-                    <ArrowUpDown size={14} className={sortColumn === "category" ? "text-blue-600" : "text-gray-900/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "category" ? "text-[#0BA5D9]" : "text-white/40"} />
                   </button>
                 </th>
                 <th>Tipo</th>
                 <th>
                   <button
                     onClick={() => handleSort("partner_name")}
-                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Parceiro
-                    <ArrowUpDown size={14} className={sortColumn === "partner_name" ? "text-blue-600" : "text-gray-900/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "partner_name" ? "text-[#0BA5D9]" : "text-white/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("contract_value")}
-                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Valor
-                    <ArrowUpDown size={14} className={sortColumn === "contract_value" ? "text-blue-600" : "text-gray-900/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "contract_value" ? "text-[#0BA5D9]" : "text-white/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("commission")}
-                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Comissão
-                    <ArrowUpDown size={14} className={sortColumn === "commission" ? "text-blue-600" : "text-gray-900/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "commission" ? "text-[#0BA5D9]" : "text-white/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("status")}
-                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Estado
-                    <ArrowUpDown size={14} className={sortColumn === "status" ? "text-blue-600" : "text-gray-900/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "status" ? "text-[#0BA5D9]" : "text-white/40"} />
                   </button>
                 </th>
                 <th>
                   <button
                     onClick={() => handleSort("sale_date")}
-                    className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Data de Venda
-                    <ArrowUpDown size={14} className={sortColumn === "sale_date" ? "text-blue-600" : "text-gray-900/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "sale_date" ? "text-[#0BA5D9]" : "text-white/40"} />
                   </button>
                 </th>
                 <th className="text-right">Ações</th>
@@ -548,25 +548,25 @@ export default function Sales() {
                         <div>
                           <p className="font-medium">{sale.client_name}</p>
                           {sale.client_nif && (
-                            <p className="text-gray-600 text-sm font-mono">{sale.client_nif}</p>
+                            <p className="text-white/60 text-sm font-mono">{sale.client_nif}</p>
                           )}
                         </div>
                       </td>
                       <td>
                         <div className="flex items-center gap-2">
-                          <CategoryIcon size={16} className="text-blue-600" />
-                          <span className="text-gray-900/80">{category?.label}</span>
+                          <CategoryIcon size={16} className="text-[#0BA5D9]" />
+                          <span className="text-white/80">{category?.label}</span>
                         </div>
                       </td>
                       <td>
                         {sale.sale_type ? (
-                          <span className="text-gray-900/60 text-sm">
+                          <span className="text-white/60 text-sm">
                             {TYPE_MAP[sale.sale_type]}
                           </span>
                         ) : "-"}
                       </td>
-                      <td className="text-gray-900/80">{sale.partner_name}</td>
-                      <td className="font-mono text-blue-600">
+                      <td className="text-white/80">{sale.partner_name}</td>
+                      <td className="font-mono text-[#0BA5D9]">
                         {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
                       </td>
                       <td className="font-mono">
@@ -576,11 +576,11 @@ export default function Sales() {
                             (user.role === 'backoffice' && sale.operators?.commission_visible_to_bo);
 
                           if (!shouldShowCommission) {
-                            return <span className="text-gray-900/30">-</span>;
+                            return <span className="text-white/30">-</span>;
                           }
 
                           if (sale.commission !== null && sale.commission !== undefined) {
-                            const colorClass = user.role === 'admin' ? 'text-blue-600' : 'text-green-400';
+                            const colorClass = user.role === 'admin' ? 'text-[#0BA5D9]' : 'text-green-400';
                             return (
                               <span className={colorClass}>
                                 {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.commission)}
@@ -588,7 +588,7 @@ export default function Sales() {
                             );
                           }
 
-                          return <span className="text-gray-900/30">-</span>;
+                          return <span className="text-white/30">-</span>;
                         })()}
                       </td>
                       <td>
@@ -596,36 +596,36 @@ export default function Sales() {
                           {status?.label}
                         </Badge>
                       </td>
-                      <td className="text-gray-900/60 text-sm">
+                      <td className="text-white/60 text-sm">
                         {new Date(sale.sale_date || sale.created_at).toLocaleDateString('pt-PT')}
                       </td>
                       <td>
                         <div className="flex items-center justify-end gap-1">
                           <Link to={`/sales/${sale.id}`}>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-gray-900/60 hover:text-gray-900"
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-white/60 hover:text-white"
                               data-testid={`view-sale-${sale.id}`}
                             >
                               <Eye size={16} />
                             </Button>
                           </Link>
                           <Link to={`/sales/${sale.id}/edit`}>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-gray-900/60 hover:text-blue-600"
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-white/60 hover:text-[#0BA5D9]"
                               data-testid={`edit-sale-${sale.id}`}
                             >
                               <Edit2 size={16} />
                             </Button>
                           </Link>
                           {isAdminOrBackoffice && (
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-gray-900/60 hover:text-red-400"
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-white/60 hover:text-red-400"
                               onClick={() => setDeleteId(sale.id)}
                               data-testid={`delete-sale-${sale.id}`}
                             >
