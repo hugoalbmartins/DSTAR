@@ -121,29 +121,29 @@ export default function NotificationBell({ userId }) {
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-slate-600 hover:text-slate-800 hover:bg-slate-100"
+          className="relative text-white/70 hover:text-white hover:bg-white/5"
         >
           <Bell size={20} />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-cyan-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-[#0BA5D9] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-96 p-0 bg-white border border-slate-200 shadow-lg"
+        className="w-96 p-0 bg-[#1E293B] border border-[rgba(11,165,217,0.2)] shadow-lg"
         align="end"
       >
-        <div className="flex items-center justify-between p-4 border-b border-slate-200">
-          <h3 className="font-semibold text-slate-800">Notificações</h3>
+        <div className="flex items-center justify-between p-4 border-b border-white/5">
+          <h3 className="font-semibold text-white">Notificações</h3>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleMarkAllAsRead}
               disabled={loading}
-              className="text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50 text-xs h-7"
+              className="text-[#0BA5D9] hover:text-[#0BA5D9] hover:bg-[#0BA5D9]/10 text-xs h-7"
             >
               <CheckCheck size={14} className="mr-1" />
               Marcar todas como lidas
@@ -153,18 +153,18 @@ export default function NotificationBell({ userId }) {
 
         <ScrollArea className="h-[400px]">
           {notifications.length === 0 ? (
-            <div className="p-8 text-center text-slate-500">
+            <div className="p-8 text-center text-white/50">
               <Bell size={40} className="mx-auto mb-3 opacity-30" />
               <p>Sem notificações</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-white/5">
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`p-4 cursor-pointer transition-colors hover:bg-slate-50 ${
-                    !notification.read ? "bg-cyan-50/30" : ""
+                  className={`p-4 cursor-pointer transition-colors hover:bg-white/5 ${
+                    !notification.read ? "bg-[#0BA5D9]/10" : ""
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -176,8 +176,8 @@ export default function NotificationBell({ userId }) {
                         <p
                           className={`font-medium text-sm ${
                             !notification.read
-                              ? "text-slate-800"
-                              : "text-slate-600"
+                              ? "text-white"
+                              : "text-white/70"
                           }`}
                         >
                           {notification.title}
@@ -185,17 +185,17 @@ export default function NotificationBell({ userId }) {
                         {!notification.read && (
                           <Badge
                             variant="secondary"
-                            className="bg-cyan-100 text-cyan-700 border border-cyan-300 text-xs px-1.5 py-0 h-4 flex-shrink-0"
+                            className="bg-[#0BA5D9]/20 text-[#0BA5D9] border border-[#0BA5D9]/30 text-xs px-1.5 py-0 h-4 flex-shrink-0"
                           >
                             Nova
                           </Badge>
                         )}
                       </div>
-                      <p className="text-xs text-slate-600 mb-2">
+                      <p className="text-xs text-white/70 mb-2">
                         {notification.message}
                       </p>
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-white/50">
                           {formatDate(notification.created_at)}
                         </span>
                         {!notification.read && (
@@ -206,7 +206,7 @@ export default function NotificationBell({ userId }) {
                               e.stopPropagation();
                               handleMarkAsRead(notification.id);
                             }}
-                            className="text-slate-600 hover:text-slate-800 h-6 px-2 text-xs"
+                            className="text-white/70 hover:text-white h-6 px-2 text-xs"
                           >
                             <Check size={12} className="mr-1" />
                             Marcar como lida

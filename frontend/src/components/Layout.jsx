@@ -44,9 +44,9 @@ export const Layout = () => {
 
   const getRoleBadge = (role) => {
     const badges = {
-      admin: { text: "Admin", class: "bg-cyan-100 text-cyan-800 border border-cyan-300" },
-      backoffice: { text: "Backoffice", class: "bg-teal-100 text-teal-800 border border-teal-300" },
-      vendedor: { text: "Vendedor", class: "bg-slate-100 text-slate-700 border border-slate-300" }
+      admin: { text: "Admin", class: "bg-[#0BA5D9] text-white" },
+      backoffice: { text: "Backoffice", class: "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" },
+      vendedor: { text: "Vendedor", class: "bg-white/10 text-white/70" }
     };
     return badges[role] || badges.vendedor;
   };
@@ -54,12 +54,11 @@ export const Layout = () => {
   const badge = getRoleBadge(user?.role);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#0F172A]">
       {/* Mobile menu button */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md shadow-lg text-white"
-        style={{ background: 'linear-gradient(135deg, #00b4d8 0%, #0096c7 100%)' }}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md shadow-lg text-white bg-[#0BA5D9]"
         data-testid="mobile-menu-btn"
       >
         {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
@@ -69,7 +68,7 @@ export const Layout = () => {
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''} lg:translate-x-0`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-slate-700/50 flex items-center justify-center bg-gradient-to-b from-slate-900/50 to-transparent">
+          <div className="p-6 border-b border-white/5 flex items-center justify-center">
             <img
               src={LOGO_URL}
               alt="CRM Dolphin+Star"
@@ -98,10 +97,10 @@ export const Layout = () => {
           </nav>
 
           {/* User info */}
-          <div className="p-4 border-t border-slate-700/50">
+          <div className="p-4 border-t border-white/5">
             <div className="mb-4">
               <p className="text-white font-semibold truncate text-sm">{user?.name}</p>
-              <p className="text-slate-300 text-xs truncate mt-0.5">{user?.email}</p>
+              <p className="text-white/50 text-xs truncate mt-0.5">{user?.email}</p>
               <span className={`inline-block mt-2 px-2 py-0.5 rounded text-xs font-medium ${badge.class}`}>
                 {badge.text}
               </span>
@@ -109,7 +108,7 @@ export const Layout = () => {
             <Button
               onClick={logout}
               variant="ghost"
-              className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-700/50"
+              className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
               data-testid="logout-btn"
             >
               <LogOut size={18} className="mr-2" />
@@ -124,7 +123,7 @@ export const Layout = () => {
         {/* Top bar */}
         <div className="top-bar px-6 py-4 flex items-center justify-between">
           <div className="lg:hidden w-8"></div>
-          <h1 className="text-xl font-bold text-slate-800">
+          <h1 className="text-xl font-bold text-white font-['Manrope']">
             {navigation.find(item => isActive(item.href))?.name || "CRM Leiritrix"}
           </h1>
           <div className="flex items-center gap-4">

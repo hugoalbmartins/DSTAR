@@ -66,10 +66,10 @@ export default function Login() {
           />
         </div>
 
-        <h2 className="text-2xl font-bold text-slate-800 text-center mb-2 font-['Manrope']">
+        <h2 className="text-2xl font-bold text-white text-center mb-2 font-['Manrope']">
           Bem-vindo
         </h2>
-        <p className="text-slate-600 text-center mb-8 text-sm">
+        <p className="text-white/70 text-center mb-8 text-sm">
           Aceda à sua conta para continuar
         </p>
 

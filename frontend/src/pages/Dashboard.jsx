@@ -317,7 +317,7 @@ export default function Dashboard() {
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-          className="bg-white border border-gray-300 text-gray-900 text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all font-medium shadow-sm"
+          className="bg-[#1E293B] border border-white/10 text-white text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-[#0BA5D9] focus:ring-2 focus:ring-[#0BA5D9]/20 transition-all font-medium shadow-sm"
         >
           {months.map((month) => (
             <option key={month.value} value={month.value}>
@@ -328,7 +328,7 @@ export default function Dashboard() {
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-          className="bg-white border border-gray-300 text-gray-900 text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all font-medium shadow-sm"
+          className="bg-[#1E293B] border border-white/10 text-white text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-[#0BA5D9] focus:ring-2 focus:ring-[#0BA5D9]/20 transition-all font-medium shadow-sm"
         >
           {years.map((year) => (
             <option key={year} value={year}>
@@ -549,8 +549,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Year-over-Year Line Chart */}
         <Card className="card-leiritrix lg:col-span-2 border-l-4 border-l-blue-600" data-testid="monthly-chart">
-          <CardHeader className="border-b border-gray-200 pb-4">
-            <CardTitle className="text-gray-800 font-['Manrope'] text-lg flex items-center gap-2">
+          <CardHeader className="border-b border-white/5 pb-4">
+            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
               <TrendingUp className="text-blue-600" size={20} />
               Evolução de Vendas (Ano Corrente vs Ano Anterior)
             </CardTitle>
@@ -623,8 +623,8 @@ export default function Dashboard() {
 
         {/* Category Pie Chart */}
         <Card className="card-leiritrix border-l-4 border-l-green-600" data-testid="category-chart">
-          <CardHeader className="border-b border-gray-200 pb-4">
-            <CardTitle className="text-gray-800 font-['Manrope'] text-lg flex items-center gap-2">
+          <CardHeader className="border-b border-white/5 pb-4">
+            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
               <ShoppingCart className="text-green-600" size={20} />
               Por Categoria
             </CardTitle>
@@ -659,7 +659,7 @@ export default function Dashboard() {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-400">
+                <div className="flex items-center justify-center h-full text-white/40">
                   Sem dados
                 </div>
               )}
@@ -668,8 +668,8 @@ export default function Dashboard() {
             {/* Total Sales */}
             {categoryData.length > 0 && (
               <div className="text-center mt-4 mb-2">
-                <p className="text-gray-500 text-sm">Total de Vendas do Mês</p>
-                <p className="text-gray-900 text-2xl font-bold font-mono">
+                <p className="text-white/50 text-sm">Total de Vendas do Mês</p>
+                <p className="text-white text-2xl font-bold font-mono">
                   {categoryData.reduce((sum, item) => sum + item.value, 0)}
                 </p>
               </div>
@@ -683,7 +683,7 @@ export default function Dashboard() {
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
                   />
-                  <span className="text-sm text-gray-600">{item.name}: {item.value}</span>
+                  <span className="text-sm text-white/70">{item.name}: {item.value}</span>
                 </div>
               ))}
             </div>
@@ -695,8 +695,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Summary */}
         <Card className="card-leiritrix border-l-4 border-l-purple-600" data-testid="status-summary">
-          <CardHeader className="border-b border-gray-200 pb-4">
-            <CardTitle className="text-gray-800 font-['Manrope'] text-lg flex items-center gap-2">
+          <CardHeader className="border-b border-white/5 pb-4">
+            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
               <CheckCircle className="text-purple-600" size={20} />
               Por Estado
             </CardTitle>
@@ -710,7 +710,7 @@ export default function Dashboard() {
                     <span className={`badge ${status.color} border`}>
                       {status.label}
                     </span>
-                    <span className="text-gray-900 font-mono font-bold">{count}</span>
+                    <span className="text-white font-mono font-bold">{count}</span>
                   </div>
                 );
               })}
@@ -720,8 +720,8 @@ export default function Dashboard() {
 
         {/* Loyalty Alerts */}
         <Card className="card-leiritrix border-l-4 border-l-amber-600" data-testid="loyalty-alerts">
-          <CardHeader className="border-b border-gray-200 pb-4 flex flex-row items-center justify-between">
-            <CardTitle className="text-gray-800 font-['Manrope'] text-lg flex items-center gap-2">
+          <CardHeader className="border-b border-white/5 pb-4 flex flex-row items-center justify-between">
+            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
               <AlertTriangle className="text-amber-600" size={20} />
               Alertas de Fidelização
             </CardTitle>
@@ -745,15 +745,15 @@ export default function Dashboard() {
                         <div className="flex items-start gap-3">
                           <CategoryIcon className="text-blue-600 mt-0.5" size={18} />
                           <div>
-                            <p className="text-gray-900 font-medium">{alert.client_name}</p>
-                            <p className="text-gray-500 text-sm">{alert.partner_name}</p>
+                            <p className="text-white font-medium">{alert.client_name}</p>
+                            <p className="text-white/50 text-sm">{alert.partner_name}</p>
                           </div>
                         </div>
                         <div className="text-right">
                           <p className="text-amber-600 font-mono font-bold">
                             {alert.days_until_end} dias
                           </p>
-                          <p className="text-gray-400 text-xs flex items-center gap-1 justify-end">
+                          <p className="text-white/40 text-xs flex items-center gap-1 justify-end">
                             <Calendar size={12} />
                             {new Date(alert.loyalty_end_date).toLocaleDateString('pt-PT')}
                           </p>
@@ -764,7 +764,7 @@ export default function Dashboard() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-white/40">
                 <AlertTriangle size={32} className="mx-auto mb-2 opacity-50" />
                 <p>Sem alertas de fidelização</p>
               </div>
@@ -772,7 +772,7 @@ export default function Dashboard() {
 
             {alerts.length > 5 && (
               <Link to="/sales?filter=alerts">
-                <Button variant="ghost" className="w-full mt-4 text-blue-600 hover:bg-blue-50">
+                <Button variant="ghost" className="w-full mt-4 text-blue-600 hover:bg-white/5">
                   Ver todos ({alerts.length})
                   <ArrowRight size={16} className="ml-2" />
                 </Button>
