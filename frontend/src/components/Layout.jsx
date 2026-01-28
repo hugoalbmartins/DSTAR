@@ -50,6 +50,24 @@ export const Layout = () => {
     return location.pathname.startsWith(href);
   };
 
+  const getPageTitle = () => {
+    const path = location.pathname;
+
+    // Special routes
+    if (path.match(/^\/sales\/\d+\/edit$/)) return "Edição de venda";
+    if (path.match(/^\/sales\/\d+$/)) return "Detalhes da venda";
+    if (path.match(/^\/clients\/\d+\/edit$/)) return "Editar cliente";
+    if (path.match(/^\/clients\/\d+$/)) return "Detalhes do cliente";
+    if (path.match(/^\/leads\/\d+\/edit$/)) return "Editar lead";
+
+    // Standard navigation
+    const activeNav = navigation.find(item => isActive(item.href));
+    if (activeNav) return activeNav.name;
+
+    // Default fallback
+    return "Dashboard";
+  };
+
   const getRoleBadge = (role) => {
     const badges = {
       admin: { text: "Admin", class: "bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-glow" },
@@ -196,7 +214,7 @@ export const Layout = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent"
             >
-              {navigation.find(item => isActive(item.href))?.name || "CRM Leiritrix"}
+              {getPageTitle()}
             </motion.h1>
             <div className="flex items-center gap-4">
               <NotificationBell userId={user?.id} />

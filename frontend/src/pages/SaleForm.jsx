@@ -1067,13 +1067,13 @@ export default function SaleForm() {
               </ModernButton>
               <ModernButton
                 onClick={() => handleSaleTypeSelection("Up_sell")}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-6"
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 Up-sell
               </ModernButton>
               <ModernButton
                 onClick={() => handleSaleTypeSelection("Cross_sell")}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-6"
+                className="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold py-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 Cross-sell
               </ModernButton>
