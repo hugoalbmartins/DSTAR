@@ -491,6 +491,19 @@ export default function Sales() {
                   )
                 },
                 {
+                  key: 'sale_date',
+                  label: 'Data de Venda',
+                  sortable: true,
+                  render: (value) => {
+                    if (!value) return <span className="text-slate-400">-</span>;
+                    return (
+                      <span className="text-sm text-slate-700">
+                        {new Date(value).toLocaleDateString('pt-PT')}
+                      </span>
+                    );
+                  }
+                },
+                {
                   key: 'contract_value',
                   label: 'Mensalidade',
                   sortable: true,

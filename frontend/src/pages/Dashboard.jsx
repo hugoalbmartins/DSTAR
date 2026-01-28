@@ -1,12 +1,14 @@
 import { useState, useEffect, Suspense } from "react";
 import { useAuth } from "@/App";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { salesService } from "@/services/salesService";
 import { usersService } from "@/services/usersService";
 import { operatorsService } from "@/services/operatorsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import KPICard from "@/components/KPICard";
 import { SalesLineChart, SalesBarChart, ConversionFunnelChart } from "@/components/SalesChart";
 import RecentActivity from "@/components/RecentActivity";
@@ -14,6 +16,7 @@ import LeadAlerts from "@/components/LeadAlerts";
 import { SkeletonKPI, SkeletonChart, SkeletonActivity } from "@/components/SkeletonLoader";
 import { leadsService } from "@/services/leadsService";
 import { useIdleTimeout } from "@/hooks/useIdleTimeout";
+import { ModernTable, ModernBadge } from "@/components/modern";
 import {
   TrendingUp,
   ShoppingCart,
@@ -27,7 +30,9 @@ import {
   Users,
   EyeOff,
   CheckCircle,
-  TrendingDown
+  TrendingDown,
+  Search,
+  X
 } from "lucide-react";
 
 const STATUS_MAP = {
@@ -63,6 +68,7 @@ const CATEGORY_LABELS = {
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const now = new Date();
   const [metrics, setMetrics] = useState(null);
   const [monthlyStats, setMonthlyStats] = useState({ daily: [], yearly: [] });
@@ -74,10 +80,27 @@ export default function Dashboard() {
   const [hasHiddenOperators, setHasHiddenOperators] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const [showLoyaltyModal, setShowLoyaltyModal] = useState(false);
+  const [loyaltySearchTerm, setLoyaltySearchTerm] = useState('');
+  const [filteredAlerts, setFilteredAlerts] = useState([]);
 
   useEffect(() => {
     fetchData();
   }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    if (loyaltySearchTerm.trim()) {
+      const term = loyaltySearchTerm.toLowerCase();
+      const filtered = alerts.filter(alert =>
+        alert.client_name?.toLowerCase().includes(term) ||
+        alert.partner_name?.toLowerCase().includes(term) ||
+        alert.operators?.name?.toLowerCase().includes(term)
+      );
+      setFilteredAlerts(filtered);
+    } else {
+      setFilteredAlerts(alerts);
+    }
+  }, [loyaltySearchTerm, alerts]);
 
   useIdleTimeout(() => {
     fetchData();
@@ -576,15 +599,110 @@ export default function Dashboard() {
           )}
 
           {alerts.length > 5 && (
-            <Link to="/sales?filter=alerts">
-              <Button variant="ghost" className="w-full mt-4 text-[#0052CC] hover:bg-blue-50">
-                Ver todos ({alerts.length})
-                <ArrowRight size={16} className="ml-2" />
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              className="w-full mt-4 text-[#0052CC] hover:bg-blue-50"
+              onClick={() => setShowLoyaltyModal(true)}
+            >
+              Ver todos ({alerts.length})
+              <ArrowRight size={16} className="ml-2" />
+            </Button>
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={showLoyaltyModal} onOpenChange={setShowLoyaltyModal}>
+        <DialogContent className="max-w-5xl max-h-[80vh] overflow-hidden flex flex-col bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-slate-900">
+              Todos os Alertas de Fidelização ({filteredAlerts.length})
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 flex-1 overflow-auto">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Pesquisar por cliente, parceiro ou operadora..."
+                value={loyaltySearchTerm}
+                onChange={(e) => setLoyaltySearchTerm(e.target.value)}
+                className="pl-10"
+              />
+              {loyaltySearchTerm && (
+                <button
+                  onClick={() => setLoyaltySearchTerm('')}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            {filteredAlerts.length === 0 ? (
+              <div className="text-center py-12 text-slate-500">
+                <p>Nenhum alerta encontrado</p>
+              </div>
+            ) : (
+              <ModernTable
+                columns={[
+                  {
+                    key: 'client_name',
+                    label: 'Cliente',
+                    sortable: true,
+                    render: (value) => <span className="font-medium text-slate-900">{value}</span>
+                  },
+                  {
+                    key: 'partner_name',
+                    label: 'Parceiro',
+                    sortable: true,
+                    render: (value) => <span className="text-slate-700 text-sm">{value}</span>
+                  },
+                  {
+                    key: 'operators',
+                    label: 'Operadora',
+                    sortable: false,
+                    render: (value) => <span className="text-slate-700 text-sm">{value?.name || '-'}</span>
+                  },
+                  {
+                    key: 'category',
+                    label: 'Categoria',
+                    sortable: true,
+                    render: (value) => {
+                      const CategoryIcon = CATEGORY_ICONS[value] || Zap;
+                      return (
+                        <div className="flex items-center gap-2">
+                          <CategoryIcon className="text-brand-600" size={16} />
+                          <span className="text-sm text-slate-700">{CATEGORY_LABELS[value]}</span>
+                        </div>
+                      );
+                    }
+                  },
+                  {
+                    key: 'loyalty_end_date',
+                    label: 'Data de Fim',
+                    sortable: true,
+                    render: (value, row) => (
+                      <div>
+                        <p className="text-sm text-slate-700">{new Date(value).toLocaleDateString('pt-PT')}</p>
+                        <p className="text-orange-600 font-bold text-xs">{row.days_until_end} dias</p>
+                      </div>
+                    )
+                  }
+                ]}
+                data={filteredAlerts}
+                sortable={true}
+                hoverable={true}
+                itemsPerPage={15}
+                showPagination={true}
+                onRowClick={(row) => {
+                  setShowLoyaltyModal(false);
+                  navigate(`/sales/${row.id}`);
+                }}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
