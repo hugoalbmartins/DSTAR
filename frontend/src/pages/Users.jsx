@@ -243,8 +243,8 @@ export default function Users() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Manrope']">Utilizadores</h1>
-          <p className="text-white/70 text-sm mt-1">Gerir utilizadores do sistema</p>
+          <h1 className="text-2xl font-bold text-[#172B4D] font-['Manrope']">Utilizadores</h1>
+          <p className="text-[#172B4D]/70 text-sm mt-1">Gerir utilizadores do sistema</p>
         </div>
         <Button
           onClick={openCreateModal}
@@ -271,8 +271,8 @@ export default function Users() {
                       <UsersIcon size={20} className={user.active ? 'text-blue-600' : 'text-gray-400'} />
                     </div>
                     <div>
-                      <p className="text-white font-medium">{user.name}</p>
-                      <p className="text-white/50 text-sm">{user.email}</p>
+                      <p className="text-[#172B4D] font-medium">{user.name}</p>
+                      <p className="text-[#172B4D]/50 text-sm">{user.email}</p>
                     </div>
                   </div>
                   {!user.active && (
@@ -298,7 +298,7 @@ export default function Users() {
                     onClick={() => openEditModal(user)}
                     variant="ghost"
                     size="sm"
-                    className="flex-1 text-white/70 hover:text-white hover:bg-white/5"
+                    className="flex-1 text-[#172B4D]/70 hover:text-[#172B4D] hover:bg-white/5"
                     data-testid={`edit-user-${user.id}`}
                   >
                     <Edit2 size={16} className="mr-1" />
@@ -320,7 +320,7 @@ export default function Users() {
                         onClick={() => setDeleteId(user.id)}
                         variant="ghost"
                         size="sm"
-                        className="text-white/70 hover:text-red-400 hover:bg-red-400/10"
+                        className="text-[#172B4D]/70 hover:text-red-400 hover:bg-red-400/10"
                         data-testid={`delete-user-${user.id}`}
                       >
                         <Trash2 size={16} />

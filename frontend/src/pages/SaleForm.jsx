@@ -709,8 +709,8 @@ export default function SaleForm() {
       <div className="max-w-3xl mx-auto">
         <Card className="card-leiritrix">
           <CardContent className="p-8 text-center">
-            <p className="text-white/70 mb-4">Não existem parceiros registados.</p>
-            <p className="text-white/70 text-sm mb-6">É necessário criar pelo menos um parceiro antes de registar vendas.</p>
+            <p className="text-[#172B4D]/70 mb-4">Não existem parceiros registados.</p>
+            <p className="text-[#172B4D]/70 text-sm mb-6">É necessário criar pelo menos um parceiro antes de registar vendas.</p>
             <Button
               onClick={() => navigate("/partners")}
               className="btn-primary btn-primary-glow"
@@ -735,8 +735,8 @@ export default function SaleForm() {
             <ArrowLeft size={20} />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-white font-['Manrope']">Nova Venda</h1>
-            <p className="text-white/70 text-sm mt-1">Insira o NIF do cliente para começar</p>
+            <h1 className="text-2xl font-bold text-[#172B4D] font-['Manrope']">Nova Venda</h1>
+            <p className="text-[#172B4D]/70 text-sm mt-1">Insira o NIF do cliente para começar</p>
           </div>
         </div>
 
@@ -930,7 +930,7 @@ export default function SaleForm() {
               solar_panel_quantity: ""
             });
           }}
-          className="text-white/70 hover:text-white"
+          className="text-[#172B4D]/70 hover:text-[#172B4D]"
           data-testid="back-btn"
         >
           <ArrowLeft size={20} />

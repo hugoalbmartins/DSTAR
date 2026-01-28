@@ -229,14 +229,14 @@ export default function Reports() {
     <div className="space-y-6" data-testid="reports-page">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white font-['Manrope']">Relatórios</h1>
-        <p className="text-white/70 text-sm mt-1">Gere relatórios de vendas com filtros personalizados</p>
+        <h1 className="text-2xl font-bold text-[#172B4D] font-['Manrope']">Relatórios</h1>
+        <p className="text-[#172B4D]/70 text-sm mt-1">Gere relatórios de vendas com filtros personalizados</p>
       </div>
 
       {/* Filters */}
       <Card className="card-leiritrix">
         <CardHeader className="border-b border-white/5 pb-4">
-          <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
+          <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg flex items-center gap-2">
             <Filter size={20} className="text-blue-600" />
             Filtros
           </CardTitle>
@@ -244,7 +244,7 @@ export default function Reports() {
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="text-xs text-white/70 mb-1 block">Data Início</label>
+              <label className="text-xs text-[#172B4D]/70 mb-1 block">Data Início</label>
               <DatePickerPopup
                 value={startDate}
                 onChange={setStartDate}
@@ -254,7 +254,7 @@ export default function Reports() {
             </div>
 
             <div>
-              <label className="text-xs text-white/70 mb-1 block">Data Fim</label>
+              <label className="text-xs text-[#172B4D]/70 mb-1 block">Data Fim</label>
               <DatePickerPopup
                 value={endDate}
                 onChange={setEndDate}

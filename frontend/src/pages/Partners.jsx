@@ -314,8 +314,8 @@ export default function Partners() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Manrope']">Parceiros</h1>
-          <p className="text-white/70 text-sm mt-1">Gerir parceiros de negócio</p>
+          <h1 className="text-2xl font-bold text-[#172B4D] font-['Manrope']">Parceiros</h1>
+          <p className="text-[#172B4D]/70 text-sm mt-1">Gerir parceiros de negócio</p>
         </div>
         <Button 
           onClick={openCreateModal}
@@ -339,7 +339,7 @@ export default function Partners() {
                       <Building2 size={20} className={partner.active ? 'text-blue-600' : 'text-[#172B4D]'} />
                     </div>
                     <div>
-                      <p className="text-white font-medium">{partner.name}</p>
+                      <p className="text-[#172B4D] font-medium">{partner.name}</p>
                       {!partner.active && (
                         <Badge className="bg-red-500/20 text-red-400 border border-red-500/30 text-xs mt-1">
                           Inativo
@@ -351,19 +351,19 @@ export default function Partners() {
 
                 <div className="space-y-2 text-sm">
                   {partner.contact_person && (
-                    <div className="flex items-center gap-2 text-white/70">
+                    <div className="flex items-center gap-2 text-[#172B4D]/70">
                       <User size={14} />
                       <span>{partner.contact_person}</span>
                     </div>
                   )}
                   {partner.email && (
-                    <div className="flex items-center gap-2 text-white/70">
+                    <div className="flex items-center gap-2 text-[#172B4D]/70">
                       <Mail size={14} />
                       <span>{partner.email}</span>
                     </div>
                   )}
                   {partner.phone && (
-                    <div className="flex items-center gap-2 text-white/70">
+                    <div className="flex items-center gap-2 text-[#172B4D]/70">
                       <Phone size={14} />
                       <span>{partner.phone}</span>
                     </div>
@@ -386,7 +386,7 @@ export default function Partners() {
                       onClick={() => openEditModal(partner)}
                       variant="ghost"
                       size="sm"
-                      className="flex-1 text-white/70 hover:text-white"
+                      className="flex-1 text-[#172B4D]/70 hover:text-[#172B4D]"
                       data-testid={`edit-partner-${partner.id}`}
                     >
                       <Edit2 size={16} className="mr-1" />
@@ -405,7 +405,7 @@ export default function Partners() {
                       onClick={() => setDeleteId(partner.id)}
                       variant="ghost"
                       size="sm"
-                      className="text-white/70 hover:text-red-400"
+                      className="text-[#172B4D]/70 hover:text-red-400"
                       data-testid={`delete-partner-${partner.id}`}
                     >
                       <Trash2 size={16} />
@@ -418,8 +418,8 @@ export default function Partners() {
         ) : (
           <Card className="card-leiritrix col-span-full">
             <CardContent className="p-8 text-center">
-              <Building2 size={48} className="mx-auto text-white/20 mb-4" />
-              <p className="text-white/70">Nenhum parceiro registado</p>
+              <Building2 size={48} className="mx-auto text-[#172B4D]/20 mb-4" />
+              <p className="text-[#172B4D]/70">Nenhum parceiro registado</p>
               <Button 
                 onClick={openCreateModal}
                 className="btn-primary btn-primary-glow mt-4"

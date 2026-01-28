@@ -262,8 +262,8 @@ export default function Sales() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Manrope']">Vendas</h1>
-          <p className="text-white/70 text-sm mt-1">{sales.length} registos encontrados</p>
+          <h1 className="text-2xl font-bold text-[#172B4D] font-['Manrope']">Vendas</h1>
+          <p className="text-[#172B4D]/70 text-sm mt-1">{sales.length} registos encontrados</p>
         </div>
         <Link to="/sales/new">
           <Button className="btn-primary btn-primary-glow flex items-center gap-2" data-testid="new-sale-btn">
@@ -279,7 +279,7 @@ export default function Sales() {
           <Button
             onClick={() => setShowFilters(!showFilters)}
             variant="outline"
-            className="bg-white/5 border-white/10 text-white hover:bg-white/10 h-10 px-4"
+            className="bg-white/5 border-white/10 text-[#172B4D] hover:bg-white/10 h-10 px-4"
           >
             <Filter size={16} className="mr-2" />
             Filtros
@@ -290,13 +290,13 @@ export default function Sales() {
               <Button
                 onClick={clearFilters}
                 variant="outline"
-                className="bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white h-10 px-4"
+                className="bg-white/5 border-white/10 text-[#172B4D]/70 hover:bg-white/10 hover:text-[#172B4D] h-10 px-4"
                 data-testid="clear-filters-btn"
               >
                 <X size={16} className="mr-2" />
                 Limpar
               </Button>
-              <p className="text-white/70 text-sm">
+              <p className="text-[#172B4D]/70 text-sm">
                 {sales.length} resultado{sales.length !== 1 ? 's' : ''}
               </p>
             </>
@@ -309,7 +309,7 @@ export default function Sales() {
               {/* Pesquisa por NIF ou Nome */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
-                  <label className="text-xs text-white/70 mb-1 block">Tipo de Pesquisa</label>
+                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Tipo de Pesquisa</label>
                   <Select value={searchType || "none"} onValueChange={(value) => {
                     setSearchType(value === "none" ? "" : value);
                     setSearchText("");
@@ -327,7 +327,7 @@ export default function Sales() {
 
                 {searchType && searchType !== "none" && (
                   <div className="md:col-span-3">
-                    <label className="text-xs text-white/70 mb-1 block">
+                    <label className="text-xs text-[#172B4D]/70 mb-1 block">
                       {searchType === "nif" ? "NIF do Cliente" : "Nome do Cliente"}
                     </label>
                     <Input
@@ -344,7 +344,7 @@ export default function Sales() {
               {/* Filtros: Estado, Categoria, Operadora, Parceiro */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
-                  <label className="text-xs text-white/70 mb-1 block">Estado</label>
+                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Estado</label>
                   <Select value={statusFilter || "all"} onValueChange={setStatusFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="status-filter">
                       <SelectValue placeholder="Todos" />
@@ -361,7 +361,7 @@ export default function Sales() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-white/70 mb-1 block">Categoria</label>
+                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Categoria</label>
                   <Select value={categoryFilter || "all"} onValueChange={setCategoryFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="category-filter">
                       <SelectValue placeholder="Todas" />
@@ -378,7 +378,7 @@ export default function Sales() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-white/70 mb-1 block">Operadora</label>
+                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Operadora</label>
                   <Select value={operatorFilter || "all"} onValueChange={setOperatorFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="operator-filter">
                       <SelectValue placeholder="Todas" />
@@ -395,7 +395,7 @@ export default function Sales() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-white/70 mb-1 block">Parceiro</label>
+                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Parceiro</label>
                   <Select value={partnerFilter || "all"} onValueChange={setPartnerFilter}>
                     <SelectTrigger className="form-input h-9 text-sm" data-testid="partner-filter">
                       <SelectValue placeholder="Todos" />
@@ -415,7 +415,7 @@ export default function Sales() {
               {/* Filtros de Data */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs text-white/70 mb-1 block">Tipo de Data</label>
+                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Tipo de Data</label>
                   <Select value={dateType || "none"} onValueChange={(value) => {
                     setDateType(value);
                     if (value === "none") {
@@ -437,7 +437,7 @@ export default function Sales() {
                 {dateType && dateType !== "none" && (
                   <>
                     <div>
-                      <label className="text-xs text-white/70 mb-1 block">Data De</label>
+                      <label className="text-xs text-[#172B4D]/70 mb-1 block">Data De</label>
                       <DatePickerPopup
                         value={dateFrom}
                         onChange={setDateFrom}
@@ -446,7 +446,7 @@ export default function Sales() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-white/70 mb-1 block">Data Até</label>
+                      <label className="text-xs text-[#172B4D]/70 mb-1 block">Data Até</label>
                       <DatePickerPopup
                         value={dateTo}
                         onChange={setDateTo}
@@ -474,7 +474,7 @@ export default function Sales() {
                     className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Cliente
-                    <ArrowUpDown size={14} className={sortColumn === "client_name" ? "text-[#0BA5D9]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "client_name" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
                   </button>
                 </th>
                 <th>
@@ -483,7 +483,7 @@ export default function Sales() {
                     className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Categoria
-                    <ArrowUpDown size={14} className={sortColumn === "category" ? "text-[#0BA5D9]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "category" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
                   </button>
                 </th>
                 <th>Tipo</th>
@@ -493,7 +493,7 @@ export default function Sales() {
                     className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Parceiro
-                    <ArrowUpDown size={14} className={sortColumn === "partner_name" ? "text-[#0BA5D9]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "partner_name" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
                   </button>
                 </th>
                 <th>
@@ -502,7 +502,7 @@ export default function Sales() {
                     className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Valor
-                    <ArrowUpDown size={14} className={sortColumn === "contract_value" ? "text-[#0BA5D9]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "contract_value" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
                   </button>
                 </th>
                 <th>
@@ -511,7 +511,7 @@ export default function Sales() {
                     className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Comissão
-                    <ArrowUpDown size={14} className={sortColumn === "commission" ? "text-[#0BA5D9]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "commission" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
                   </button>
                 </th>
                 <th>
@@ -520,7 +520,7 @@ export default function Sales() {
                     className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Estado
-                    <ArrowUpDown size={14} className={sortColumn === "status" ? "text-[#0BA5D9]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "status" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
                   </button>
                 </th>
                 <th>
@@ -529,7 +529,7 @@ export default function Sales() {
                     className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
                   >
                     Data de Venda
-                    <ArrowUpDown size={14} className={sortColumn === "sale_date" ? "text-[#0BA5D9]" : "text-white/40"} />
+                    <ArrowUpDown size={14} className={sortColumn === "sale_date" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
                   </button>
                 </th>
                 <th className="text-right">Ações</th>
@@ -548,24 +548,24 @@ export default function Sales() {
                         <div>
                           <p className="font-medium">{sale.client_name}</p>
                           {sale.client_nif && (
-                            <p className="text-white/60 text-sm font-mono">{sale.client_nif}</p>
+                            <p className="text-[#172B4D]/60 text-sm font-mono">{sale.client_nif}</p>
                           )}
                         </div>
                       </td>
                       <td>
                         <div className="flex items-center gap-2">
                           <CategoryIcon size={16} className="text-[#0BA5D9]" />
-                          <span className="text-white/80">{category?.label}</span>
+                          <span className="text-[#172B4D]/80">{category?.label}</span>
                         </div>
                       </td>
                       <td>
                         {sale.sale_type ? (
-                          <span className="text-white/60 text-sm">
+                          <span className="text-[#172B4D]/60 text-sm">
                             {TYPE_MAP[sale.sale_type]}
                           </span>
                         ) : "-"}
                       </td>
-                      <td className="text-white/80">{sale.partners?.name || sale.partner_name || "-"}</td>
+                      <td className="text-[#172B4D]/80">{sale.partners?.name || sale.partner_name || "-"}</td>
                       <td className="font-mono text-[#0BA5D9]">
                         {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
                       </td>
@@ -576,7 +576,7 @@ export default function Sales() {
                             (user.role === 'backoffice' && sale.operators?.commission_visible_to_bo);
 
                           if (!shouldShowCommission) {
-                            return <span className="text-white/30">-</span>;
+                            return <span className="text-[#172B4D]/30">-</span>;
                           }
 
                           if (sale.commission !== null && sale.commission !== undefined) {
@@ -588,7 +588,7 @@ export default function Sales() {
                             );
                           }
 
-                          return <span className="text-white/30">-</span>;
+                          return <span className="text-[#172B4D]/30">-</span>;
                         })()}
                       </td>
                       <td>
@@ -596,7 +596,7 @@ export default function Sales() {
                           {status?.label}
                         </Badge>
                       </td>
-                      <td className="text-white/60 text-sm">
+                      <td className="text-[#172B4D]/60 text-sm">
                         {new Date(sale.sale_date || sale.created_at).toLocaleDateString('pt-PT')}
                       </td>
                       <td>
@@ -605,7 +605,7 @@ export default function Sales() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-white/60 hover:text-white"
+                              className="text-[#172B4D]/60 hover:text-[#172B4D]"
                               data-testid={`view-sale-${sale.id}`}
                             >
                               <Eye size={16} />
@@ -615,7 +615,7 @@ export default function Sales() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-white/60 hover:text-[#0BA5D9]"
+                              className="text-[#172B4D]/60 hover:text-[#0BA5D9]"
                               data-testid={`edit-sale-${sale.id}`}
                             >
                               <Edit2 size={16} />
@@ -625,7 +625,7 @@ export default function Sales() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-white/60 hover:text-red-400"
+                              className="text-[#172B4D]/60 hover:text-red-400"
                               onClick={() => setDeleteId(sale.id)}
                               data-testid={`delete-sale-${sale.id}`}
                             >
