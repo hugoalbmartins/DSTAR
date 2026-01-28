@@ -742,7 +742,7 @@ export default function SaleForm() {
 
         <Card className="card-leiritrix">
           <CardContent className="p-8">
-            <Label htmlFor="nif_input" className="form-label text-lg mb-4 block">NIF do Cliente</Label>
+            <Label htmlFor="nif_input" className="form-label text-lg mb-4 block text-[#172B4D]">NIF do Cliente</Label>
             <div className="flex gap-3">
               <Input
                 id="nif_input"
