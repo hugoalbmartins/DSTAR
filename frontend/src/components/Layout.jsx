@@ -12,7 +12,9 @@ import {
   PlusCircle,
   Building2,
   Radio,
-  Settings
+  Settings,
+  UserCircle,
+  ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NotificationBell from "@/components/NotificationBell";
@@ -28,6 +30,8 @@ export const Layout = () => {
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, show: true },
     { name: "Vendas", href: "/sales", icon: ShoppingCart, show: true },
     { name: "Nova Venda", href: "/sales/new", icon: PlusCircle, show: true },
+    { name: "Clientes", href: "/clients", icon: UserCircle, show: true },
+    { name: "Leads", href: "/leads", icon: ClipboardList, show: true },
     { name: "Parceiros", href: "/partners", icon: Building2, show: isAdminOrBackoffice },
     { name: "Operadoras", href: "/operators", icon: Radio, show: isAdminOrBackoffice },
     { name: "Relatórios", href: "/reports", icon: FileText, show: isAdminOrBackoffice },

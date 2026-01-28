@@ -7,6 +7,9 @@ import { operatorsService } from "@/services/operatorsService";
 import { usersService } from "@/services/usersService";
 import { commissionsService } from "@/services/commissionsService";
 import { operatorClientCategoriesService } from "@/services/operatorClientCategoriesService";
+import { clientsService } from "@/services/clientsService";
+import { addressesService } from "@/services/addressesService";
+import { servicesService } from "@/services/servicesService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,6 +107,7 @@ export default function SaleForm() {
   const [previousSales, setPreviousSales] = useState([]);
   const [showTypeDialog, setShowTypeDialog] = useState(false);
   const [showAddressDialog, setShowAddressDialog] = useState(false);
+  const [showServiceDialog, setShowServiceDialog] = useState(false);
   const [selectedSaleFlow, setSelectedSaleFlow] = useState(null);
   const [selectedPreviousAddress, setSelectedPreviousAddress] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -111,6 +115,9 @@ export default function SaleForm() {
   const [commissionType, setCommissionType] = useState("automatic");
   const [calculatingCommission, setCalculatingCommission] = useState(false);
   const [availableSaleTypes, setAvailableSaleTypes] = useState(SALE_TYPES);
+  const [currentClient, setCurrentClient] = useState(null);
+  const [availableServices, setAvailableServices] = useState([]);
+  const [selectedService, setSelectedService] = useState(null);
 
   const [formData, setFormData] = useState({
     client_name: "",
@@ -433,14 +440,36 @@ export default function SaleForm() {
 
     setCheckingNIF(true);
     try {
-      const sales = await salesService.getSalesByNIF(nifInput);
-      setPreviousSales(sales);
+      const client = await clientsService.getClientByNIF(nifInput);
 
-      if (sales.length > 0) {
-        setShowTypeDialog(true);
+      if (client) {
+        setCurrentClient(client);
+        const services = await servicesService.getServicesByClientId(client.id);
+        setAvailableServices(services || []);
+
+        const sales = await salesService.getSalesByNIF(nifInput);
+        setPreviousSales(sales);
+
+        if (services.length > 0) {
+          setShowTypeDialog(true);
+        } else {
+          handleChange("client_nif", nifInput);
+          handleChange("client_name", client.name);
+          handleChange("client_email", client.email || "");
+          handleChange("client_phone", client.phone || "");
+          handleChange("client_type", client.client_type);
+          handleChange("portfolio_status", client.portfolio_status || "");
+          setShowForm(true);
+        }
       } else {
-        handleChange("client_nif", nifInput);
-        setShowForm(true);
+        const sales = await salesService.getSalesByNIF(nifInput);
+        if (sales.length > 0) {
+          setPreviousSales(sales);
+          setShowTypeDialog(true);
+        } else {
+          handleChange("client_nif", nifInput);
+          setShowForm(true);
+        }
       }
     } catch (error) {
       console.error("Error checking NIF:", error);
@@ -457,7 +486,11 @@ export default function SaleForm() {
     if (type === "NI") {
       handleNovaVenda();
     } else {
-      setShowAddressDialog(true);
+      if (availableServices.length > 0) {
+        setShowServiceDialog(true);
+      } else {
+        setShowAddressDialog(true);
+      }
     }
   };
 
@@ -534,6 +567,82 @@ export default function SaleForm() {
   };
 
   const handleRefidSelection = handleMCSelection;
+
+  const handleServiceSelection = async (service) => {
+    setSelectedService(service);
+    setShowServiceDialog(false);
+
+    const address = service.address;
+    const operator = service.operator;
+
+    const validSeller = sellers.find(s => s.id === currentClient?.id && s.active);
+
+    const serviceTypeMap = {
+      'energia_eletricidade': 'eletricidade',
+      'energia_gas': 'gas',
+      'energia_dual': 'dual'
+    };
+
+    const newFormData = {
+      ...formData,
+      client_name: currentClient?.name || "",
+      client_email: currentClient?.email || "",
+      client_phone: currentClient?.phone || "",
+      client_nif: nifInput,
+      client_type: currentClient?.client_type || "",
+      portfolio_status: currentClient?.portfolio_status || "",
+      street_address: address?.street_address || "",
+      postal_code: address?.postal_code || "",
+      city: address?.city || "",
+      operator_id: operator?.id || "",
+      sale_type: selectedSaleFlow,
+      cpe: service.cpe || "",
+      cui: service.cui || "",
+      potencia: service.potencia || "",
+      escalao: service.escalao || "",
+    };
+
+    if (service.service_type.startsWith('energia_')) {
+      newFormData.category = 'energia';
+      newFormData.energy_type = serviceTypeMap[service.service_type] || '';
+    } else if (service.service_type === 'telecomunicacoes') {
+      newFormData.category = 'telecomunicacoes';
+    } else if (service.service_type === 'paineis_solares') {
+      newFormData.category = 'paineis_solares';
+    }
+
+    if (selectedSaleFlow === "MC") {
+      newFormData.street_address = "";
+      newFormData.postal_code = "";
+      newFormData.city = "";
+
+      if (service.loyalty_months > 0) {
+        try {
+          await servicesService.updateService(service.id, { loyalty_months: 0, loyalty_end_date: null });
+        } catch (error) {
+          console.error("Error updating service loyalty:", error);
+        }
+      }
+    } else if (selectedSaleFlow.startsWith('Refid') || ['Up_sell', 'Cross_sell'].includes(selectedSaleFlow)) {
+      if (service.loyalty_months > 0) {
+        try {
+          await servicesService.updateService(service.id, { loyalty_months: 0, loyalty_end_date: null });
+        } catch (error) {
+          console.error("Error updating service loyalty:", error);
+        }
+      }
+
+      if (['Up_sell', 'Cross_sell'].includes(selectedSaleFlow)) {
+        const relatedSale = previousSales.find(s => s.service_id === service.id);
+        if (relatedSale) {
+          newFormData.previous_monthly_value = relatedSale.contract_value || "";
+        }
+      }
+    }
+
+    setFormData(newFormData);
+    setShowForm(true);
+  };
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -637,7 +746,74 @@ export default function SaleForm() {
         ? parseInt(formData.custom_loyalty_months) || 0
         : parseInt(formData.loyalty_months) || 0;
 
+      let client = currentClient;
+      if (!client) {
+        try {
+          client = await clientsService.createClient({
+            name: formData.client_name,
+            nif: formData.client_nif,
+            email: formData.client_email || null,
+            phone: formData.client_phone || null,
+            client_type: formData.client_type || 'residencial',
+            portfolio_status: formData.portfolio_status || null
+          });
+        } catch (error) {
+          if (error.message?.includes('duplicate') || error.message?.includes('unique')) {
+            client = await clientsService.getClientByNIF(formData.client_nif);
+          } else {
+            throw error;
+          }
+        }
+      }
+
+      let address = null;
+      if (selectedService && selectedSaleFlow !== "MC") {
+        address = { id: selectedService.address_id };
+      } else {
+        address = await addressesService.createAddress({
+          client_id: client.id,
+          street_address: formData.street_address,
+          postal_code: formData.postal_code,
+          city: formData.city,
+          is_active: true
+        });
+      }
+
+      let service = selectedService;
+      if (!service || selectedSaleFlow === "MC" || selectedSaleFlow === "NI") {
+        const serviceTypeMap = {
+          'eletricidade': 'energia_eletricidade',
+          'gas': 'energia_gas',
+          'dual': 'energia_dual'
+        };
+
+        let serviceType = formData.category;
+        if (formData.category === 'energia') {
+          serviceType = serviceTypeMap[formData.energy_type] || 'energia_eletricidade';
+        } else if (formData.category === 'telecomunicacoes') {
+          serviceType = 'telecomunicacoes';
+        } else if (formData.category === 'paineis_solares') {
+          serviceType = 'paineis_solares';
+        }
+
+        service = await servicesService.createService({
+          address_id: address.id,
+          service_type: serviceType,
+          operator_id: formData.operator_id || null,
+          cpe: formData.cpe || null,
+          potencia: formData.potencia || null,
+          cui: formData.cui || null,
+          escalao: formData.escalao || null,
+          req: formData.req || null,
+          loyalty_months: finalLoyaltyMonths,
+          is_active: true
+        });
+      }
+
       const payload = {
+        client_id: client.id,
+        address_id: address.id,
+        service_id: service.id,
         client_name: formData.client_name,
         client_email: formData.client_email || null,
         client_phone: formData.client_phone || null,
@@ -774,7 +950,10 @@ export default function SaleForm() {
             <DialogHeader>
               <DialogTitle className="text-white font-['Manrope'] text-xl">Cliente Existente</DialogTitle>
               <DialogDescription className="text-white/70">
-                Encontrámos {previousSales.length} venda(s) para este NIF. Que tipo de venda deseja registar?
+                {availableServices.length > 0
+                  ? `Encontrámos ${availableServices.length} serviço(s) registado(s). Que tipo de venda deseja registar?`
+                  : `Encontrámos {previousSales.length} venda(s) para este NIF. Que tipo de venda deseja registar?`
+                }
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 mt-4">
@@ -857,6 +1036,57 @@ export default function SaleForm() {
                           {sale.loyalty_months > 0 && (
                             <span className="text-orange-400">
                               {sale.loyalty_months} meses fidelização
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <ArrowRight size={20} className="text-blue-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showServiceDialog} onOpenChange={setShowServiceDialog}>
+          <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)] max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-white font-['Manrope'] text-xl flex items-center gap-2">
+                <Zap className="text-blue-600" size={24} />
+                Selecione o Serviço
+              </DialogTitle>
+              <DialogDescription className="text-white/70">
+                Escolha o serviço que deseja processar nesta venda
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 mt-4">
+              {availableServices.map((service) => (
+                <Card
+                  key={service.id}
+                  className="card-leiritrix cursor-pointer hover:border-[#c8f31d]/50 transition-colors"
+                  onClick={() => handleServiceSelection(service)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="text-white font-['Manrope'] font-semibold">
+                          {service.service_number || 'Sem número de serviço'}
+                        </p>
+                        <p className="text-white/70 text-sm mt-1">
+                          {service.address?.street_address}
+                        </p>
+                        <p className="text-white/70 text-sm">
+                          {service.address?.postal_code} {service.address?.city}
+                        </p>
+                        <div className="flex gap-4 mt-2 text-xs text-white/70">
+                          <span>{service.operator?.name || "Sem operadora"}</span>
+                          <span className="capitalize">{service.service_type.replace('energia_', '').replace('_', ' ')}</span>
+                          {service.cpe && <span>CPE: {service.cpe}</span>}
+                          {service.cui && <span>CUI: {service.cui}</span>}
+                          {service.loyalty_end_date && (
+                            <span className="text-orange-400">
+                              Fidelização até {new Date(service.loyalty_end_date).toLocaleDateString('pt-PT')}
                             </span>
                           )}
                         </div>

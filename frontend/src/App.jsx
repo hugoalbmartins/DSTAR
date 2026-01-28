@@ -13,6 +13,11 @@ import Dashboard from "@/pages/Dashboard";
 import Sales from "@/pages/Sales";
 import SaleForm from "@/pages/SaleForm";
 import SaleDetail from "@/pages/SaleDetail";
+import Clients from "@/pages/Clients";
+import ClientForm from "@/pages/ClientForm";
+import ClientDetail from "@/pages/ClientDetail";
+import Leads from "@/pages/Leads";
+import LeadForm from "@/pages/LeadForm";
 import Reports from "@/pages/Reports";
 import Users from "@/pages/Users";
 import Partners from "@/pages/Partners";
@@ -174,6 +179,13 @@ function AppRoutes() {
         <Route path="sales/new" element={<SaleForm />} />
         <Route path="sales/:id" element={<SaleDetail />} />
         <Route path="sales/:id/edit" element={<SaleDetail editMode={true} />} />
+        <Route path="clients" element={<Clients />} />
+        <Route path="clients/new" element={<ClientForm />} />
+        <Route path="clients/:id" element={<ClientDetail />} />
+        <Route path="clients/:id/edit" element={<ClientForm />} />
+        <Route path="leads" element={<Leads />} />
+        <Route path="leads/new" element={<LeadForm />} />
+        <Route path="leads/:id/edit" element={<LeadForm />} />
         <Route path="partners" element={
           <ProtectedRoute requireAdminOrBO>
             <Partners />

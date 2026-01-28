@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 import KPICard from "@/components/KPICard";
 import { SalesLineChart, SalesBarChart, ConversionFunnelChart } from "@/components/SalesChart";
 import RecentActivity from "@/components/RecentActivity";
+import LeadAlerts from "@/components/LeadAlerts";
 import { SkeletonKPI, SkeletonChart, SkeletonActivity } from "@/components/SkeletonLoader";
+import { leadsService } from "@/services/leadsService";
 import {
   TrendingUp,
   ShoppingCart,
@@ -470,6 +472,12 @@ export default function Dashboard() {
         <div className="lg:col-span-2">
           <Suspense fallback={<SkeletonActivity />}>
             <RecentActivity activities={recentActivities} />
+          </Suspense>
+        </div>
+
+        <div className="lg:col-span-2">
+          <Suspense fallback={<SkeletonActivity />}>
+            <LeadAlerts />
           </Suspense>
         </div>
       </div>

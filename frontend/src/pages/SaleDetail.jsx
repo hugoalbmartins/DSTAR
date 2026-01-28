@@ -111,6 +111,8 @@ export default function SaleDetail({ editMode = false }) {
   const [editSaleDate, setEditSaleDate] = useState(null);
   const [editNotes, setEditNotes] = useState("");
   const [editReq, setEditReq] = useState("");
+  const [editNumeroServico, setEditNumeroServico] = useState("");
+  const [editPrt, setEditPrt] = useState("");
   const [editCommissionSeller, setEditCommissionSeller] = useState("");
   const [editCommissionPartner, setEditCommissionPartner] = useState("");
   const [editCommissionBackoffice, setEditCommissionBackoffice] = useState("");
@@ -152,6 +154,8 @@ export default function SaleDetail({ editMode = false }) {
       setEditStatus(saleData.status || "");
       setEditNotes(saleData.notes || "");
       setEditReq(saleData.req || "");
+      setEditNumeroServico(saleData.numero_servico || "");
+      setEditPrt(saleData.prt || "");
       setEditEmail(saleData.client_email || "");
       setEditAddress(saleData.client_address || "");
       setEditStreetAddress(saleData.street_address || "");
@@ -287,6 +291,18 @@ export default function SaleDetail({ editMode = false }) {
   }, [editOperatorId, editPartnerId, isEditing]);
 
   const handleSave = async () => {
+    if (editStatus === "ativo") {
+      if (!editNumeroServico || !editNumeroServico.trim()) {
+        toast.error("Número de serviço é obrigatório quando o estado é Ativo");
+        return;
+      }
+
+      if ((!editPrt || !editPrt.trim()) && (!editReq || !editReq.trim())) {
+        toast.error("Pelo menos um dos campos PRT ou Requisição deve estar preenchido quando o estado é Ativo");
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       const finalLoyaltyMonths = editLoyaltyMonths === "outra"
@@ -304,6 +320,8 @@ export default function SaleDetail({ editMode = false }) {
         active_date: editActiveDate ? editActiveDate.toISOString() : null,
         sale_date: editSaleDate ? editSaleDate.toISOString().split('T')[0] : null,
         req: sale.category === "telecomunicacoes" ? editReq : null,
+        numero_servico: editNumeroServico || null,
+        prt: editPrt || null,
         client_email: editEmail,
         client_address: editAddress,
         street_address: editStreetAddress,
@@ -645,6 +663,34 @@ export default function SaleDetail({ editMode = false }) {
                   />
                 </div>
               )}
+
+              {/* Número de Serviço - obrigatório quando ativo */}
+              <div>
+                <Label className="form-label">
+                  Número de Serviço {editStatus === "ativo" && <span className="text-red-500">*</span>}
+                </Label>
+                <Input
+                  value={editNumeroServico}
+                  onChange={(e) => setEditNumeroServico(e.target.value)}
+                  className="form-input"
+                  placeholder="Número do serviço"
+                  data-testid="edit-numero-servico-input"
+                />
+              </div>
+
+              {/* PRT - opcional mas pelo menos PRT ou REQ quando ativo */}
+              <div>
+                <Label className="form-label">
+                  PRT {editStatus === "ativo" && <span className="text-amber-500">(PRT ou Requisição obrigatório)</span>}
+                </Label>
+                <Input
+                  value={editPrt}
+                  onChange={(e) => setEditPrt(e.target.value)}
+                  className="form-input"
+                  placeholder="PRT"
+                  data-testid="edit-prt-input"
+                />
+              </div>
 
               {/* Commissions - editable by Admin always, by BO if operator allows */}
               {isAdminOrBackoffice && (user.role === 'admin' || sale?.operators?.commission_visible_to_bo) && (
