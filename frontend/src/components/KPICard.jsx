@@ -8,6 +8,8 @@ const KPICard = React.memo(({ title, value, icon: Icon, trend, trendValue, descr
 
   const colorClasses = {
     blue: 'from-brand-600 to-brand-700',
+    cyan: 'from-cyan-500 to-cyan-600',
+    sky: 'from-sky-500 to-sky-600',
     green: 'from-green-500 to-green-600',
     orange: 'from-orange-500 to-orange-600',
     purple: 'from-purple-500 to-purple-600',

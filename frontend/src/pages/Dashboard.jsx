@@ -53,8 +53,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const now = new Date();
   const [metrics, setMetrics] = useState(null);
-  const [monthlyStats, setMonthlyStats] = useState([]);
-  const [operatorStats, setOperatorStats] = useState([]);
+  const [monthlyStats, setMonthlyStats] = useState({ daily: [], yearly: [] });
   const [conversionData, setConversionData] = useState([]);
   const [recentActivities, setRecentActivities] = useState([]);
   const [alerts, setAlerts] = useState([]);
@@ -72,6 +71,7 @@ export default function Dashboard() {
     try {
       const stats = await salesService.getSaleStatistics();
       const sales = await salesService.getSales();
+      const leads = await leadsService.getLeads();
 
       let currentUserData = null;
       if (user.role === 'backoffice') {
@@ -118,30 +118,51 @@ export default function Dashboard() {
       });
 
       const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-      const chartData = monthNames.map((month, index) => {
-        const count = currentYearSales.filter(s => new Date(s.sale_date || s.created_at).getMonth() === index).length;
+
+      // Gráfico anual - vendas e leads por mês
+      const yearlyChartData = monthNames.map((month, index) => {
+        const salesCount = currentYearSales.filter(s => new Date(s.sale_date || s.created_at).getMonth() === index).length;
+        const leadsCount = leads.filter(l => {
+          const leadDate = new Date(l.created_at);
+          return leadDate.getFullYear() === currentYear && leadDate.getMonth() === index;
+        }).length;
         return {
           name: month,
-          vendas: count
+          vendas: salesCount,
+          leads: leadsCount
         };
       });
 
-      const operatorCounts = {};
-      currentMonthSales.forEach(sale => {
-        const operatorName = sale.operators?.name || 'Outros';
-        operatorCounts[operatorName] = (operatorCounts[operatorName] || 0) + 1;
-      });
-
-      const operatorChartData = Object.entries(operatorCounts)
-        .map(([name, vendas]) => ({ name, vendas }))
-        .sort((a, b) => b.vendas - a.vendas)
-        .slice(0, 5);
+      // Gráfico mensal - vendas e leads por dia do mês atual
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const dailyChartData = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const salesCount = currentMonthSales.filter(s => {
+          const saleDate = new Date(s.sale_date || s.created_at);
+          return saleDate.getDate() === day;
+        }).length;
+        const leadsCount = leads.filter(l => {
+          const leadDate = new Date(l.created_at);
+          return leadDate.getFullYear() === currentYear &&
+                 leadDate.getMonth() === currentMonth &&
+                 leadDate.getDate() === day;
+        }).length;
+        dailyChartData.push({
+          name: day.toString(),
+          vendas: salesCount,
+          leads: leadsCount
+        });
+      }
 
       const statusCounts = stats.byStatus || {};
+      const totalCreated = currentMonthSales.length;
+      const totalPending = statusCounts.pendente || 0;
+      const totalCompleted = statusCounts.ativo || 0;
+
       const funnelData = [
-        { name: 'Em Negociação', value: statusCounts.em_negociacao || 0 },
-        { name: 'Pendente', value: statusCounts.pendente || 0 },
-        { name: 'Ativo', value: statusCounts.ativo || 0 }
+        { name: 'Criadas', value: totalCreated, fill: '#3B82F6' },
+        { name: 'Pendentes', value: totalPending, fill: '#F59E0B' },
+        { name: 'Concretizadas', value: totalCompleted, fill: '#10B981' }
       ];
 
       const calcMensalidadesTelecom = (salesList) => {
@@ -284,8 +305,10 @@ export default function Dashboard() {
         ...metricsData
       });
 
-      setMonthlyStats(chartData);
-      setOperatorStats(operatorChartData);
+      setMonthlyStats({
+        daily: dailyChartData,
+        yearly: yearlyChartData
+      });
       setConversionData(funnelData);
       setRecentActivities(activities);
       setAlerts(expiringSoon);
@@ -391,9 +414,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <KPICard
-          title="Vendas do Mês"
+          title="Quantidade de Vendas"
           value={metrics?.sales_this_month || 0}
           icon={ShoppingCart}
           trend={metrics?.sales_this_month > 0 ? 'up' : 'down'}
@@ -402,78 +425,46 @@ export default function Dashboard() {
         />
 
         <KPICard
-          title="Mensalidades Telecom"
+          title="Mensalidades Telecomunicações"
           value={formatCurrency(metrics?.total_mensalidades)}
           icon={Phone}
           trend={metrics?.mensalidades_yoy >= 0 ? 'up' : 'down'}
           trendValue={formatPercentage(metrics?.mensalidades_yoy || 0)}
-          color="green"
+          color="cyan"
         />
 
-        {user.role === 'admin' && hasSellers && (
-          <KPICard
-            title="Comissões Vendedores"
-            value={formatCurrency(metrics?.seller_commissions)}
-            icon={Users}
-            trend={metrics?.seller_commissions_yoy >= 0 ? 'up' : 'down'}
-            trendValue={formatPercentage(metrics?.seller_commissions_yoy || 0)}
-            color="purple"
-          />
-        )}
-
-        {user.role === 'admin' && (
-          <KPICard
-            title="Comissões Ativas"
-            value={formatCurrency(metrics?.active_commissions)}
-            icon={CheckCircle}
-            trend={metrics?.active_commissions_yoy >= 0 ? 'up' : 'down'}
-            trendValue={formatPercentage(metrics?.active_commissions_yoy || 0)}
-            color="green"
-          />
-        )}
-
-        {user.role === 'backoffice' && (
-          <>
-            <KPICard
-              title="Comissão Backoffice"
-              value={formatCurrency(metrics?.backoffice_commission)}
-              icon={Euro}
-              trend={metrics?.backoffice_commission_yoy >= 0 ? 'up' : 'down'}
-              trendValue={formatPercentage(metrics?.backoffice_commission_yoy || 0)}
-              color="blue"
-            />
-            <KPICard
-              title="Comissões Operadoras"
-              value={formatCurrency(metrics?.partner_commissions)}
-              icon={TrendingUp}
-              trend={metrics?.partner_commissions_yoy >= 0 ? 'up' : 'down'}
-              trendValue={formatPercentage(metrics?.partner_commissions_yoy || 0)}
-              color="orange"
-            />
-          </>
-        )}
+        <KPICard
+          title="Comissões Ativas"
+          value={formatCurrency(metrics?.active_commissions || 0)}
+          icon={CheckCircle}
+          trend={metrics?.active_commissions_yoy >= 0 ? 'up' : 'down'}
+          trendValue={formatPercentage(metrics?.active_commissions_yoy || 0)}
+          color="sky"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Suspense fallback={<SkeletonChart />}>
-          <SalesLineChart data={monthlyStats} title="Evolução de Vendas Mensal" />
+          <SalesLineChart
+            data={monthlyStats.daily}
+            title="Evolução Mensal"
+            subtitle="Vendas e leads por dia do mês"
+          />
         </Suspense>
 
         <Suspense fallback={<SkeletonChart />}>
-          <SalesBarChart data={operatorStats} title="Top 5 Operadoras do Mês" />
+          <SalesLineChart
+            data={monthlyStats.yearly}
+            title="Evolução de Vendas Anual"
+            subtitle="Vendas e leads por mês do ano"
+          />
         </Suspense>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Suspense fallback={<SkeletonChart />}>
-          <ConversionFunnelChart data={conversionData} />
+          <ConversionFunnelChart data={conversionData} title="Funil de Conversão de Vendas" />
         </Suspense>
-
-        <div className="lg:col-span-2">
-          <Suspense fallback={<SkeletonActivity />}>
-            <RecentActivity activities={recentActivities} />
-          </Suspense>
-        </div>
 
         <div className="lg:col-span-2">
           <Suspense fallback={<SkeletonActivity />}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -23,7 +23,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export const SalesLineChart = React.memo(({ data, title = "Evolução de Vendas" }) => {
+export const SalesLineChart = React.memo(({ data, title = "Evolução de Vendas", subtitle }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -33,6 +33,7 @@ export const SalesLineChart = React.memo(({ data, title = "Evolução de Vendas"
       <Card className="card-leiritrix overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50/30">
           <CardTitle className="text-lg font-bold text-slate-900">{title}</CardTitle>
+          {subtitle && <p className="text-sm text-slate-600 mt-1">{subtitle}</p>}
         </CardHeader>
         <CardContent className="pt-6">
           <ResponsiveContainer width="100%" height={320}>
@@ -59,6 +60,15 @@ export const SalesLineChart = React.memo(({ data, title = "Evolução de Vendas"
                 dot={{ fill: '#0066e6', strokeWidth: 2, r: 5 }}
                 activeDot={{ r: 8, stroke: '#fff', strokeWidth: 2 }}
                 name="Vendas"
+              />
+              <Line
+                type="monotone"
+                dataKey="leads"
+                stroke="#06b6d4"
+                strokeWidth={3}
+                dot={{ fill: '#06b6d4', strokeWidth: 2, r: 5 }}
+                activeDot={{ r: 8, stroke: '#fff', strokeWidth: 2 }}
+                name="Leads"
               />
             </LineChart>
           </ResponsiveContainer>
@@ -122,37 +132,43 @@ SalesBarChart.displayName = 'SalesBarChart';
 
 export const ConversionFunnelChart = React.memo(({ data, title = "Funil de Conversão" }) => {
   return (
-    <Card className="card-leiritrix">
-      <CardHeader>
-        <CardTitle className="text-lg font-bold text-[#172B4D]">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="#DFE1E6" />
-            <XAxis
-              type="number"
-              stroke="#42526E"
-              style={{ fontSize: '12px' }}
-            />
-            <YAxis
-              type="category"
-              dataKey="name"
-              stroke="#42526E"
-              style={{ fontSize: '12px' }}
-              width={120}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar
-              dataKey="value"
-              fill="#0052CC"
-              radius={[0, 8, 8, 0]}
-              name="Quantidade"
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.2 }}
+    >
+      <Card className="card-leiritrix overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50/30">
+          <CardTitle className="text-lg font-bold text-slate-900">{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
+              <XAxis
+                dataKey="name"
+                stroke="#64748b"
+                style={{ fontSize: '12px', fontWeight: 500 }}
+              />
+              <YAxis
+                stroke="#64748b"
+                style={{ fontSize: '12px', fontWeight: 500 }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar
+                dataKey="value"
+                radius={[10, 10, 0, 0]}
+                name="Quantidade"
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 });
 
