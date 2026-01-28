@@ -342,7 +342,7 @@ export default function CommissionWizard() {
       </div>
 
       <Card className="card-leiritrix">
-        <CardHeader className="border-b border-white/5 pb-4">
+        <CardHeader className="border-b border-slate-200 pb-4">
           <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg">
             1. Operadora e Parceiro
           </CardTitle>
@@ -357,7 +357,7 @@ export default function CommissionWizard() {
                 </SelectTrigger>
                 <SelectContent className="bg-white border-slate-200">
                   {operators.map((op) => (
-                    <SelectItem key={op.id} value={op.id} className="text-white hover:bg-white/10">
+                    <SelectItem key={op.id} value={op.id} className="text-slate-900 hover:bg-slate-100">
                       {op.name}
                     </SelectItem>
                   ))}
@@ -372,17 +372,17 @@ export default function CommissionWizard() {
                   <SelectValue placeholder="Todos os parceiros" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-slate-200">
-                  <SelectItem value="all" className="text-white hover:bg-white/10">
+                  <SelectItem value="all" className="text-slate-900 hover:bg-slate-100">
                     Todos os parceiros
                   </SelectItem>
                   {partners.map((p) => (
-                    <SelectItem key={p.id} value={p.id} className="text-white hover:bg-white/10">
+                    <SelectItem key={p.id} value={p.id} className="text-slate-900 hover:bg-slate-100">
                       {p.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-[#172B4D]/50 text-xs mt-1">
+              <p className="text-slate-600 text-xs mt-1">
                 Deixe vazio para aplicar a todos os parceiros
               </p>
             </div>
@@ -391,7 +391,7 @@ export default function CommissionWizard() {
       </Card>
 
       <Card className="card-leiritrix">
-        <CardHeader className="border-b border-white/5 pb-4">
+        <CardHeader className="border-b border-slate-200 pb-4">
           <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg">
             2. Tipo de Comissão
           </CardTitle>
@@ -404,10 +404,10 @@ export default function CommissionWizard() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200">
-                <SelectItem value="manual" className="text-white hover:bg-white/10">
+                <SelectItem value="manual" className="text-slate-900 hover:bg-slate-100">
                   Manual (Inserção manual em cada venda)
                 </SelectItem>
-                <SelectItem value="automatic" className="text-white hover:bg-white/10">
+                <SelectItem value="automatic" className="text-slate-900 hover:bg-slate-100">
                   Automático (Cálculo baseado em regras)
                 </SelectItem>
               </SelectContent>
@@ -417,7 +417,7 @@ export default function CommissionWizard() {
       </Card>
 
       <Card className="card-leiritrix">
-        <CardHeader className="border-b border-white/5 pb-4">
+        <CardHeader className="border-b border-slate-200 pb-4">
           <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg">
             3. Tipos de Venda Permitidos *
           </CardTitle>
@@ -519,7 +519,7 @@ export default function CommissionWizard() {
                               </SelectTrigger>
                               <SelectContent className="bg-white border-slate-200">
                                 {SALE_TYPES.filter(t => allowedSaleTypes.includes(t.value)).map((type) => (
-                                  <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
+                                  <SelectItem key={type.value} value={type.value} className="text-slate-900 hover:bg-slate-100">
                                     {type.label}
                                   </SelectItem>
                                 ))}
@@ -538,11 +538,11 @@ export default function CommissionWizard() {
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white border-slate-200">
-                                  <SelectItem value="all" className="text-white hover:bg-white/10">
+                                  <SelectItem value="all" className="text-slate-900 hover:bg-slate-100">
                                     Todas as Categorias
                                   </SelectItem>
                                   {clientCategories.map((cat) => (
-                                    <SelectItem key={cat.id} value={cat.id} className="text-white hover:bg-white/10">
+                                    <SelectItem key={cat.id} value={cat.id} className="text-slate-900 hover:bg-slate-100">
                                       {cat.name}
                                     </SelectItem>
                                   ))}
@@ -561,13 +561,13 @@ export default function CommissionWizard() {
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent className="bg-white border-slate-200">
-                                <SelectItem value="all" className="text-white hover:bg-white/10">
+                                <SelectItem value="all" className="text-slate-900 hover:bg-slate-100">
                                   Todos os Tipos
                                 </SelectItem>
-                                <SelectItem value="residencial" className="text-white hover:bg-white/10">
+                                <SelectItem value="residencial" className="text-slate-900 hover:bg-slate-100">
                                   Residencial
                                 </SelectItem>
-                                <SelectItem value="empresarial" className="text-white hover:bg-white/10">
+                                <SelectItem value="empresarial" className="text-slate-900 hover:bg-slate-100">
                                   Empresarial
                                 </SelectItem>
                               </SelectContent>
@@ -584,21 +584,21 @@ export default function CommissionWizard() {
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent className="bg-white border-slate-200">
-                                <SelectItem value="all" className="text-white hover:bg-white/10">
+                                <SelectItem value="all" className="text-slate-900 hover:bg-slate-100">
                                   Todos
                                 </SelectItem>
-                                <SelectItem value="novo" className="text-white hover:bg-white/10">
+                                <SelectItem value="novo" className="text-slate-900 hover:bg-slate-100">
                                   Novo
                                 </SelectItem>
-                                <SelectItem value="cliente_carteira" className="text-white hover:bg-white/10">
+                                <SelectItem value="cliente_carteira" className="text-slate-900 hover:bg-slate-100">
                                   Cliente de Carteira
                                 </SelectItem>
-                                <SelectItem value="fora_carteira" className="text-white hover:bg-white/10">
+                                <SelectItem value="fora_carteira" className="text-slate-900 hover:bg-slate-100">
                                   Fora de Carteira
                                 </SelectItem>
                               </SelectContent>
                             </Select>
-                            <p className="text-[#172B4D]/50 text-xs mt-1">
+                            <p className="text-slate-600 text-xs mt-1">
                               Aplicável apenas a clientes empresariais
                             </p>
                           </div>
@@ -614,13 +614,13 @@ export default function CommissionWizard() {
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white border-slate-200">
-                                  <SelectItem value="all" className="text-white hover:bg-white/10">
+                                  <SelectItem value="all" className="text-slate-900 hover:bg-slate-100">
                                     Todos os NIFs
                                   </SelectItem>
-                                  <SelectItem value="5xx" className="text-white hover:bg-white/10">
+                                  <SelectItem value="5xx" className="text-slate-900 hover:bg-slate-100">
                                     NIFs 5xx
                                   </SelectItem>
-                                  <SelectItem value="123xxx" className="text-white hover:bg-white/10">
+                                  <SelectItem value="123xxx" className="text-slate-900 hover:bg-slate-100">
                                     NIFs 1/2/3xxx
                                   </SelectItem>
                                 </SelectContent>
@@ -638,15 +638,15 @@ export default function CommissionWizard() {
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent className="bg-white border-slate-200">
-                                <SelectItem value="per_contract" className="text-white hover:bg-white/10">
+                                <SelectItem value="per_contract" className="text-slate-900 hover:bg-slate-100">
                                   Por Quantidade de Contratos
                                 </SelectItem>
-                                <SelectItem value="per_power" className="text-white hover:bg-white/10">
+                                <SelectItem value="per_power" className="text-slate-900 hover:bg-slate-100">
                                   Por Potência Contratada
                                 </SelectItem>
                               </SelectContent>
                             </Select>
-                            <p className="text-[#172B4D]/50 text-xs mt-1">
+                            <p className="text-slate-600 text-xs mt-1">
                               {rule.commission_type === 'per_power'
                                 ? 'Comissão individual por cada valor de potência'
                                 : 'Comissão por quantidade de contratos'
@@ -665,10 +665,10 @@ export default function CommissionWizard() {
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white border-slate-200">
-                                  <SelectItem value="fixed_per_quantity" className="text-white hover:bg-white/10">
+                                  <SelectItem value="fixed_per_quantity" className="text-slate-900 hover:bg-slate-100">
                                     Valor Fixo por Quantidade
                                   </SelectItem>
-                                  <SelectItem value="monthly_multiple" className="text-white hover:bg-white/10">
+                                  <SelectItem value="monthly_multiple" className="text-slate-900 hover:bg-slate-100">
                                     Múltiplo de Mensalidade
                                   </SelectItem>
                                 </SelectContent>
@@ -683,7 +683,7 @@ export default function CommissionWizard() {
                                 checked={rule.depends_on_loyalty}
                                 onCheckedChange={(v) => updateRule(index, 'depends_on_loyalty', v)}
                               />
-                              <Label htmlFor={`depends-loyalty-${index}`} className="text-white/80 text-sm cursor-pointer">
+                              <Label htmlFor={`depends-loyalty-${index}`} className="text-slate-700 text-sm cursor-pointer font-medium">
                                 Depende do período de fidelização
                               </Label>
                             </div>
@@ -701,7 +701,7 @@ export default function CommissionWizard() {
                                 </SelectTrigger>
                                 <SelectContent className="bg-white border-slate-200">
                                   {LOYALTY_PERIODS.map((period) => (
-                                    <SelectItem key={period} value={period.toString()} className="text-white hover:bg-white/10">
+                                    <SelectItem key={period} value={period.toString()} className="text-slate-900 hover:bg-slate-100">
                                       {period === 0 ? 'Sem fidelização' : `${period} meses`}
                                     </SelectItem>
                                   ))}
@@ -726,7 +726,7 @@ export default function CommissionWizard() {
                                   </thead>
                                   <tbody>
                                     {rule.power_values.map((pv) => (
-                                      <tr key={pv.power_value} className="border-b border-white/5">
+                                      <tr key={pv.power_value} className="border-b border-slate-200">
                                         <td className="py-2 px-2 text-[#172B4D]">{pv.power_value}</td>
                                         <td className="py-2 px-2">
                                           <Input
@@ -749,7 +749,7 @@ export default function CommissionWizard() {
 
                           {rule.commission_type === 'per_contract' && (
                             <div className="md:col-span-2 pt-4 border-t border-slate-200">
-                              <h5 className="text-white text-sm font-medium mb-3">Valores de Comissão</h5>
+                              <h5 className="text-slate-900 text-sm font-semibold mb-3">Valores de Comissão</h5>
                               <div>
                                 <div className="flex items-center gap-2 mb-2">
                                   <Checkbox
@@ -757,7 +757,7 @@ export default function CommissionWizard() {
                                     checked={rule.applies_to_partner}
                                     onCheckedChange={(v) => updateRule(index, 'applies_to_partner', v)}
                                   />
-                                  <Label htmlFor={`applies-partner-${index}`} className="text-white/80 text-sm cursor-pointer">
+                                  <Label htmlFor={`applies-partner-${index}`} className="text-slate-700 text-sm cursor-pointer font-medium">
                                     Comissão a receber
                                   </Label>
                                 </div>

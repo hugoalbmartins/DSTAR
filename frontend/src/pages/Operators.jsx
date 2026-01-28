@@ -424,13 +424,13 @@ export default function Operators() {
       </div>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-white border-slate-200 max-w-lg">
+        <DialogContent className="bg-white border-slate-200 max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white font-['Manrope']">
+            <DialogTitle className="text-slate-900 font-['Manrope'] text-xl">
               {editingOperator ? "Editar Operadora" : "Nova Operadora"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-6 py-4">
             <div>
               <Label className="form-label">Nome da Operadora *</Label>
               <Input
@@ -443,14 +443,14 @@ export default function Operators() {
             </div>
 
             <div>
-              <Label className="form-label mb-3">Categorias de Vendas *</Label>
+              <Label className="form-label mb-3 block">Categorias de Vendas *</Label>
               <div className="space-y-2">
                 {CATEGORY_OPTIONS.map((category) => {
                   const Icon = category.icon;
                   return (
                     <div
                       key={category.value}
-                      className="flex items-center space-x-2 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer"
+                      className="flex items-center space-x-3 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 cursor-pointer transition-colors"
                       onClick={() => handleCategoryToggle(category.value)}
                     >
                       <Checkbox
@@ -458,10 +458,10 @@ export default function Operators() {
                         checked={formData.categories.includes(category.value)}
                         onCheckedChange={() => handleCategoryToggle(category.value)}
                       />
-                      <Icon size={16} className="text-blue-600" />
+                      <Icon size={16} className="text-brand-600" />
                       <Label
                         htmlFor={category.value}
-                        className="text-white text-sm cursor-pointer flex-1"
+                        className="text-slate-700 text-sm cursor-pointer flex-1 font-medium"
                       >
                         {category.label}
                       </Label>
@@ -472,15 +472,15 @@ export default function Operators() {
             </div>
 
             <div>
-              <Label className="form-label mb-3">Tipos de Venda Permitidos</Label>
-              <p className="text-white/70 text-xs mb-3">
+              <Label className="form-label mb-3 block">Tipos de Venda Permitidos</Label>
+              <p className="text-slate-600 text-xs mb-3">
                 Selecione os tipos de venda disponíveis para esta operadora. Se nenhum for selecionado, todos os tipos estarão disponíveis.
               </p>
               <div className="grid grid-cols-1 gap-2">
                 {SALE_TYPES.map((type) => (
                   <div
                     key={type.value}
-                    className="flex items-center space-x-2 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer"
+                    className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 cursor-pointer transition-colors"
                     onClick={() => handleSaleTypeToggle(type.value)}
                   >
                     <Checkbox
@@ -490,7 +490,7 @@ export default function Operators() {
                     />
                     <Label
                       htmlFor={`sale-type-${type.value}`}
-                      className="text-white text-sm cursor-pointer flex-1"
+                      className="text-slate-700 text-sm cursor-pointer flex-1 font-medium"
                     >
                       {type.label}
                     </Label>
@@ -500,10 +500,10 @@ export default function Operators() {
             </div>
 
             {isAdmin && (
-              <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 border border-slate-200">
                 <div className="flex-1">
                   <Label className="form-label mb-1">Comissões Visíveis para Backoffice</Label>
-                  <p className="text-white/70 text-xs">
+                  <p className="text-slate-600 text-xs">
                     Se ativo, os utilizadores de backoffice podem ver e registar comissões nas vendas desta operadora
                   </p>
                 </div>
@@ -517,10 +517,10 @@ export default function Operators() {
             )}
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 border border-slate-200">
                 <div className="flex-1">
                   <Label className="form-label mb-1">Categorias de Cliente</Label>
-                  <p className="text-white/70 text-xs">
+                  <p className="text-slate-600 text-xs">
                     Permite definir diferentes categorias de cliente para esta operadora
                   </p>
                 </div>
@@ -534,7 +534,7 @@ export default function Operators() {
               </div>
 
               {formData.has_client_categories && (
-                <div className="p-4 rounded-lg bg-slate-50 space-y-3">
+                <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex gap-2">
                     <Input
                       value={newCategoryName}
@@ -546,7 +546,7 @@ export default function Operators() {
                     <Button
                       type="button"
                       onClick={handleAddClientCategory}
-                      className="btn-primary"
+                      className="btn-primary shrink-0"
                     >
                       <Plus size={16} />
                     </Button>
@@ -557,13 +557,13 @@ export default function Operators() {
                       {clientCategories.map((category, index) => (
                         <div
                           key={category.id || index}
-                          className="flex items-center justify-between p-2 rounded bg-white/10"
+                          className="flex items-center justify-between p-3 rounded bg-white border border-slate-200"
                         >
                           <div className="flex items-center gap-2">
-                            <Tags size={14} className="text-blue-600" />
-                            <span className="text-white text-sm">{category.name}</span>
+                            <Tags size={14} className="text-brand-600" />
+                            <span className="text-slate-700 text-sm font-medium">{category.name}</span>
                             {category.isNew && (
-                              <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs">
+                              <Badge className="bg-brand-50 text-brand-700 border-brand-200 text-xs">
                                 Nova
                               </Badge>
                             )}
@@ -573,7 +573,7 @@ export default function Operators() {
                             onClick={() => handleRemoveClientCategory(category)}
                             variant="ghost"
                             size="sm"
-                            className="text-red-400 hover:bg-red-400/10 h-6 w-6 p-0"
+                            className="text-red-500 hover:bg-red-50 hover:text-red-600 h-7 w-7 p-0"
                           >
                             <X size={14} />
                           </Button>
@@ -615,8 +615,8 @@ export default function Operators() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent className="bg-white border-slate-200">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Eliminar Operadora</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70">
+            <AlertDialogTitle className="text-slate-900 font-['Manrope'] text-xl">Eliminar Operadora</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
               Tem a certeza que pretende eliminar esta operadora? Esta ação não pode ser revertida.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -624,7 +624,7 @@ export default function Operators() {
             <AlertDialogCancel className="btn-secondary">Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-white font-semibold"
             >
               Eliminar
             </AlertDialogAction>
