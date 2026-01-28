@@ -106,32 +106,35 @@
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Form inputs */
+/* Form inputs - Modern Design System */
 .form-input {
-    background-color: #1E293B;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
+    background-color: #FFFFFF;
+    border: 2px solid #E2E8F0;
+    color: #0F172A;
     border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
+    padding: 0.625rem 0.875rem;
     width: 100%;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    height: 2.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .form-input:focus {
     border-color: #0BA5D9;
-    box-shadow: 0 0 0 2px rgba(11, 165, 217, 0.2);
+    box-shadow: 0 0 0 3px rgba(11, 165, 217, 0.1);
     outline: none;
 }
 
 .form-input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: #94A3B8;
 }
 
 .form-label {
     display: block;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+    color: #334155;
     margin-bottom: 0.5rem;
 }
 
