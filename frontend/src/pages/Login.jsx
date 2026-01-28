@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Lock, Mail, ArrowRight, Sparkles } from "lucide-react";
 import { authService } from "@/services/authService";
 
-const LOGO_URL = "/logo_dolphinstar_fundopreto_vertical.jpg";
+const LOGO_URL = "/logo_dstar_semfundo.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");

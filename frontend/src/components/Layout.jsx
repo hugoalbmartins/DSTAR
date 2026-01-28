@@ -22,7 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import NotificationBell from "@/components/NotificationBell";
 
-const LOGO_URL = "/logo_dolphinstar_fundopreto_vertical.jpg";
+const LOGO_URL = "/logo_dstar_semfundo.png";
 
 export const Layout = () => {
   const { user, logout, isAdmin, isAdminOrBackoffice } = useAuth();

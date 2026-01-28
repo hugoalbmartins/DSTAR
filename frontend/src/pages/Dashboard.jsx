@@ -464,22 +464,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {metrics && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center gap-3">
-          <div className="bg-[#0052CC] rounded-full p-2">
-            <Calendar className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-[#172B4D]">
-              Período de Análise: {months.find(m => m.value === selectedMonth)?.label} {selectedYear}
-            </p>
-            <p className="text-xs text-[#172B4D]/60">
-              Visualizando {metrics.sales_this_month} {metrics.sales_this_month === 1 ? 'venda' : 'vendas'} neste período
-            </p>
-          </div>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <KPICard
           title="Quantidade de Vendas"
