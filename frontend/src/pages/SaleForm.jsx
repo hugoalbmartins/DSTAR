@@ -157,7 +157,35 @@ export default function SaleForm() {
     fetchPartners();
     fetchSellers();
     fetchOperators();
-  }, []);
+
+    const clientId = searchParams.get('clientId');
+    if (clientId) {
+      loadClientData(clientId);
+    }
+  }, [searchParams]);
+
+  const loadClientData = async (clientId) => {
+    try {
+      const client = await clientsService.getClientById(clientId);
+      if (client) {
+        setNifInput(client.nif);
+        setCurrentClient(client);
+        setFormData(prev => ({
+          ...prev,
+          client_name: client.name,
+          client_email: client.email || '',
+          client_phone: client.phone || '',
+          client_nif: client.nif,
+          client_type: client.client_type || 'residencial',
+          portfolio_status: client.portfolio_status || ''
+        }));
+        setShowForm(true);
+      }
+    } catch (error) {
+      console.error('Error loading client data:', error);
+      toast.error('Erro ao carregar dados do cliente');
+    }
+  };
 
   const fetchPartners = async () => {
     try {

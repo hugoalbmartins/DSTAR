@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
+import { ModernCard, ModernButton, ModernBadge, ModernTable } from '../components/modern';
 import { Input } from '../components/ui/input';
-import { Badge } from '../components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { toast } from 'sonner';
 import { clientsService } from '../services/clientsService';
-import { Plus, Search, Loader2, Eye } from 'lucide-react';
+import { Plus, Search, Loader2, Eye, Users } from 'lucide-react';
 
 export default function Clients() {
   const navigate = useNavigate();
@@ -64,117 +61,98 @@ export default function Clients() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Clientes</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
+            Clientes
+          </h1>
+          <p className="text-slate-600 text-sm mt-1">
             Total de {clients.length} cliente{clients.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Button onClick={() => navigate('/clients/new')}>
-          <Plus className="mr-2 h-4 w-4" />
+        <ModernButton onClick={() => navigate('/clients/new')} variant="primary" icon={Plus}>
           Novo Cliente
-        </Button>
+        </ModernButton>
       </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Pesquisar por nome, NIF, email ou telefone..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+      <ModernCard title="Gestão de Clientes" icon={Users} variant="gradient">
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Pesquisar por nome, NIF, email ou telefone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
-        </CardHeader>
-        <CardContent>
+
           {filteredClients.length === 0 ? (
             <div className="text-center py-12">
               {searchTerm ? (
                 <>
-                  <p className="text-gray-500 mb-4">
-                    Nenhum cliente encontrado com &quot;{searchTerm}&quot;
+                  <p className="text-slate-500 mb-4">
+                    Nenhum cliente encontrado com "{searchTerm}"
                   </p>
-                  <Button variant="outline" onClick={() => setSearchTerm('')}>
+                  <ModernButton variant="secondary" onClick={() => setSearchTerm('')}>
                     Limpar Pesquisa
-                  </Button>
+                  </ModernButton>
                 </>
               ) : (
                 <>
-                  <p className="text-gray-500 mb-4">
+                  <p className="text-slate-500 mb-4">
                     Ainda não existem clientes registados
                   </p>
-                  <Button onClick={() => navigate('/clients/new')}>
-                    <Plus className="mr-2 h-4 w-4" />
+                  <ModernButton onClick={() => navigate('/clients/new')} variant="primary" icon={Plus}>
                     Criar Primeiro Cliente
-                  </Button>
+                  </ModernButton>
                 </>
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>NIF</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Telefone</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Data de Criação</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredClients.map((client) => (
-                    <TableRow key={client.id}>
-                      <TableCell className="font-medium">{client.name}</TableCell>
-                      <TableCell className="font-mono">{client.nif}</TableCell>
-                      <TableCell>{client.email || '-'}</TableCell>
-                      <TableCell>{client.phone || '-'}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {client.client_type === 'residencial' ? 'Residencial' : 'Empresarial'}
-                        </Badge>
-                        {client.portfolio_status && (
-                          <Badge variant="outline" className="ml-2">
-                            {client.portfolio_status === 'novo' && 'Novo'}
-                            {client.portfolio_status === 'cliente_carteira' && 'Carteira'}
-                            {client.portfolio_status === 'fora_carteira' && 'Fora Carteira'}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>{formatDate(client.created_at)}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/clients/${client.id}`)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+            <ModernTable
+              headers={['Nome', 'NIF', 'Email', 'Telefone', 'Tipo', 'Data de Criação', '']}
+              data={filteredClients.map((client) => ({
+                id: client.id,
+                cells: [
+                  <span key="name" className="font-medium text-slate-900">{client.name}</span>,
+                  <span key="nif" className="font-mono text-slate-700">{client.nif}</span>,
+                  <span key="email" className="text-slate-600">{client.email || '-'}</span>,
+                  <span key="phone" className="text-slate-600">{client.phone || '-'}</span>,
+                  <div key="type" className="flex flex-wrap gap-1">
+                    <ModernBadge variant="default">
+                      {client.client_type === 'residencial' ? 'Residencial' : 'Empresarial'}
+                    </ModernBadge>
+                    {client.portfolio_status && (
+                      <ModernBadge variant="info">
+                        {client.portfolio_status === 'novo' && 'Novo'}
+                        {client.portfolio_status === 'cliente_carteira' && 'Carteira'}
+                        {client.portfolio_status === 'fora_carteira' && 'Fora Carteira'}
+                      </ModernBadge>
+                    )}
+                  </div>,
+                  <span key="date" className="text-slate-600">{formatDate(client.created_at)}</span>,
+                  <div key="actions" className="flex gap-2">
+                    <ModernButton
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate(`/clients/${client.id}`)}
+                      icon={Eye}
+                    />
+                  </div>
+                ]
+              }))}
+            />
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </ModernCard>
     </div>
   );
 }

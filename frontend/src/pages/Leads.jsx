@@ -1,29 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
+import { ModernCard, ModernButton, ModernBadge, ModernTable } from '../components/modern';
 import { Input } from '../components/ui/input';
-import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { toast } from 'sonner';
 import { leadsService } from '../services/leadsService';
-import { Plus, Search, Loader2, Eye, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Loader2, Edit, Trash2, FileText } from 'lucide-react';
 
-const STATUS_COLORS = {
-  nova: 'bg-blue-100 text-blue-800',
-  em_contacto: 'bg-yellow-100 text-yellow-800',
-  qualificada: 'bg-green-100 text-green-800',
-  convertida: 'bg-purple-100 text-purple-800',
-  perdida: 'bg-red-100 text-red-800'
-};
-
-const STATUS_LABELS = {
-  nova: 'Nova',
-  em_contacto: 'Em Contacto',
-  qualificada: 'Qualificada',
-  convertida: 'Convertida',
-  perdida: 'Perdida'
+const STATUS_MAP = {
+  nova: { label: 'Nova', variant: 'info' },
+  em_contacto: { label: 'Em Contacto', variant: 'warning' },
+  qualificada: { label: 'Qualificada', variant: 'success' },
+  convertida: { label: 'Convertida', variant: 'default' },
+  perdida: { label: 'Perdida', variant: 'danger' }
 };
 
 export default function Leads() {
@@ -102,9 +91,8 @@ export default function Leads() {
   };
 
   const getStatusBadge = (status) => {
-    const color = STATUS_COLORS[status] || 'bg-gray-100 text-gray-800';
-    const label = STATUS_LABELS[status] || status;
-    return <Badge className={color}>{label}</Badge>;
+    const statusInfo = STATUS_MAP[status] || { label: status, variant: 'default' };
+    return <ModernBadge variant={statusInfo.variant}>{statusInfo.label}</ModernBadge>;
   };
 
   const getDaysUntilAlert = (alertDate) => {
@@ -127,31 +115,32 @@ export default function Leads() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Leads</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
+            Leads
+          </h1>
+          <p className="text-slate-600 text-sm mt-1">
             Total de {leads.length} lead{leads.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Button onClick={() => navigate('/leads/new')}>
-          <Plus className="mr-2 h-4 w-4" />
+        <ModernButton onClick={() => navigate('/leads/new')} variant="primary" icon={Plus}>
           Nova Lead
-        </Button>
+        </ModernButton>
       </div>
 
-      <Card>
-        <CardHeader>
+      <ModernCard title="Gestão de Leads" icon={FileText} variant="gradient">
+        <div className="space-y-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Pesquisar por nome, NIF ou observações..."
                 value={searchTerm}
@@ -186,15 +175,14 @@ export default function Leads() {
               </SelectContent>
             </Select>
           </div>
-        </CardHeader>
-        <CardContent>
+
           {filteredLeads.length === 0 ? (
             <div className="text-center py-12">
               {searchTerm || statusFilter !== 'all' || saleTypeFilter !== 'all' ? (
                 <>
-                  <p className="text-gray-500 mb-4">Nenhuma lead encontrada com os filtros aplicados</p>
-                  <Button
-                    variant="outline"
+                  <p className="text-slate-500 mb-4">Nenhuma lead encontrada com os filtros aplicados</p>
+                  <ModernButton
+                    variant="secondary"
                     onClick={() => {
                       setSearchTerm('');
                       setStatusFilter('all');
@@ -202,81 +190,56 @@ export default function Leads() {
                     }}
                   >
                     Limpar Filtros
-                  </Button>
+                  </ModernButton>
                 </>
               ) : (
                 <>
-                  <p className="text-gray-500 mb-4">Ainda não existem leads registadas</p>
-                  <Button onClick={() => navigate('/leads/new')}>
-                    <Plus className="mr-2 h-4 w-4" />
+                  <p className="text-slate-500 mb-4">Ainda não existem leads registadas</p>
+                  <ModernButton onClick={() => navigate('/leads/new')} variant="primary" icon={Plus}>
                     Criar Primeira Lead
-                  </Button>
+                  </ModernButton>
                 </>
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Tipo de Venda</TableHead>
-                    <TableHead>Data de Alerta</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Vendedor</TableHead>
-                    <TableHead>Observações</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLeads.map((lead) => (
-                    <TableRow key={lead.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{lead.client?.name}</p>
-                          <p className="text-sm text-gray-500">{lead.client?.nif}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{lead.sale_type}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p>{formatDate(lead.alert_date)}</p>
-                          <p className="text-sm">{getDaysUntilAlert(lead.alert_date)}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(lead.status)}</TableCell>
-                      <TableCell>{lead.user?.name || '-'}</TableCell>
-                      <TableCell>
-                        <p className="max-w-xs truncate">{lead.observations || '-'}</p>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/leads/${lead.id}/edit`)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(lead.id)}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+            <ModernTable
+              headers={['Cliente', 'Tipo de Venda', 'Data de Alerta', 'Estado', 'Vendedor', 'Observações', '']}
+              data={filteredLeads.map((lead) => ({
+                id: lead.id,
+                cells: [
+                  <div key="client">
+                    <p className="font-medium text-slate-900">{lead.client?.name}</p>
+                    <p className="text-sm text-slate-500">{lead.client?.nif}</p>
+                  </div>,
+                  <ModernBadge key="type" variant="default">{lead.sale_type}</ModernBadge>,
+                  <div key="alert">
+                    <p>{formatDate(lead.alert_date)}</p>
+                    <p className="text-sm">{getDaysUntilAlert(lead.alert_date)}</p>
+                  </div>,
+                  getStatusBadge(lead.status),
+                  <span key="seller" className="text-slate-700">{lead.user?.name || '-'}</span>,
+                  <p key="obs" className="max-w-xs truncate text-slate-600">{lead.observations || '-'}</p>,
+                  <div key="actions" className="flex gap-2">
+                    <ModernButton
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate(`/leads/${lead.id}/edit`)}
+                      icon={Edit}
+                    />
+                    <ModernButton
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(lead.id)}
+                      icon={Trash2}
+                      className="text-red-600 hover:text-red-700"
+                    />
+                  </div>
+                ]
+              }))}
+            />
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </ModernCard>
     </div>
   );
 }

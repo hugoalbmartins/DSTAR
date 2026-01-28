@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
+import { ModernCard, ModernButton } from '../components/modern';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
@@ -10,7 +9,7 @@ import { toast } from 'sonner';
 import { leadsService } from '../services/leadsService';
 import { clientsService } from '../services/clientsService';
 import { usersService } from '../services/usersService';
-import { ArrowLeft, Save, Loader2, Search, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Search, ArrowRight, UserCircle, ClipboardList } from 'lucide-react';
 
 const SALE_TYPES = [
   { value: 'NI', label: 'NI (Nova Instalação)' },
@@ -38,9 +37,9 @@ export default function LeadForm() {
   const prefilledClientId = searchParams.get('clientId');
 
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(isEdit || prefilledClientId);
+  const [initialLoading, setInitialLoading] = useState(false);
   const [checkingNIF, setCheckingNIF] = useState(false);
-  const [showForm, setShowForm] = useState(isEdit || prefilledClientId);
+  const [showForm, setShowForm] = useState(false);
   const [nifInput, setNifInput] = useState('');
   const [sellers, setSellers] = useState([]);
 
@@ -62,8 +61,12 @@ export default function LeadForm() {
   useEffect(() => {
     fetchSellers();
     if (isEdit) {
+      setInitialLoading(true);
+      setShowForm(true);
       loadLead();
     } else if (prefilledClientId) {
+      setInitialLoading(true);
+      setShowForm(true);
       loadClientData();
     }
   }, [id, prefilledClientId]);
@@ -267,84 +270,93 @@ export default function LeadForm() {
   if (initialLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
       </div>
     );
   }
 
   if (!showForm && !isEdit) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-xl mx-auto space-y-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/leads')}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold">Nova Lead</h1>
-              <p className="text-gray-600 text-sm mt-1">Insira o NIF do cliente para começar</p>
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="flex items-center gap-4 mb-8">
+          <ModernButton
+            variant="ghost"
+            onClick={() => navigate('/leads')}
+            icon={ArrowLeft}
+          >
+            Voltar
+          </ModernButton>
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
+              Nova Lead
+            </h1>
+            <p className="text-slate-600 text-sm mt-1">Insira o NIF do cliente para começar</p>
+          </div>
+        </div>
+
+        <ModernCard variant="gradient" hover={false}>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-brand-100 rounded-xl">
+                <Search className="text-brand-600" size={24} />
+              </div>
+              <div>
+                <Label htmlFor="nif_input" className="text-lg font-bold text-slate-900">NIF do Cliente</Label>
+                <p className="text-sm text-slate-600 mt-1">Digite o NIF para verificar se o cliente já existe</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Input
+                id="nif_input"
+                value={nifInput}
+                onChange={(e) => setNifInput(e.target.value.replace(/\D/g, '').slice(0, 9))}
+                onKeyDown={(e) => e.key === 'Enter' && handleCheckNIF()}
+                className="text-lg h-12 border-2"
+                placeholder="123456789"
+                maxLength={9}
+                autoFocus
+              />
+              <ModernButton
+                onClick={handleCheckNIF}
+                loading={checkingNIF}
+                icon={ArrowRight}
+                iconPosition="right"
+                size="lg"
+                className="px-8"
+              >
+                Continuar
+              </ModernButton>
             </div>
           </div>
-
-          <Card>
-            <CardContent className="p-8">
-              <Label htmlFor="nif_input" className="text-lg mb-4 block">NIF do Cliente</Label>
-              <div className="flex gap-3">
-                <Input
-                  id="nif_input"
-                  value={nifInput}
-                  onChange={(e) => setNifInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleCheckNIF()}
-                  className="text-lg"
-                  placeholder="123456789"
-                  maxLength={9}
-                  autoFocus
-                />
-                <Button
-                  onClick={handleCheckNIF}
-                  disabled={checkingNIF}
-                  className="px-8"
-                >
-                  {checkingNIF ? (
-                    <Loader2 size={20} className="animate-spin" />
-                  ) : (
-                    <ArrowRight size={20} />
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        </ModernCard>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/leads')}
-          className="mb-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar
-        </Button>
-        <h1 className="text-3xl font-bold">
-          {isEdit ? 'Editar Lead' : 'Nova Lead'}
-        </h1>
+    <div className="max-w-6xl mx-auto space-y-6">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <ModernButton
+            variant="ghost"
+            onClick={() => navigate('/leads')}
+            icon={ArrowLeft}
+          >
+            Voltar
+          </ModernButton>
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
+              {isEdit ? 'Editar Lead' : 'Nova Lead'}
+            </h1>
+            <p className="text-slate-600 text-sm mt-1">
+              {isEdit ? 'Atualize as informações da lead' : 'Preencha os dados para criar uma nova lead'}
+            </p>
+          </div>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Dados do Cliente</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+        <ModernCard title="Dados do Cliente" icon={UserCircle} variant="gradient" hover={false}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="client_name">Nome Completo *</Label>
@@ -434,14 +446,9 @@ export default function LeadForm() {
                 </div>
               )}
             </div>
-          </CardContent>
-        </Card>
+        </ModernCard>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Dados da Lead</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+        <ModernCard title="Dados da Lead" icon={ClipboardList} variant="gradient" hover={false}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="sale_type">Tipo de Venda *</Label>
@@ -527,31 +534,24 @@ export default function LeadForm() {
                 />
               </div>
             </div>
-          </CardContent>
-        </Card>
+        </ModernCard>
 
-        <div className="flex justify-end gap-4">
-          <Button
+        <div className="flex justify-end gap-4 pt-4">
+          <ModernButton
             type="button"
-            variant="outline"
+            variant="secondary"
             onClick={() => navigate('/leads')}
             disabled={loading}
           >
             Cancelar
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                A guardar...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                {isEdit ? 'Atualizar' : 'Criar'} Lead
-              </>
-            )}
-          </Button>
+          </ModernButton>
+          <ModernButton
+            type="submit"
+            loading={loading}
+            icon={Save}
+          >
+            {isEdit ? 'Atualizar' : 'Criar'} Lead
+          </ModernButton>
         </div>
       </form>
     </div>
