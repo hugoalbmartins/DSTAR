@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ModernCard, ModernButton, ModernBadge, ModernTable } from '../components/modern';
 import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { DatePickerPopup } from '../components/ui/date-picker-popup';
 import { toast } from 'sonner';
 import { leadsService } from '../services/leadsService';
 import { Plus, Search, Loader2, Edit, Trash2, FileText, ShoppingCart } from 'lucide-react';
@@ -23,6 +24,8 @@ export default function Leads() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [saleTypeFilter, setSaleTypeFilter] = useState('all');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     loadLeads();
@@ -30,7 +33,7 @@ export default function Leads() {
 
   useEffect(() => {
     filterLeads();
-  }, [searchTerm, statusFilter, saleTypeFilter, leads]);
+  }, [searchTerm, statusFilter, saleTypeFilter, startDate, endDate, leads]);
 
   const loadLeads = async () => {
     try {
@@ -64,6 +67,20 @@ export default function Leads() {
 
     if (saleTypeFilter !== 'all') {
       filtered = filtered.filter(lead => lead.sale_type === saleTypeFilter);
+    }
+
+    if (startDate) {
+      filtered = filtered.filter(lead => {
+        if (!lead.alert_date) return false;
+        return new Date(lead.alert_date) >= startDate;
+      });
+    }
+
+    if (endDate) {
+      filtered = filtered.filter(lead => {
+        if (!lead.alert_date) return false;
+        return new Date(lead.alert_date) <= endDate;
+      });
     }
 
     setFilteredLeads(filtered);
@@ -174,9 +191,47 @@ export default function Leads() {
             </Select>
           </div>
 
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <label className="text-xs text-slate-700 font-semibold mb-1 block">Data Alerta Início</label>
+              <DatePickerPopup
+                value={startDate}
+                onChange={setStartDate}
+                placeholder="Data início"
+                allowFutureDates={true}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-xs text-slate-700 font-semibold mb-1 block">Data Alerta Fim</label>
+              <DatePickerPopup
+                value={endDate}
+                onChange={setEndDate}
+                placeholder="Data fim"
+                allowFutureDates={true}
+              />
+            </div>
+            <div className="flex-1 md:flex-none md:w-[200px] flex items-end">
+              {(startDate || endDate || searchTerm || statusFilter !== 'all' || saleTypeFilter !== 'all') && (
+                <ModernButton
+                  variant="secondary"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setStatusFilter('all');
+                    setSaleTypeFilter('all');
+                    setStartDate(null);
+                    setEndDate(null);
+                  }}
+                  className="w-full"
+                >
+                  Limpar Filtros
+                </ModernButton>
+              )}
+            </div>
+          </div>
+
           {filteredLeads.length === 0 ? (
             <div className="text-center py-12">
-              {searchTerm || statusFilter !== 'all' || saleTypeFilter !== 'all' ? (
+              {searchTerm || statusFilter !== 'all' || saleTypeFilter !== 'all' || startDate || endDate ? (
                 <>
                   <p className="text-slate-500 mb-4">Nenhuma lead encontrada com os filtros aplicados</p>
                   <ModernButton
@@ -185,6 +240,8 @@ export default function Leads() {
                       setSearchTerm('');
                       setStatusFilter('all');
                       setSaleTypeFilter('all');
+                      setStartDate(null);
+                      setEndDate(null);
                     }}
                   >
                     Limpar Filtros

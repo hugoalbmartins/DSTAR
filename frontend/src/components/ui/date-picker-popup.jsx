@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export function DatePickerPopup({ value, onChange, className, placeholder = "Selecionar data" }) {
+export function DatePickerPopup({ value, onChange, className, placeholder = "Selecionar data", allowFutureDates = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [tempDate, setTempDate] = useState(null);
@@ -215,16 +215,17 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
                   const isSelected = isSameDay(currentDate, tempDate);
                   const isToday = isSameDay(currentDate, new Date());
                   const isFuture = isFutureDate(currentDate);
+                  const isDisabled = !allowFutureDates && isFuture;
 
                   return (
                     <button
                       key={day}
                       type="button"
-                      onClick={() => !isFuture && handleDayClick(day)}
-                      disabled={isFuture}
+                      onClick={() => !isDisabled && handleDayClick(day)}
+                      disabled={isDisabled}
                       className={`
                         aspect-square rounded-md text-sm transition-colors
-                        ${isFuture
+                        ${isDisabled
                           ? 'text-gray-300 cursor-not-allowed'
                           : isSelected
                           ? 'bg-blue-600 text-white font-bold'

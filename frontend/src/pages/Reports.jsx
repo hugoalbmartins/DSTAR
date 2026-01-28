@@ -768,6 +768,7 @@ export default function Reports() {
                   value={leadsStartDate}
                   onChange={setLeadsStartDate}
                   placeholder="Data início"
+                  allowFutureDates={true}
                 />
               </div>
 
@@ -777,6 +778,7 @@ export default function Reports() {
                   value={leadsEndDate}
                   onChange={setLeadsEndDate}
                   placeholder="Data fim"
+                  allowFutureDates={true}
                 />
               </div>
 

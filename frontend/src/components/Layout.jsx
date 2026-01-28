@@ -171,7 +171,7 @@ export const Layout = () => {
       <main className="min-h-screen w-full">
         <div className="min-h-screen lg:ml-64">
           {/* Top bar */}
-          <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-4 lg:px-6 py-4 flex items-center justify-center shadow-sm relative">
+          <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-4 lg:px-6 py-6 flex items-center justify-center shadow-sm relative">
             <div className="lg:hidden absolute left-4 w-12"></div>
             <Link to="/dashboard" className="absolute left-1/2 transform -translate-x-1/2">
               <motion.h1
