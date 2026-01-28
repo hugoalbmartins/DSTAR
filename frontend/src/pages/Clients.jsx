@@ -26,11 +26,14 @@ export default function Clients() {
     try {
       setLoading(true);
       const data = await clientsService.getAllClients();
-      setClients(data);
-      setFilteredClients(data);
+      console.log('Clients loaded:', data);
+      setClients(data || []);
+      setFilteredClients(data || []);
     } catch (error) {
       console.error('Error loading clients:', error);
       toast.error('Erro ao carregar clientes');
+      setClients([]);
+      setFilteredClients([]);
     } finally {
       setLoading(false);
     }

@@ -504,15 +504,15 @@ export default function LeadForm() {
               <div className="space-y-2">
                 <Label htmlFor="user_id">Vendedor</Label>
                 <Select
-                  value={formData.user_id}
-                  onValueChange={(value) => handleChange('user_id', value)}
+                  value={formData.user_id || "unassigned"}
+                  onValueChange={(value) => handleChange('user_id', value === "unassigned" ? "" : value)}
                   disabled={loading}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um vendedor (opcional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Nenhum</SelectItem>
+                    <SelectItem value="unassigned">Nenhum</SelectItem>
                     {sellers.map((seller) => (
                       <SelectItem key={seller.id} value={seller.id}>
                         {seller.name}
