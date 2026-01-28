@@ -89,10 +89,6 @@ export const authService = {
       .eq('id', userId)
       .maybeSingle();
 
-    console.log('getUserProfile - userId:', userId);
-    console.log('getUserProfile - data:', data);
-    console.log('getUserProfile - error:', error);
-
     if (error) throw error;
     return data;
   },

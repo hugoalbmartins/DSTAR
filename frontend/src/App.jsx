@@ -46,7 +46,6 @@ const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       try {
         const currentUser = await authService.getCurrentUser();
-        console.log('Current user loaded:', currentUser);
         setUser(currentUser);
         if (currentUser?.must_change_password) {
           setShowPasswordChange(true);

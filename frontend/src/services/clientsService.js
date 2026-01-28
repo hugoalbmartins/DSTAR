@@ -7,9 +7,6 @@ export const clientsService = {
       .select('*')
       .order('created_at', { ascending: false });
 
-    console.log('getAllClients - data:', data);
-    console.log('getAllClients - error:', error);
-
     if (error) throw error;
     return data;
   },

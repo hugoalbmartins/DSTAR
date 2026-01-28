@@ -26,7 +26,6 @@ export default function Clients() {
     try {
       setLoading(true);
       const data = await clientsService.getAllClients();
-      console.log('Clients loaded:', data);
       setClients(data || []);
       setFilteredClients(data || []);
     } catch (error) {
@@ -121,37 +120,43 @@ export default function Clients() {
             </div>
           ) : (
             <ModernTable
-              headers={['Nome', 'NIF', 'Email', 'Telefone', 'Tipo', 'Data de Criação', '']}
-              data={filteredClients.map((client) => ({
-                id: client.id,
-                cells: [
-                  <span key="name" className="font-medium text-slate-900">{client.name}</span>,
-                  <span key="nif" className="font-mono text-slate-700">{client.nif}</span>,
-                  <span key="email" className="text-slate-600">{client.email || '-'}</span>,
-                  <span key="phone" className="text-slate-600">{client.phone || '-'}</span>,
-                  <div key="type" className="flex flex-wrap gap-1">
+              columns={[
+                { key: 'name', label: 'Nome', sortable: true, render: (value) => <span className="font-medium text-slate-900">{value}</span> },
+                { key: 'nif', label: 'NIF', sortable: true, render: (value) => <span className="font-mono text-slate-700">{value}</span> },
+                { key: 'email', label: 'Email', sortable: true, render: (value) => <span className="text-slate-600">{value || '-'}</span> },
+                { key: 'phone', label: 'Telefone', sortable: false, render: (value) => <span className="text-slate-600">{value || '-'}</span> },
+                { key: 'client_type', label: 'Tipo', sortable: true, render: (value, row) => (
+                  <div className="flex flex-wrap gap-1">
                     <ModernBadge variant="default">
-                      {client.client_type === 'residencial' ? 'Residencial' : 'Empresarial'}
+                      {value === 'residencial' ? 'Residencial' : 'Empresarial'}
                     </ModernBadge>
-                    {client.portfolio_status && (
+                    {row.portfolio_status && (
                       <ModernBadge variant="info">
-                        {client.portfolio_status === 'novo' && 'Novo'}
-                        {client.portfolio_status === 'cliente_carteira' && 'Carteira'}
-                        {client.portfolio_status === 'fora_carteira' && 'Fora Carteira'}
+                        {row.portfolio_status === 'novo' && 'Novo'}
+                        {row.portfolio_status === 'cliente_carteira' && 'Carteira'}
+                        {row.portfolio_status === 'fora_carteira' && 'Fora Carteira'}
                       </ModernBadge>
                     )}
-                  </div>,
-                  <span key="date" className="text-slate-600">{formatDate(client.created_at)}</span>,
-                  <div key="actions" className="flex gap-2">
+                  </div>
+                ) },
+                { key: 'created_at', label: 'Data de Criação', sortable: true, render: (value) => <span className="text-slate-600">{formatDate(value)}</span> },
+                { key: 'id', label: '', sortable: false, render: (value) => (
+                  <div className="flex gap-2">
                     <ModernButton
                       variant="ghost"
                       size="sm"
-                      onClick={() => navigate(`/clients/${client.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/clients/${value}`);
+                      }}
                       icon={Eye}
                     />
                   </div>
-                ]
-              }))}
+                ) }
+              ]}
+              data={filteredClients}
+              sortable={true}
+              hoverable={true}
             />
           )}
         </div>
