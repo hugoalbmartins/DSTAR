@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { authService } from "@/services/authService";
@@ -41,6 +41,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [shouldRedirectToLogin, setShouldRedirectToLogin] = useState(false);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -68,6 +69,7 @@ const AuthProvider = ({ children }) => {
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setShowPasswordChange(false);
+        setShouldRedirectToLogin(true);
       }
     });
 
@@ -82,7 +84,7 @@ const AuthProvider = ({ children }) => {
       setUser(null);
       setShowPasswordChange(false);
       toast.success("Logout efetuado com sucesso");
-      window.location.href = '/login';
+      setShouldRedirectToLogin(true);
     } catch (error) {
       toast.error("Erro ao fazer logout");
     }
@@ -94,10 +96,10 @@ const AuthProvider = ({ children }) => {
       setUser(null);
       setShowPasswordChange(false);
       toast.warning("Sessão expirada por inatividade");
-      window.location.href = '/login';
+      setShouldRedirectToLogin(true);
     } catch (error) {
       console.error("Error during idle logout:", error);
-      window.location.href = '/login';
+      setShouldRedirectToLogin(true);
     }
   };
 
@@ -117,7 +119,8 @@ const AuthProvider = ({ children }) => {
     loading,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
-    isAdminOrBackoffice: user?.role === "admin" || user?.role === "backoffice"
+    isAdminOrBackoffice: user?.role === "admin" || user?.role === "backoffice",
+    shouldRedirectToLogin
   };
 
   return (
@@ -129,6 +132,19 @@ const AuthProvider = ({ children }) => {
       />
     </AuthContext.Provider>
   );
+};
+
+const AuthRedirectHandler = () => {
+  const { shouldRedirectToLogin } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (shouldRedirectToLogin) {
+      navigate('/login', { replace: true });
+    }
+  }, [shouldRedirectToLogin, navigate]);
+
+  return null;
 };
 
 // Protected Route
@@ -165,8 +181,10 @@ function AppRoutes() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <Routes>
-      <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />
+    <>
+      <AuthRedirectHandler />
+      <Routes>
+        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />
       
       <Route path="/" element={
         <ProtectedRoute>
@@ -224,7 +242,8 @@ function AppRoutes() {
       </Route>
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+      </Routes>
+    </>
   );
 }
 
