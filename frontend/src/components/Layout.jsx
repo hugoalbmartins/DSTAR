@@ -186,36 +186,34 @@ export const Layout = () => {
       </motion.aside>
 
       {/* Main content */}
-      <motion.main
-        animate={{ marginLeft: sidebarCollapsed ? 80 : 256 }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className="min-h-screen lg:ml-64"
-      >
-        {/* Top bar */}
-        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-6 py-4 flex items-center justify-between shadow-sm">
-          <div className="lg:hidden w-8"></div>
-          <motion.h1
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent"
-          >
-            {navigation.find(item => isActive(item.href))?.name || "CRM Leiritrix"}
-          </motion.h1>
-          <div className="flex items-center gap-4">
-            <NotificationBell userId={user?.id} />
+      <main className="min-h-screen w-full">
+        <div className={`min-h-screen transition-[margin] duration-300 ease-out ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
+          {/* Top bar */}
+          <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-4 lg:px-6 py-4 flex items-center justify-between shadow-sm">
+            <div className="lg:hidden w-12"></div>
+            <motion.h1
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent"
+            >
+              {navigation.find(item => isActive(item.href))?.name || "CRM Leiritrix"}
+            </motion.h1>
+            <div className="flex items-center gap-4">
+              <NotificationBell userId={user?.id} />
+            </div>
           </div>
-        </div>
 
-        {/* Page content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="p-6"
-        >
-          <Outlet />
-        </motion.div>
-      </motion.main>
+          {/* Page content */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="p-4 lg:p-6"
+          >
+            <Outlet />
+          </motion.div>
+        </div>
+      </main>
 
       {/* Mobile overlay */}
       <AnimatePresence>
