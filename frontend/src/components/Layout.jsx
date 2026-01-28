@@ -15,9 +15,7 @@ import {
   Radio,
   Settings,
   UserCircle,
-  ClipboardList,
-  ChevronLeft,
-  ChevronRight
+  ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NotificationBell from "@/components/NotificationBell";
@@ -28,7 +26,6 @@ export const Layout = () => {
   const { user, logout, isAdmin, isAdminOrBackoffice } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, show: true },
@@ -78,7 +75,6 @@ export const Layout = () => {
   };
 
   const badge = getRoleBadge(user?.role);
-  const sidebarWidth = sidebarCollapsed ? 'w-20' : 'w-64';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
@@ -96,42 +92,20 @@ export const Layout = () => {
       </motion.button>
 
       {/* Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={{ width: sidebarCollapsed ? 80 : 256 }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className={`fixed top-0 left-0 h-full bg-white/95 backdrop-blur-xl border-r border-slate-200/60 z-40 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 shadow-2xl shadow-slate-200/50`}
+      <aside
+        className={`fixed top-0 left-0 h-full w-64 bg-white/95 backdrop-blur-xl border-r border-slate-200/60 z-40 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 shadow-2xl shadow-slate-200/50`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="relative p-6 border-b border-slate-200/60 flex items-center justify-center bg-gradient-to-br from-brand-600 to-brand-800 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-transparent"></div>
-            <motion.img
-              animate={{ opacity: sidebarCollapsed ? 0 : 1, scale: sidebarCollapsed ? 0.8 : 1 }}
-              transition={{ duration: 0.2 }}
+            <img
               src={LOGO_URL}
               alt="CRM Dolphin+Star"
               className="h-16 w-auto relative z-10"
               data-testid="logo"
             />
-            {sidebarCollapsed && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-white font-bold text-2xl"
-              >
-                D+
-              </motion.div>
-            )}
           </div>
-
-          {/* Collapse Button - Desktop Only */}
-          <button
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="hidden lg:flex absolute top-24 -right-3 z-50 p-1.5 rounded-full bg-white border-2 border-brand-500 text-brand-600 shadow-lg hover:shadow-glow transition-all hover:scale-110"
-          >
-            {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          </button>
 
           {/* Navigation */}
           <nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin" data-testid="sidebar-nav">
@@ -155,13 +129,9 @@ export const Layout = () => {
                     data-testid={`nav-${item.name.toLowerCase().replace(/\s/g, '-')}`}
                   >
                     <item.icon size={20} className={`${active ? 'drop-shadow-sm' : ''}`} />
-                    <motion.span
-                      animate={{ opacity: sidebarCollapsed ? 0 : 1, width: sidebarCollapsed ? 0 : 'auto' }}
-                      transition={{ duration: 0.2 }}
-                      className="whitespace-nowrap overflow-hidden"
-                    >
+                    <span className="whitespace-nowrap">
                       {item.name}
-                    </motion.span>
+                    </span>
                     {active && (
                       <motion.div
                         layoutId="activeIndicator"
@@ -177,35 +147,29 @@ export const Layout = () => {
 
           {/* User info */}
           <div className="p-4 border-t border-slate-200/60 bg-gradient-to-br from-slate-50 to-blue-50/30">
-            {!sidebarCollapsed && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="mb-3"
-              >
-                <p className="text-slate-900 font-semibold truncate text-sm">{user?.name}</p>
-                <p className="text-slate-600 text-xs truncate mt-0.5">{user?.email}</p>
-                <span className={`inline-block mt-2 px-3 py-1 rounded-lg text-xs font-semibold ${badge.class}`}>
-                  {badge.text}
-                </span>
-              </motion.div>
-            )}
+            <div className="mb-3">
+              <p className="text-slate-900 font-semibold truncate text-sm">{user?.name}</p>
+              <p className="text-slate-600 text-xs truncate mt-0.5">{user?.email}</p>
+              <span className={`inline-block mt-2 px-3 py-1 rounded-lg text-xs font-semibold ${badge.class}`}>
+                {badge.text}
+              </span>
+            </div>
             <Button
               onClick={logout}
               variant="ghost"
-              className={`w-full ${sidebarCollapsed ? 'justify-center px-0' : 'justify-start'} text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 transition-all hover:shadow-md`}
+              className="w-full justify-start text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 transition-all hover:shadow-md"
               data-testid="logout-btn"
             >
-              <LogOut size={18} className={sidebarCollapsed ? '' : 'mr-2'} />
-              {!sidebarCollapsed && <span>Sair</span>}
+              <LogOut size={18} className="mr-2" />
+              <span>Sair</span>
             </Button>
           </div>
         </div>
-      </motion.aside>
+      </aside>
 
       {/* Main content */}
       <main className="min-h-screen w-full">
-        <div className={`min-h-screen transition-[margin] duration-300 ease-out ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
+        <div className="min-h-screen lg:ml-64">
           {/* Top bar */}
           <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-4 lg:px-6 py-4 flex items-center justify-between shadow-sm">
             <div className="lg:hidden w-12"></div>
