@@ -6,7 +6,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
-        <p className="font-semibold text-gray-900 mb-2">{label}</p>
+        <p className="font-semibold text-[#172B4D] mb-2">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
             {entry.name}: <span className="font-semibold">{entry.value}</span>
@@ -22,7 +22,7 @@ export const SalesLineChart = React.memo(({ data, title = "Evolução de Vendas"
   return (
     <Card className="card-leiritrix">
       <CardHeader>
-        <CardTitle className="text-lg font-bold text-gray-900">{title}</CardTitle>
+        <CardTitle className="text-lg font-bold text-[#172B4D]">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -63,7 +63,7 @@ export const SalesBarChart = React.memo(({ data, title = "Vendas por Operadora" 
   return (
     <Card className="card-leiritrix">
       <CardHeader>
-        <CardTitle className="text-lg font-bold text-gray-900">{title}</CardTitle>
+        <CardTitle className="text-lg font-bold text-[#172B4D]">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -101,7 +101,7 @@ export const ConversionFunnelChart = React.memo(({ data, title = "Funil de Conve
   return (
     <Card className="card-leiritrix">
       <CardHeader>
-        <CardTitle className="text-lg font-bold text-gray-900">{title}</CardTitle>
+        <CardTitle className="text-lg font-bold text-[#172B4D]">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>

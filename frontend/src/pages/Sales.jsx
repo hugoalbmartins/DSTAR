@@ -639,7 +639,7 @@ export default function Sales() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={9} className="text-center py-12 text-gray-600">
+                  <td colSpan={9} className="text-center py-12 text-[#172B4D]">
                     Nenhuma venda encontrada
                   </td>
                 </tr>
@@ -652,7 +652,7 @@ export default function Sales() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <p className="text-gray-900/60 text-sm">
+          <p className="text-[#172B4D]/60 text-sm">
             Página {currentPage} de {totalPages} ({sortedSales.length} vendas)
           </p>
           <div className="flex gap-2">
@@ -661,7 +661,7 @@ export default function Sales() {
               size="sm"
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="border-white/10 text-gray-900 hover:bg-white/5 disabled:opacity-30"
+              className="border-white/10 text-[#172B4D] hover:bg-white/5 disabled:opacity-30"
             >
               <ChevronLeft size={16} />
               Anterior
@@ -682,7 +682,7 @@ export default function Sales() {
                       className={
                         page === currentPage
                           ? "bg-[#c8f31d] text-[#082d32] hover:bg-[#c8f31d]/90"
-                          : "border-white/10 text-gray-900 hover:bg-white/5"
+                          : "border-white/10 text-[#172B4D] hover:bg-white/5"
                       }
                     >
                       {page}
@@ -692,7 +692,7 @@ export default function Sales() {
                   page === currentPage - 2 ||
                   page === currentPage + 2
                 ) {
-                  return <span key={page} className="text-gray-900/40 px-2">...</span>;
+                  return <span key={page} className="text-[#172B4D]/40 px-2">...</span>;
                 }
                 return null;
               })}
@@ -702,7 +702,7 @@ export default function Sales() {
               size="sm"
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="border-white/10 text-gray-900 hover:bg-white/5 disabled:opacity-30"
+              className="border-white/10 text-[#172B4D] hover:bg-white/5 disabled:opacity-30"
             >
               Seguinte
               <ChevronRight size={16} />
@@ -715,8 +715,8 @@ export default function Sales() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent className="bg-white border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900">Eliminar Venda</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-900/60">
+            <AlertDialogTitle className="text-[#172B4D]">Eliminar Venda</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#172B4D]/60">
               Tem a certeza que pretende eliminar esta venda? Esta ação não pode ser revertida.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -724,7 +724,7 @@ export default function Sales() {
             <AlertDialogCancel className="btn-secondary">Cancelar</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600 text-gray-900"
+              className="bg-red-500 hover:bg-red-600 text-[#172B4D]"
             >
               Eliminar
             </AlertDialogAction>

@@ -127,7 +127,7 @@ export const Layout = () => {
         {/* Top bar */}
         <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="lg:hidden w-8"></div>
-          <h1 className="text-xl font-bold text-gray-900 font-['Manrope']">
+          <h1 className="text-xl font-bold text-[#172B4D] font-['Manrope']">
             {navigation.find(item => isActive(item.href))?.name || "CRM Leiritrix"}
           </h1>
           <div className="flex items-center gap-4">

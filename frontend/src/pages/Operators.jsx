@@ -328,7 +328,7 @@ export default function Operators() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${operator.active ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                      <Radio size={20} className={operator.active ? 'text-blue-600' : 'text-gray-500'} />
+                      <Radio size={20} className={operator.active ? 'text-blue-600' : 'text-[#172B4D]'} />
                     </div>
                     <div>
                       <p className="text-white font-medium">{operator.name}</p>

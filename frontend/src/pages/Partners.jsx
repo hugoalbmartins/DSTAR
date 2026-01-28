@@ -336,7 +336,7 @@ export default function Partners() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${partner.active ? 'bg-blue-100' : 'bg-white/10'}`}>
-                      <Building2 size={20} className={partner.active ? 'text-blue-600' : 'text-gray-500'} />
+                      <Building2 size={20} className={partner.active ? 'text-blue-600' : 'text-[#172B4D]'} />
                     </div>
                     <div>
                       <p className="text-white font-medium">{partner.name}</p>
@@ -569,7 +569,7 @@ export default function Partners() {
                               className="border-[#c8f31d]"
                             />
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${operator.active ? 'bg-blue-100' : 'bg-white/10'}`}>
-                              <Radio size={16} className={operator.active ? 'text-blue-600' : 'text-gray-500'} />
+                              <Radio size={16} className={operator.active ? 'text-blue-600' : 'text-[#172B4D]'} />
                             </div>
                             <div className="flex-1">
                               <p className="text-white font-medium">{operator.name}</p>
@@ -620,7 +620,7 @@ export default function Partners() {
                               className="border-white/30"
                             />
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${operator.active ? 'bg-blue-100' : 'bg-white/10'}`}>
-                              <Radio size={16} className={operator.active ? 'text-blue-600' : 'text-gray-500'} />
+                              <Radio size={16} className={operator.active ? 'text-blue-600' : 'text-[#172B4D]'} />
                             </div>
                             <div className="flex-1">
                               <p className="text-white font-medium">{operator.name}</p>

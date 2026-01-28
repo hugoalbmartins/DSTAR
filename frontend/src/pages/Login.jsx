@@ -69,7 +69,7 @@ export default function Login() {
         <h2 className="text-2xl font-bold text-[#172B4D] text-center mb-2 font-['Manrope']">
           Bem-vindo
         </h2>
-        <p className="text-gray-600 text-center mb-8 text-sm">
+        <p className="text-[#172B4D]/70 text-center mb-8 text-sm">
           Aceda à sua conta para continuar
         </p>
 

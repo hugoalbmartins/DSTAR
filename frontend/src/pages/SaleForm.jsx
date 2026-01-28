@@ -730,7 +730,7 @@ export default function SaleForm() {
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="text-gray-900/70 hover:text-gray-900"
+            className="text-[#172B4D]/70 hover:text-[#172B4D]"
           >
             <ArrowLeft size={20} />
           </Button>

@@ -360,8 +360,8 @@ export default function Dashboard() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500 mt-1">Visão geral do desempenho de vendas</p>
+          <h1 className="text-3xl font-bold text-[#172B4D]">Dashboard</h1>
+          <p className="text-[#172B4D]/70 mt-1">Visão geral do desempenho de vendas</p>
         </div>
         <div className="flex gap-2">
           <select
@@ -476,7 +476,7 @@ export default function Dashboard() {
 
       <Card className="card-leiritrix">
         <CardHeader className="border-b border-gray-200 flex flex-row items-center justify-between">
-          <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <CardTitle className="text-lg font-bold text-[#172B4D] flex items-center gap-2">
             <AlertTriangle className="text-orange-500" size={20} />
             Alertas de Fidelização
           </CardTitle>
@@ -502,8 +502,8 @@ export default function Dashboard() {
                         <CategoryIcon className="text-[#0052CC]" size={18} />
                       </div>
                       <div>
-                        <p className="text-gray-900 font-medium">{alert.client_name}</p>
-                        <p className="text-gray-500 text-sm">{alert.partner_name}</p>
+                        <p className="text-[#172B4D] font-medium">{alert.client_name}</p>
+                        <p className="text-[#172B4D]/70 text-sm">{alert.partner_name}</p>
                       </div>
                     </div>
                     <div className="text-right">

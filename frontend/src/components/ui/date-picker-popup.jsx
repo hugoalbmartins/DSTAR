@@ -127,7 +127,7 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
           className="w-full flex items-center gap-2 p-3 rounded-md border border-gray-300 bg-white hover:border-gray-400 transition-colors text-left"
         >
           <CalendarIcon className="h-4 w-4 text-blue-600 flex-shrink-0" />
-          <span className={`flex-1 text-sm ${selectedDate ? 'text-[#172B4D]' : 'text-gray-500'}`}>
+          <span className={`flex-1 text-sm ${selectedDate ? 'text-[#172B4D]' : 'text-[#172B4D]/60'}`}>
             {displayValue}
           </span>
           {selectedDate && (
@@ -137,7 +137,7 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
                 e.stopPropagation();
                 handleClear();
               }}
-              className="text-gray-500 hover:text-[#172B4D] text-xs px-2"
+              className="text-[#172B4D]/60 hover:text-[#172B4D] text-xs px-2"
             >
               ✕
             </button>
@@ -203,7 +203,7 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
 
               <div className="grid grid-cols-7 gap-1">
                 {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((day) => (
-                  <div key={day} className="text-center text-xs text-gray-600 font-medium py-2">
+                  <div key={day} className="text-center text-xs text-[#172B4D] font-medium py-2">
                     {day}
                   </div>
                 ))}
