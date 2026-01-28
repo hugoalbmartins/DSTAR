@@ -10,8 +10,8 @@ import { operatorClientCategoriesService } from "@/services/operatorClientCatego
 import { clientsService } from "@/services/clientsService";
 import { addressesService } from "@/services/addressesService";
 import { servicesService } from "@/services/servicesService";
+import { ModernCard, ModernButton, ModernBadge } from "@/components/modern";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -903,7 +903,7 @@ export default function SaleForm() {
   if (loadingPartners) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="spinner"></div>
+        <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
       </div>
     );
   }
@@ -911,18 +911,17 @@ export default function SaleForm() {
   if (partners.length === 0) {
     return (
       <div className="max-w-3xl mx-auto">
-        <Card className="card-leiritrix">
-          <CardContent className="p-8 text-center">
-            <p className="text-[#172B4D]/70 mb-4">Não existem parceiros registados.</p>
-            <p className="text-[#172B4D]/70 text-sm mb-6">É necessário criar pelo menos um parceiro antes de registar vendas.</p>
-            <Button
+        <ModernCard variant="gradient" hover={false}>
+          <div className="text-center py-6">
+            <p className="text-slate-700 mb-4 text-lg font-semibold">Não existem parceiros registados.</p>
+            <p className="text-slate-600 text-sm mb-6">É necessário criar pelo menos um parceiro antes de registar vendas.</p>
+            <ModernButton
               onClick={() => navigate("/partners")}
-              className="btn-primary btn-primary-glow"
             >
               Criar Parceiro
-            </Button>
-          </CardContent>
-        </Card>
+            </ModernButton>
+          </div>
+        </ModernCard>
       </div>
     );
   }
@@ -930,48 +929,49 @@ export default function SaleForm() {
   if (!showForm) {
     return (
       <div className="max-w-xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button
+        <div className="flex items-center gap-4 mb-8">
+          <ModernButton
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="text-[#172B4D]/70 hover:text-[#172B4D]"
+            icon={ArrowLeft}
           >
-            <ArrowLeft size={20} />
-          </Button>
+            Voltar
+          </ModernButton>
           <div>
-            <h1 className="text-2xl font-bold text-[#172B4D] font-['Manrope']">Nova Venda</h1>
-            <p className="text-[#172B4D]/70 text-sm mt-1">Insira o NIF do cliente para começar</p>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
+              Nova Venda
+            </h1>
+            <p className="text-slate-600 text-sm mt-1">Insira o NIF do cliente para começar</p>
           </div>
         </div>
 
-        <Card className="card-leiritrix">
-          <CardContent className="p-8">
-            <Label htmlFor="nif_input" className="form-label text-lg mb-4 block text-[#172B4D]">NIF do Cliente</Label>
-            <div className="flex gap-3">
-              <Input
-                id="nif_input"
-                value={nifInput}
-                onChange={(e) => setNifInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCheckNIF()}
-                className="form-input text-lg"
-                placeholder="123456789"
-                maxLength={9}
-                autoFocus
-              />
-              <Button
-                onClick={handleCheckNIF}
-                disabled={checkingNIF}
-                className="btn-primary btn-primary-glow px-8"
-              >
-                {checkingNIF ? (
-                  <Loader2 size={20} className="animate-spin" />
-                ) : (
-                  <ArrowRight size={20} />
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <ModernCard
+          title="NIF do Cliente"
+          icon={User}
+          variant="gradient"
+          hover={false}
+        >
+          <div className="flex gap-3">
+            <Input
+              id="nif_input"
+              value={nifInput}
+              onChange={(e) => setNifInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCheckNIF()}
+              className="text-lg"
+              placeholder="123456789"
+              maxLength={9}
+              autoFocus
+            />
+            <ModernButton
+              onClick={handleCheckNIF}
+              disabled={checkingNIF}
+              loading={checkingNIF}
+              icon={ArrowRight}
+            >
+              Continuar
+            </ModernButton>
+          </div>
+        </ModernCard>
 
         <Dialog open={showTypeDialog} onOpenChange={setShowTypeDialog}>
           <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)] max-w-md">
@@ -1146,9 +1146,9 @@ export default function SaleForm() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6" data-testid="sale-form-page">
-      <div className="flex items-center gap-4">
-        <Button
+    <div className="max-w-4xl mx-auto space-y-6" data-testid="sale-form-page">
+      <div className="flex items-center gap-4 mb-8">
+        <ModernButton
           variant="ghost"
           onClick={() => {
             setShowForm(false);
@@ -1188,26 +1188,26 @@ export default function SaleForm() {
               solar_panel_quantity: ""
             });
           }}
-          className="text-[#172B4D]/70 hover:text-[#172B4D]"
+          icon={ArrowLeft}
           data-testid="back-btn"
         >
-          <ArrowLeft size={20} />
-        </Button>
+          Voltar
+        </ModernButton>
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Manrope']">Nova Venda</h1>
-          <p className="text-white/70 text-sm mt-1">NIF: {formData.client_nif}</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
+            Nova Venda
+          </h1>
+          <p className="text-slate-600 text-sm mt-1">NIF: {formData.client_nif}</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} data-testid="sale-form">
-        <Card className="card-leiritrix">
-          <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <User size={20} className="text-blue-600" />
-              Dados do Cliente
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6">
+      <form onSubmit={handleSubmit} data-testid="sale-form" className="space-y-6">
+        <ModernCard
+          title="Dados do Cliente"
+          icon={User}
+          variant="gradient"
+          hover={false}
+        >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="client_name" className="form-label">Nome do Cliente *</Label>
@@ -1283,17 +1283,14 @@ export default function SaleForm() {
                 />
               </div>
             </div>
-          </CardContent>
-        </Card>
+        </ModernCard>
 
-        <Card className="card-leiritrix mt-6">
-          <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <FileText size={20} className="text-blue-600" />
-              Dados do Contrato
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6">
+        <ModernCard
+          title="Dados do Contrato"
+          icon={FileText}
+          variant="gradient"
+          hover={false}
+        >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
                 <Label htmlFor="sale_date" className="form-label">Data de Venda *</Label>
@@ -1674,18 +1671,15 @@ export default function SaleForm() {
                 </>
               )}
             </div>
-          </CardContent>
-        </Card>
+        </ModernCard>
 
         {showEnergyFields && formData.energy_type && (
-          <Card className="card-leiritrix mt-6">
-            <CardHeader className="border-b border-white/5 pb-4">
-              <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-                <Zap size={20} className="text-blue-600" />
-                Detalhes de Energia ({ENERGY_TYPE_MAP[formData.energy_type]})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6 space-y-6">
+          <ModernCard
+            title={`Detalhes de Energia (${ENERGY_TYPE_MAP[formData.energy_type]})`}
+            icon={Zap}
+            variant="gradient"
+            hover={false}
+          >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {showElectricityFields && (
                   <>
@@ -1749,19 +1743,16 @@ export default function SaleForm() {
                   </>
                 )}
               </div>
-            </CardContent>
-          </Card>
+          </ModernCard>
         )}
 
         {showSolarFields && (
-          <Card className="card-leiritrix mt-6">
-            <CardHeader className="border-b border-white/5 pb-4">
-              <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-                <Sun size={20} className="text-blue-600" />
-                Detalhes de Painéis Solares
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6 space-y-6">
+          <ModernCard
+            title="Detalhes de Painéis Solares"
+            icon={Sun}
+            variant="gradient"
+            hover={false}
+          >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <Label htmlFor="cpe" className="form-label">CPE</Label>
@@ -1802,56 +1793,44 @@ export default function SaleForm() {
                   <p className="text-white/40 text-xs mt-1">Opcional</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+          </ModernCard>
         )}
 
-        <Card className="card-leiritrix mt-6">
-          <CardContent className="pt-6">
-            <Label htmlFor="notes" className="form-label">Notas</Label>
+        <ModernCard variant="glass" hover={false}>
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-slate-700 font-semibold">Notas</Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => handleChange("notes", e.target.value)}
-              className="form-input min-h-24"
+              className="min-h-24"
               placeholder="Observações adicionais..."
               data-testid="notes-input"
             />
-          </CardContent>
-        </Card>
+          </div>
+        </ModernCard>
 
-        <div className="flex justify-end gap-4 mt-6">
-          <Button
+        <div className="flex justify-end gap-4 pt-4">
+          <ModernButton
             type="button"
-            variant="ghost"
+            variant="secondary"
             onClick={() => {
               setShowForm(false);
               setNifInput("");
               setPreviousSales([]);
             }}
-            className="btn-secondary"
             data-testid="cancel-btn"
           >
             Cancelar
-          </Button>
-          <Button
+          </ModernButton>
+          <ModernButton
             type="submit"
-            disabled={loading}
-            className="btn-primary btn-primary-glow"
+            loading={loading}
+            icon={Save}
             data-testid="submit-btn"
           >
-            {loading ? (
-              <>
-                <Loader2 size={18} className="mr-2 animate-spin" />
-                A guardar...
-              </>
-            ) : (
-              <>
-                <Save size={18} className="mr-2" />
-                Criar Venda
-              </>
-            )}
-          </Button>
+            Criar Venda
+          </ModernButton>
         </div>
       </form>
 
