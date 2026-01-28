@@ -1024,10 +1024,10 @@ export default function SaleForm() {
         </ModernCard>
 
         <Dialog open={showTypeDialog} onOpenChange={setShowTypeDialog}>
-          <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)] max-w-md">
+          <DialogContent className="bg-white border-slate-200 max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-white font-['Manrope'] text-xl">Cliente Existente</DialogTitle>
-              <DialogDescription className="text-white/70">
+              <DialogTitle className="text-slate-900 font-['Manrope'] text-xl">Cliente Existente</DialogTitle>
+              <DialogDescription className="text-slate-600">
                 {availableServices.length > 0
                   ? `Encontrámos ${availableServices.length} serviço(s) registado(s). Que tipo de venda deseja registar?`
                   : `Encontrámos {previousSales.length} venda(s) para este NIF. Que tipo de venda deseja registar?`
@@ -1043,25 +1043,25 @@ export default function SaleForm() {
               </ModernButton>
               <ModernButton
                 onClick={() => handleSaleTypeSelection("MC")}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6"
+                className="w-full bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white font-semibold py-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 MC (Mudança de Casa)
               </ModernButton>
               <ModernButton
                 onClick={() => handleSaleTypeSelection("Refid")}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-6"
+                className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 Refid (Refidelização)
               </ModernButton>
               <ModernButton
                 onClick={() => handleSaleTypeSelection("Refid_Acrescimo")}
-                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-6"
+                className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 Refid com Acréscimo
               </ModernButton>
               <ModernButton
                 onClick={() => handleSaleTypeSelection("Refid_Decrescimo")}
-                className="w-full bg-purple-400 hover:bg-purple-500 text-white font-semibold py-6"
+                className="w-full bg-gradient-to-r from-indigo-400 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 text-white font-semibold py-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 Refid com Decréscimo
               </ModernButton>
@@ -1082,13 +1082,13 @@ export default function SaleForm() {
         </Dialog>
 
         <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
-          <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)] max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="bg-white border-slate-200 max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-white font-['Manrope'] text-xl flex items-center gap-2">
-                <MapPin className="text-blue-600" size={24} />
+              <DialogTitle className="text-slate-900 font-['Manrope'] text-xl flex items-center gap-2">
+                <MapPin className="text-brand-600" size={24} />
                 Selecione a Morada Original
               </DialogTitle>
-              <DialogDescription className="text-white/70">
+              <DialogDescription className="text-slate-600">
                 Escolha a morada da venda anterior que deseja processar
               </DialogDescription>
             </DialogHeader>
@@ -1096,29 +1096,29 @@ export default function SaleForm() {
               {previousSales.map((sale) => (
                 <Card
                   key={sale.id}
-                  className="card-leiritrix cursor-pointer hover:border-[#c8f31d]/50 transition-colors"
+                  className="bg-white border border-slate-200 rounded-xl shadow-sm cursor-pointer hover:border-brand-500 hover:shadow-md transition-all duration-200"
                   onClick={() => selectedSaleFlow === "mc" ? handleMCSelection(sale) : handleRefidSelection(sale)}
                 >
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="text-white font-['Manrope'] font-semibold">
+                        <p className="text-slate-900 font-semibold">
                           {sale.street_address}
                         </p>
-                        <p className="text-white/70 text-sm">
+                        <p className="text-slate-600 text-sm">
                           {sale.postal_code} {sale.city}
                         </p>
-                        <div className="flex gap-4 mt-2 text-xs text-white/70">
+                        <div className="flex gap-4 mt-2 text-xs text-slate-600">
                           <span>{sale.operators?.name || "Sem operadora"}</span>
                           <span>{sale.category}</span>
                           {sale.loyalty_months > 0 && (
-                            <span className="text-orange-400">
+                            <span className="text-orange-600 font-medium">
                               {sale.loyalty_months} meses fidelização
                             </span>
                           )}
                         </div>
                       </div>
-                      <ArrowRight size={20} className="text-blue-600" />
+                      <ArrowRight size={20} className="text-brand-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -1128,13 +1128,13 @@ export default function SaleForm() {
         </Dialog>
 
         <Dialog open={showServiceDialog} onOpenChange={setShowServiceDialog}>
-          <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)] max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="bg-white border-slate-200 max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-white font-['Manrope'] text-xl flex items-center gap-2">
-                <Zap className="text-blue-600" size={24} />
+              <DialogTitle className="text-slate-900 font-['Manrope'] text-xl flex items-center gap-2">
+                <Zap className="text-brand-600" size={24} />
                 Selecione o Serviço
               </DialogTitle>
-              <DialogDescription className="text-white/70">
+              <DialogDescription className="text-slate-600">
                 Escolha o serviço que deseja processar nesta venda
               </DialogDescription>
             </DialogHeader>
@@ -1142,34 +1142,34 @@ export default function SaleForm() {
               {availableServices.map((service) => (
                 <Card
                   key={service.id}
-                  className="card-leiritrix cursor-pointer hover:border-[#c8f31d]/50 transition-colors"
+                  className="bg-white border border-slate-200 rounded-xl shadow-sm cursor-pointer hover:border-brand-500 hover:shadow-md transition-all duration-200"
                   onClick={() => handleServiceSelection(service)}
                 >
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <p className="text-white font-['Manrope'] font-semibold">
+                        <p className="text-slate-900 font-semibold">
                           {service.service_number || 'Sem número de serviço'}
                         </p>
-                        <p className="text-white/70 text-sm mt-1">
+                        <p className="text-slate-600 text-sm mt-1">
                           {service.address?.street_address}
                         </p>
-                        <p className="text-white/70 text-sm">
+                        <p className="text-slate-600 text-sm">
                           {service.address?.postal_code} {service.address?.city}
                         </p>
-                        <div className="flex gap-4 mt-2 text-xs text-white/70">
+                        <div className="flex gap-4 mt-2 text-xs text-slate-600">
                           <span>{service.operator?.name || "Sem operadora"}</span>
                           <span className="capitalize">{service.service_type.replace('energia_', '').replace('_', ' ')}</span>
                           {service.cpe && <span>CPE: {service.cpe}</span>}
                           {service.cui && <span>CUI: {service.cui}</span>}
                           {service.loyalty_end_date && (
-                            <span className="text-orange-400">
+                            <span className="text-orange-600 font-medium">
                               Fidelização até {new Date(service.loyalty_end_date).toLocaleDateString('pt-PT')}
                             </span>
                           )}
                         </div>
                       </div>
-                      <ArrowRight size={20} className="text-blue-600" />
+                      <ArrowRight size={20} className="text-brand-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -1179,10 +1179,10 @@ export default function SaleForm() {
         </Dialog>
 
         <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-          <AlertDialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
+          <AlertDialogContent className="bg-white border-slate-200">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-white font-['Manrope']">Atenção</AlertDialogTitle>
-              <AlertDialogDescription className="text-white/70">
+              <AlertDialogTitle className="text-slate-900 font-['Manrope']">Atenção</AlertDialogTitle>
+              <AlertDialogDescription className="text-slate-600">
                 {alertMessage}
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -1351,7 +1351,7 @@ export default function SaleForm() {
                   maxDate={new Date()}
                   data-testid="sale-date-select"
                 />
-                <p className="text-white/40 text-xs mt-1">
+                <p className="text-slate-500 text-xs mt-1">
                   Esta data será usada para contabilizar comissões e mensalidades no respetivo mês
                 </p>
               </div>
@@ -1378,9 +1378,9 @@ export default function SaleForm() {
                   <SelectTrigger className="form-input" data-testid="category-select">
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1E293B] border-white/10">
+                  <SelectContent className="bg-white border-slate-200">
                     {CATEGORIES.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-white/10">
+                      <SelectItem key={cat.value} value={cat.value} className="text-slate-900">
                         {cat.label}
                       </SelectItem>
                     ))}
@@ -1391,16 +1391,16 @@ export default function SaleForm() {
               {showEnergyFields && (
                 <div className="md:col-span-2 p-4 bg-[#c8f31d]/5 border border-[#c8f31d]/20 rounded-lg">
                   <Label htmlFor="energy_type" className="form-label flex items-center gap-2">
-                    <Zap size={16} className="text-blue-600" />
+                    <Zap size={16} className="text-brand-600" />
                     Tipo de Energia * (selecione para ver as operadoras disponíveis)
                   </Label>
                   <Select value={formData.energy_type} onValueChange={(v) => handleChange("energy_type", v)}>
                     <SelectTrigger className="form-input mt-2" data-testid="energy-type-select">
                       <SelectValue placeholder="Selecione o tipo de energia" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10">
+                    <SelectContent className="bg-white border-slate-200">
                       {ENERGY_TYPES.map((type) => (
-                        <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
+                        <SelectItem key={type.value} value={type.value} className="text-slate-900">
                           {type.label}
                         </SelectItem>
                       ))}
@@ -1429,9 +1429,9 @@ export default function SaleForm() {
                         : "Selecione a operadora"
                     } />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1E293B] border-white/10">
+                  <SelectContent className="bg-white border-slate-200">
                     {getFilteredOperators().map((operator) => (
-                      <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10">
+                      <SelectItem key={operator.id} value={operator.id} className="text-slate-900">
                         {operator.name}
                       </SelectItem>
                     ))}
@@ -1460,9 +1460,9 @@ export default function SaleForm() {
                         : "Selecione o parceiro"
                     } />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1E293B] border-white/10">
+                  <SelectContent className="bg-white border-slate-200">
                     {getFilteredPartners().map((partner) => (
-                      <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
+                      <SelectItem key={partner.id} value={partner.id} className="text-slate-900">
                         {partner.name}
                       </SelectItem>
                     ))}
@@ -1480,7 +1480,7 @@ export default function SaleForm() {
                   <Label htmlFor="sale_type" className="form-label">
                     Tipo de Venda
                     {availableSaleTypes.length < SALE_TYPES.length && (
-                      <span className="ml-2 text-xs text-blue-600">
+                      <span className="ml-2 text-xs text-brand-600">
                         (Filtrado por operadora)
                       </span>
                     )}
@@ -1489,9 +1489,9 @@ export default function SaleForm() {
                     <SelectTrigger className="form-input" data-testid="sale-type-select">
                       <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10">
+                    <SelectContent className="bg-white border-slate-200">
                       {availableSaleTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
+                        <SelectItem key={type.value} value={type.value} className="text-slate-900">
                           {type.label}
                         </SelectItem>
                       ))}
@@ -1511,9 +1511,9 @@ export default function SaleForm() {
                     <SelectTrigger className="form-input">
                       <SelectValue placeholder="Selecione a categoria do cliente" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10">
+                    <SelectContent className="bg-white border-slate-200">
                       {clientCategories.map((category) => (
-                        <SelectItem key={category.id} value={category.id} className="text-white hover:bg-white/10">
+                        <SelectItem key={category.id} value={category.id} className="text-slate-900">
                           {category.name}
                         </SelectItem>
                       ))}
@@ -1536,11 +1536,11 @@ export default function SaleForm() {
                   <SelectTrigger className="form-input" data-testid="client-type-select">
                     <SelectValue placeholder="Selecione o tipo de cliente" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1E293B] border-white/10">
-                    <SelectItem value="residencial" className="text-white hover:bg-white/10">
+                  <SelectContent className="bg-white border-slate-200">
+                    <SelectItem value="residencial" className="text-slate-900">
                       Residencial
                     </SelectItem>
-                    <SelectItem value="empresarial" className="text-white hover:bg-white/10">
+                    <SelectItem value="empresarial" className="text-slate-900">
                       Empresarial
                     </SelectItem>
                   </SelectContent>
@@ -1557,14 +1557,14 @@ export default function SaleForm() {
                     <SelectTrigger className="form-input" data-testid="portfolio-status-select">
                       <SelectValue placeholder="Selecione o encarteiramento" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10">
-                      <SelectItem value="novo" className="text-white hover:bg-white/10">
+                    <SelectContent className="bg-white border-slate-200">
+                      <SelectItem value="novo" className="text-slate-900">
                         Novo
                       </SelectItem>
-                      <SelectItem value="cliente_carteira" className="text-white hover:bg-white/10">
+                      <SelectItem value="cliente_carteira" className="text-slate-900">
                         Cliente de Carteira
                       </SelectItem>
-                      <SelectItem value="fora_carteira" className="text-white hover:bg-white/10">
+                      <SelectItem value="fora_carteira" className="text-slate-900">
                         Fora de Carteira
                       </SelectItem>
                     </SelectContent>
@@ -1579,12 +1579,12 @@ export default function SaleForm() {
                     <SelectTrigger className="form-input" data-testid="seller-select">
                       <SelectValue placeholder="Selecione o vendedor" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10">
-                      <SelectItem value="none" className="text-white hover:bg-white/10">
+                    <SelectContent className="bg-white border-slate-200">
+                      <SelectItem value="none" className="text-slate-900">
                         Nenhum
                       </SelectItem>
                       {sellers.map((seller) => (
-                        <SelectItem key={seller.id} value={seller.id} className="text-white hover:bg-white/10">
+                        <SelectItem key={seller.id} value={seller.id} className="text-slate-900">
                           {seller.name}
                         </SelectItem>
                       ))}
@@ -1649,9 +1649,9 @@ export default function SaleForm() {
                   <SelectTrigger className="form-input">
                     <SelectValue placeholder="Selecione o prazo" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1E293B] border-white/10">
+                  <SelectContent className="bg-white border-slate-200">
                     {LOYALTY_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value} className="text-white hover:bg-white/10">
+                      <SelectItem key={option.value} value={option.value} className="text-slate-900">
                         {option.label}
                       </SelectItem>
                     ))}
@@ -1750,9 +1750,9 @@ export default function SaleForm() {
                         <SelectTrigger className="form-input" data-testid="potencia-select">
                           <SelectValue placeholder="Selecione a potência" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#1E293B] border-white/10 max-h-60">
+                        <SelectContent className="bg-white border-slate-200 max-h-60">
                           {POTENCIAS.map((pot) => (
-                            <SelectItem key={pot} value={pot} className="text-white hover:bg-white/10">
+                            <SelectItem key={pot} value={pot} className="text-slate-900">
                               {pot} {pot !== "Outra" && "kVA"}
                             </SelectItem>
                           ))}
@@ -1781,9 +1781,9 @@ export default function SaleForm() {
                         <SelectTrigger className="form-input" data-testid="escalao-select">
                           <SelectValue placeholder="Selecione o escalão" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#1E293B] border-white/10">
+                        <SelectContent className="bg-white border-slate-200">
                           {ESCALOES_GAS.map((esc) => (
-                            <SelectItem key={esc} value={esc} className="text-white hover:bg-white/10">
+                            <SelectItem key={esc} value={esc} className="text-slate-900">
                               {esc}
                             </SelectItem>
                           ))}
@@ -1813,7 +1813,7 @@ export default function SaleForm() {
                     className="form-input"
                     placeholder="PT0002..."
                   />
-                  <p className="text-white/40 text-xs mt-1">Opcional</p>
+                  <p className="text-slate-500 text-xs mt-1">Opcional</p>
                 </div>
                 <div>
                   <Label htmlFor="solar_power" className="form-label">Potência Instalada (kW)</Label>
@@ -1827,7 +1827,7 @@ export default function SaleForm() {
                     className="form-input"
                     placeholder="0.00"
                   />
-                  <p className="text-white/40 text-xs mt-1">Opcional</p>
+                  <p className="text-slate-500 text-xs mt-1">Opcional</p>
                 </div>
                 <div>
                   <Label htmlFor="solar_panel_quantity" className="form-label">Quantidade de Painéis</Label>
@@ -1840,7 +1840,7 @@ export default function SaleForm() {
                     className="form-input"
                     placeholder="0"
                   />
-                  <p className="text-white/40 text-xs mt-1">Opcional</p>
+                  <p className="text-slate-500 text-xs mt-1">Opcional</p>
                 </div>
               </div>
           </ModernCard>
@@ -1885,10 +1885,10 @@ export default function SaleForm() {
       </form>
 
       <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-        <AlertDialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
+        <AlertDialogContent className="bg-white border-slate-200">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white font-['Manrope']">Atenção</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70">
+            <AlertDialogTitle className="text-slate-900 font-['Manrope']">Atenção</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
               {alertMessage}
             </AlertDialogDescription>
           </AlertDialogHeader>

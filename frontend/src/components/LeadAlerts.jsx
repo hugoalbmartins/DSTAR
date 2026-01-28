@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
+import { ModernCard, ModernButton, ModernBadge } from './modern';
 import { leadsService } from '../services/leadsService';
 import { AlertTriangle, ArrowRight, Loader2 } from 'lucide-react';
 
@@ -44,77 +42,72 @@ export default function LeadAlerts() {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
-            Alertas de Leads
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-          </div>
-        </CardContent>
-      </Card>
+      <ModernCard
+        title="Alertas de Leads"
+        icon={AlertTriangle}
+        variant="gradient"
+        hover={false}
+      >
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin text-brand-600" />
+        </div>
+      </ModernCard>
     );
   }
 
   if (leads.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
-            Alertas de Leads
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-gray-500">Não há leads com alertas para amanhã</p>
-        </CardContent>
-      </Card>
+      <ModernCard
+        title="Alertas de Leads"
+        icon={AlertTriangle}
+        variant="gradient"
+        hover={false}
+      >
+        <p className="text-sm text-slate-500">Não há leads com alertas para amanhã</p>
+      </ModernCard>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
-            Alertas de Leads ({leads.length})
-          </CardTitle>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/leads')}>
-            Ver Todas
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {leads.slice(0, 5).map((lead) => {
-            const alertInfo = getDaysUntilAlert(lead.alert_date);
-            return (
-              <div
-                key={lead.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
-                onClick={() => navigate(`/leads/${lead.id}/edit`)}
-              >
-                <div className="flex-1">
-                  <p className="font-medium text-sm">{lead.client?.name}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline" className="text-xs">{lead.sale_type}</Badge>
-                    <span className={`text-xs font-semibold ${alertInfo.isPast ? 'text-red-600' : alertInfo.days <= 3 ? 'text-orange-600' : 'text-gray-600'}`}>
-                      {alertInfo.label}
-                    </span>
-                  </div>
+    <ModernCard
+      title={`Alertas de Leads (${leads.length})`}
+      icon={AlertTriangle}
+      variant="gradient"
+      hover={false}
+      headerAction={
+        <ModernButton
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/leads')}
+          icon={ArrowRight}
+        >
+          Ver Todas
+        </ModernButton>
+      }
+    >
+      <div className="space-y-3">
+        {leads.slice(0, 5).map((lead) => {
+          const alertInfo = getDaysUntilAlert(lead.alert_date);
+          return (
+            <div
+              key={lead.id}
+              className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 cursor-pointer transition-all duration-200 hover:shadow-md border border-slate-100"
+              onClick={() => navigate(`/leads/${lead.id}/edit`)}
+            >
+              <div className="flex-1">
+                <p className="font-semibold text-sm text-slate-900">{lead.client?.name}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <ModernBadge variant="default">{lead.sale_type}</ModernBadge>
+                  <span className={`text-xs font-semibold ${alertInfo.isPast ? 'text-red-600' : alertInfo.days <= 3 ? 'text-orange-600' : 'text-slate-600'}`}>
+                    {alertInfo.label}
+                  </span>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-400" />
               </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+              <ArrowRight className="h-4 w-4 text-slate-400" />
+            </div>
+          );
+        })}
+      </div>
+    </ModernCard>
   );
 }
