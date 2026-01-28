@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/App";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -14,7 +15,9 @@ import {
   Radio,
   Settings,
   UserCircle,
-  ClipboardList
+  ClipboardList,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NotificationBell from "@/components/NotificationBell";
@@ -25,6 +28,7 @@ export const Layout = () => {
   const { user, logout, isAdmin, isAdminOrBackoffice } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, show: true },
@@ -48,110 +52,183 @@ export const Layout = () => {
 
   const getRoleBadge = (role) => {
     const badges = {
-      admin: { text: "Admin", class: "bg-[#0052CC] text-white" },
-      backoffice: { text: "Backoffice", class: "bg-blue-50 text-blue-700 border border-blue-200" },
-      vendedor: { text: "Vendedor", class: "bg-gray-100 text-[#172B4D] border border-gray-300" }
+      admin: { text: "Admin", class: "bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-glow" },
+      backoffice: { text: "Backoffice", class: "bg-brand-100 text-brand-700 border border-brand-200" },
+      vendedor: { text: "Vendedor", class: "bg-slate-100 text-slate-700 border border-slate-300" }
     };
     return badges[role] || badges.vendedor;
   };
 
   const badge = getRoleBadge(user?.role);
+  const sidebarWidth = sidebarCollapsed ? 'w-20' : 'w-64';
 
   return (
-    <div className="min-h-screen bg-[#F4F5F7]">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       {/* Mobile menu button */}
-      <button
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg shadow-lg text-white bg-[#0052CC] transition-all hover:bg-[#0747A6]"
+        className="lg:hidden fixed top-4 left-4 z-50 p-3 rounded-xl text-white bg-gradient-to-br from-brand-600 to-brand-700 shadow-glow transition-all hover:shadow-glow-lg"
         data-testid="mobile-menu-btn"
       >
-        {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+        <AnimatePresence mode="wait">
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        </AnimatePresence>
+      </motion.button>
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 z-40 transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 shadow-sm`}>
+      <motion.aside
+        initial={false}
+        animate={{ width: sidebarCollapsed ? 80 : 256 }}
+        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+        className={`fixed top-0 left-0 h-full bg-white/95 backdrop-blur-xl border-r border-slate-200/60 z-40 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 shadow-2xl shadow-slate-200/50`}
+      >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-gray-200 flex items-center justify-center bg-[#0052CC]">
-            <img
+          <div className="relative p-6 border-b border-slate-200/60 flex items-center justify-center bg-gradient-to-br from-brand-600 to-brand-800 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-transparent"></div>
+            <motion.img
+              animate={{ opacity: sidebarCollapsed ? 0 : 1, scale: sidebarCollapsed ? 0.8 : 1 }}
+              transition={{ duration: 0.2 }}
               src={LOGO_URL}
               alt="CRM Dolphin+Star"
-              className="h-20 w-auto"
+              className="h-16 w-auto relative z-10"
               data-testid="logo"
             />
+            {sidebarCollapsed && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-white font-bold text-2xl"
+              >
+                D+
+              </motion.div>
+            )}
           </div>
 
+          {/* Collapse Button - Desktop Only */}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="hidden lg:flex absolute top-24 -right-3 z-50 p-1.5 rounded-full bg-white border-2 border-brand-500 text-brand-600 shadow-lg hover:shadow-glow transition-all hover:scale-110"
+          >
+            {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto" data-testid="sidebar-nav">
-            {navigation.filter(item => item.show).map((item) => {
+          <nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin" data-testid="sidebar-nav">
+            {navigation.filter(item => item.show).map((item, index) => {
               const active = isActive(item.href);
               return (
-                <Link
+                <motion.div
                   key={item.name}
-                  to={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
-                    active
-                      ? 'bg-[#0052CC] text-white shadow-md'
-                      : 'text-[#172B4D] hover:bg-gray-50 hover:text-[#0052CC]'
-                  }`}
-                  data-testid={`nav-${item.name.toLowerCase().replace(/\s/g, '-')}`}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  <item.icon size={20} />
-                  <span>{item.name}</span>
-                </Link>
+                  <Link
+                    to={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                      active
+                        ? 'bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-glow'
+                        : 'text-slate-700 hover:bg-gradient-to-r hover:from-brand-50 hover:to-blue-50 hover:text-brand-700'
+                    }`}
+                    data-testid={`nav-${item.name.toLowerCase().replace(/\s/g, '-')}`}
+                  >
+                    <item.icon size={20} className={`${active ? 'drop-shadow-sm' : ''}`} />
+                    <motion.span
+                      animate={{ opacity: sidebarCollapsed ? 0 : 1, width: sidebarCollapsed ? 0 : 'auto' }}
+                      transition={{ duration: 0.2 }}
+                      className="whitespace-nowrap overflow-hidden"
+                    >
+                      {item.name}
+                    </motion.span>
+                    {active && (
+                      <motion.div
+                        layoutId="activeIndicator"
+                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 -z-10"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                  </Link>
+                </motion.div>
               );
             })}
           </nav>
 
           {/* User info */}
-          <div className="p-4 border-t border-gray-200 bg-gray-50">
-            <div className="mb-4">
-              <p className="text-[#172B4D] font-semibold truncate text-sm">{user?.name}</p>
-              <p className="text-[#172B4D] opacity-70 text-xs truncate mt-0.5">{user?.email}</p>
-              <span className={`inline-block mt-2 px-2 py-1 rounded-md text-xs font-medium ${badge.class}`}>
-                {badge.text}
-              </span>
-            </div>
+          <div className="p-4 border-t border-slate-200/60 bg-gradient-to-br from-slate-50 to-blue-50/30">
+            {!sidebarCollapsed && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mb-3"
+              >
+                <p className="text-slate-900 font-semibold truncate text-sm">{user?.name}</p>
+                <p className="text-slate-600 text-xs truncate mt-0.5">{user?.email}</p>
+                <span className={`inline-block mt-2 px-3 py-1 rounded-lg text-xs font-semibold ${badge.class}`}>
+                  {badge.text}
+                </span>
+              </motion.div>
+            )}
             <Button
               onClick={logout}
               variant="ghost"
-              className="w-full justify-start text-[#172B4D] hover:text-[#0052CC] hover:bg-gray-100 transition-colors"
+              className={`w-full ${sidebarCollapsed ? 'justify-center px-0' : 'justify-start'} text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 transition-all hover:shadow-md`}
               data-testid="logout-btn"
             >
-              <LogOut size={18} className="mr-2" />
-              Terminar Sessão
+              <LogOut size={18} className={sidebarCollapsed ? '' : 'mr-2'} />
+              {!sidebarCollapsed && <span>Sair</span>}
             </Button>
           </div>
         </div>
-      </aside>
+      </motion.aside>
 
       {/* Main content */}
-      <main className="lg:ml-64 min-h-screen">
+      <motion.main
+        animate={{ marginLeft: sidebarCollapsed ? 80 : 256 }}
+        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+        className="min-h-screen lg:ml-64"
+      >
         {/* Top bar */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm">
+        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="lg:hidden w-8"></div>
-          <h1 className="text-xl font-bold text-[#172B4D] font-['Manrope']">
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent"
+          >
             {navigation.find(item => isActive(item.href))?.name || "CRM Leiritrix"}
-          </h1>
+          </motion.h1>
           <div className="flex items-center gap-4">
             <NotificationBell userId={user?.id} />
           </div>
         </div>
 
         {/* Page content */}
-        <div className="p-6 animate-fade-in">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="p-6"
+        >
           <Outlet />
-        </div>
-      </main>
+        </motion.div>
+      </motion.main>
 
       {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/30 z-30"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="lg:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
