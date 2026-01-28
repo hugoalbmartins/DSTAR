@@ -37,6 +37,17 @@ const STATUS_MAP = {
   anulado: { label: "Anulado", color: "bg-gray-50 text-[#172B4D] border-gray-200" }
 };
 
+const parseLocalDate = (dateString) => {
+  if (!dateString) return null;
+  if (dateString instanceof Date) return dateString;
+
+  const parts = dateString.split('T')[0].split('-');
+  if (parts.length === 3) {
+    return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+  }
+  return new Date(dateString);
+};
+
 const CATEGORY_ICONS = {
   energia: Zap,
   telecomunicacoes: Phone,
@@ -104,7 +115,9 @@ export default function Dashboard() {
       const lastYearSameMonthSales = [];
 
       sales.forEach(sale => {
-        const saleDate = new Date(sale.sale_date || sale.created_at);
+        const saleDate = parseLocalDate(sale.sale_date || sale.created_at);
+        if (!saleDate) return;
+
         const saleYear = saleDate.getFullYear();
         const saleMonth = saleDate.getMonth();
 
@@ -127,10 +140,13 @@ export default function Dashboard() {
 
       // Gráfico anual - vendas e leads por mês
       const yearlyChartData = monthNames.map((month, index) => {
-        const salesCount = currentYearSales.filter(s => new Date(s.sale_date || s.created_at).getMonth() === index).length;
+        const salesCount = currentYearSales.filter(s => {
+          const date = parseLocalDate(s.sale_date || s.created_at);
+          return date && date.getMonth() === index;
+        }).length;
         const leadsCount = leads.filter(l => {
-          const leadDate = new Date(l.created_at);
-          return leadDate.getFullYear() === currentYear && leadDate.getMonth() === index;
+          const leadDate = parseLocalDate(l.created_at);
+          return leadDate && leadDate.getFullYear() === currentYear && leadDate.getMonth() === index;
         }).length;
         return {
           name: month,
@@ -144,12 +160,12 @@ export default function Dashboard() {
       const dailyChartData = [];
       for (let day = 1; day <= daysInMonth; day++) {
         const salesCount = currentMonthSales.filter(s => {
-          const saleDate = new Date(s.sale_date || s.created_at);
-          return saleDate.getDate() === day;
+          const saleDate = parseLocalDate(s.sale_date || s.created_at);
+          return saleDate && saleDate.getDate() === day;
         }).length;
         const leadsCount = leads.filter(l => {
-          const leadDate = new Date(l.created_at);
-          return leadDate.getFullYear() === currentYear &&
+          const leadDate = parseLocalDate(l.created_at);
+          return leadDate && leadDate.getFullYear() === currentYear &&
                  leadDate.getMonth() === currentMonth &&
                  leadDate.getDate() === day;
         }).length;
@@ -265,23 +281,29 @@ export default function Dashboard() {
       const expiringSoon = sales.filter(sale => {
         if (sale.status !== 'ativo' || !sale.loyalty_end_date) return false;
 
-        const endDate = new Date(sale.loyalty_end_date);
+        const endDate = parseLocalDate(sale.loyalty_end_date);
+        if (!endDate) return false;
+
         const now = new Date();
         const daysUntilEnd = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
 
         if (daysUntilEnd > 210 || daysUntilEnd < 0) return false;
 
-        const hasRefidRenewal = sales.some(otherSale =>
-          otherSale.id !== sale.id &&
-          otherSale.sale_type === 'refid' &&
-          otherSale.client_name === sale.client_name &&
-          otherSale.client_address === sale.client_address &&
-          new Date(otherSale.sale_date || otherSale.created_at) > new Date(sale.sale_date || sale.created_at)
-        );
+        const hasRefidRenewal = sales.some(otherSale => {
+          const otherSaleDate = parseLocalDate(otherSale.sale_date || otherSale.created_at);
+          const currentSaleDate = parseLocalDate(sale.sale_date || sale.created_at);
+
+          return otherSale.id !== sale.id &&
+            otherSale.sale_type === 'refid' &&
+            otherSale.client_name === sale.client_name &&
+            otherSale.client_address === sale.client_address &&
+            otherSaleDate && currentSaleDate &&
+            otherSaleDate > currentSaleDate;
+        });
 
         return !hasRefidRenewal;
       }).map(sale => {
-        const endDate = new Date(sale.loyalty_end_date);
+        const endDate = parseLocalDate(sale.loyalty_end_date);
         const now = new Date();
         const daysUntilEnd = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
         return {

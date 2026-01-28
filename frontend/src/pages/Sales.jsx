@@ -504,20 +504,24 @@ export default function Sales() {
                   key: 'commission',
                   label: 'Comissão',
                   sortable: true,
-                  render: (value, row) => {
-                    const shouldShowCommission =
-                      user.role === 'admin' ||
-                      (user.role === 'backoffice' && row.operators?.commission_visible_to_bo);
+                  render: (_, row) => {
+                    let commission = 0;
 
-                    if (!shouldShowCommission) return <span className="text-slate-300">-</span>;
-                    if (value !== null && value !== undefined) {
-                      return (
-                        <span className="font-mono text-sm text-green-600 font-semibold">
-                          {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value)}
-                        </span>
-                      );
+                    if (user.role === 'admin' || user.role === 'backoffice') {
+                      const shouldShowCommission = user.role === 'admin' || row.operators?.commission_visible_to_bo;
+                      if (!shouldShowCommission) {
+                        return <span className="text-slate-400 text-sm">-</span>;
+                      }
+                      commission = row.commission_partner || 0;
+                    } else if (user.role === 'vendedor') {
+                      commission = row.commission_seller || 0;
                     }
-                    return <span className="text-slate-300">-</span>;
+
+                    return (
+                      <span className="font-mono text-sm text-green-600 font-semibold">
+                        {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(commission)}
+                      </span>
+                    );
                   }
                 },
                 {

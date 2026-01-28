@@ -105,19 +105,19 @@ export function DateSelect({ value, onChange, className, placeholder = "Selecion
 
   return (
     <div className={className}>
-      <div className="flex items-center gap-2 p-3 rounded-md border border-slate-200 bg-white hover:border-slate-300 transition-colors">
-        <CalendarIcon className="h-4 w-4 text-[#c8f31d] flex-shrink-0" />
+      <div className="flex items-center gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:border-[#0052CC] transition-all duration-200 shadow-sm hover:shadow-md">
+        <CalendarIcon className="h-5 w-5 text-[#0052CC] flex-shrink-0" />
         <div className="flex-1 flex items-center gap-2">
           <Select value={day} onValueChange={handleDayChange}>
-            <SelectTrigger className="h-8 border-slate-200 bg-white text-slate-900 w-[80px] px-2">
+            <SelectTrigger className="h-10 border-gray-200 bg-white text-[#172B4D] w-[80px] px-3 rounded-lg hover:border-[#0052CC] transition-colors font-medium">
               <SelectValue placeholder="Dia" />
             </SelectTrigger>
-            <SelectContent className="bg-white border-slate-200 max-h-60">
+            <SelectContent className="bg-white border-gray-200 max-h-60 rounded-lg shadow-lg">
               {days.map((d) => (
                 <SelectItem
                   key={d.value}
                   value={d.value}
-                  className="text-white hover:bg-white/10"
+                  className="text-[#172B4D] hover:bg-blue-50 hover:text-[#0052CC] cursor-pointer transition-colors"
                 >
                   {d.label}
                 </SelectItem>
@@ -126,15 +126,15 @@ export function DateSelect({ value, onChange, className, placeholder = "Selecion
           </Select>
 
           <Select value={month} onValueChange={handleMonthChange}>
-            <SelectTrigger className="h-8 border-slate-200 bg-white text-slate-900 flex-1 px-2">
+            <SelectTrigger className="h-10 border-gray-200 bg-white text-[#172B4D] flex-1 px-3 rounded-lg hover:border-[#0052CC] transition-colors font-medium">
               <SelectValue placeholder="Mês" />
             </SelectTrigger>
-            <SelectContent className="bg-white border-slate-200 max-h-60">
+            <SelectContent className="bg-white border-gray-200 max-h-60 rounded-lg shadow-lg">
               {months.map((m) => (
                 <SelectItem
                   key={m.value}
                   value={m.value}
-                  className="text-white hover:bg-white/10"
+                  className="text-[#172B4D] hover:bg-blue-50 hover:text-[#0052CC] cursor-pointer transition-colors"
                 >
                   {m.label}
                 </SelectItem>
@@ -143,15 +143,15 @@ export function DateSelect({ value, onChange, className, placeholder = "Selecion
           </Select>
 
           <Select value={year} onValueChange={handleYearChange}>
-            <SelectTrigger className="h-8 border-slate-200 bg-white text-slate-900 w-[100px] px-2">
+            <SelectTrigger className="h-10 border-gray-200 bg-white text-[#172B4D] w-[100px] px-3 rounded-lg hover:border-[#0052CC] transition-colors font-medium">
               <SelectValue placeholder="Ano" />
             </SelectTrigger>
-            <SelectContent className="bg-white border-slate-200 max-h-60">
+            <SelectContent className="bg-white border-gray-200 max-h-60 rounded-lg shadow-lg">
               {years.map((y) => (
                 <SelectItem
                   key={y}
                   value={y.toString()}
-                  className="text-white hover:bg-white/10"
+                  className="text-[#172B4D] hover:bg-blue-50 hover:text-[#0052CC] cursor-pointer transition-colors"
                 >
                   {y}
                 </SelectItem>
@@ -163,14 +163,14 @@ export function DateSelect({ value, onChange, className, placeholder = "Selecion
           <button
             type="button"
             onClick={handleClear}
-            className="text-white/50 hover:text-white text-xs px-2"
+            className="text-gray-400 hover:text-red-500 text-sm px-2 transition-colors font-bold"
           >
             ✕
           </button>
         )}
       </div>
       {isComplete && (
-        <p className="text-white/50 text-xs mt-1">
+        <p className="text-[#172B4D]/60 text-sm mt-2 font-medium">
           {displayValue}
         </p>
       )}
