@@ -63,7 +63,7 @@ export function PasswordChangeModal({ open, onPasswordChanged }) {
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="bg-[#082d32] border-white/10" onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent className="bg-white border-slate-200" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-white font-['Manrope']">
             Alterar Password

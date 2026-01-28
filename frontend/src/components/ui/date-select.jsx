@@ -105,14 +105,14 @@ export function DateSelect({ value, onChange, className, placeholder = "Selecion
 
   return (
     <div className={className}>
-      <div className="flex items-center gap-2 p-3 rounded-md border border-white/10 bg-[#082d32] hover:border-white/20 transition-colors">
+      <div className="flex items-center gap-2 p-3 rounded-md border border-slate-200 bg-white hover:border-slate-300 transition-colors">
         <CalendarIcon className="h-4 w-4 text-[#c8f31d] flex-shrink-0" />
         <div className="flex-1 flex items-center gap-2">
           <Select value={day} onValueChange={handleDayChange}>
-            <SelectTrigger className="h-8 border-white/10 bg-[#0a3940] text-white w-[80px] px-2">
+            <SelectTrigger className="h-8 border-slate-200 bg-white text-slate-900 w-[80px] px-2">
               <SelectValue placeholder="Dia" />
             </SelectTrigger>
-            <SelectContent className="bg-[#082d32] border-white/10 max-h-60">
+            <SelectContent className="bg-white border-slate-200 max-h-60">
               {days.map((d) => (
                 <SelectItem
                   key={d.value}
@@ -126,10 +126,10 @@ export function DateSelect({ value, onChange, className, placeholder = "Selecion
           </Select>
 
           <Select value={month} onValueChange={handleMonthChange}>
-            <SelectTrigger className="h-8 border-white/10 bg-[#0a3940] text-white flex-1 px-2">
+            <SelectTrigger className="h-8 border-slate-200 bg-white text-slate-900 flex-1 px-2">
               <SelectValue placeholder="Mês" />
             </SelectTrigger>
-            <SelectContent className="bg-[#082d32] border-white/10 max-h-60">
+            <SelectContent className="bg-white border-slate-200 max-h-60">
               {months.map((m) => (
                 <SelectItem
                   key={m.value}
@@ -143,10 +143,10 @@ export function DateSelect({ value, onChange, className, placeholder = "Selecion
           </Select>
 
           <Select value={year} onValueChange={handleYearChange}>
-            <SelectTrigger className="h-8 border-white/10 bg-[#0a3940] text-white w-[100px] px-2">
+            <SelectTrigger className="h-8 border-slate-200 bg-white text-slate-900 w-[100px] px-2">
               <SelectValue placeholder="Ano" />
             </SelectTrigger>
-            <SelectContent className="bg-[#082d32] border-white/10 max-h-60">
+            <SelectContent className="bg-white border-slate-200 max-h-60">
               {years.map((y) => (
                 <SelectItem
                   key={y}

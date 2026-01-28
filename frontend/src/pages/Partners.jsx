@@ -433,7 +433,7 @@ export default function Partners() {
 
       {/* Create/Edit Modal */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
+        <DialogContent className="bg-white border-slate-200">
           <DialogHeader>
             <DialogTitle className="text-white font-['Manrope']">
               {editingPartner ? "Editar Parceiro" : "Novo Parceiro"}
@@ -511,7 +511,7 @@ export default function Partners() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
+        <AlertDialogContent className="bg-white border-slate-200">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">Eliminar Parceiro</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">
@@ -532,7 +532,7 @@ export default function Partners() {
 
       {/* Operators Modal */}
       <Dialog open={operatorsModalOpen} onOpenChange={setOperatorsModalOpen}>
-        <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)] max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-white border-slate-200 max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-white font-['Manrope']">
               Operadoras - {selectedPartner?.name}
@@ -692,7 +692,7 @@ export default function Partners() {
 
       {/* Create/Edit Operator Modal */}
       <Dialog open={operatorModalOpen} onOpenChange={setOperatorModalOpen}>
-        <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
+        <DialogContent className="bg-white border-slate-200">
           <DialogHeader>
             <DialogTitle className="text-white font-['Manrope']">
               {editingOperator ? "Editar Operadora" : "Nova Operadora"}
@@ -783,7 +783,7 @@ export default function Partners() {
 
       {/* Delete Operator Confirmation */}
       <AlertDialog open={!!operatorDeleteId} onOpenChange={() => setOperatorDeleteId(null)}>
-        <AlertDialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
+        <AlertDialogContent className="bg-white border-slate-200">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">Eliminar Operadora</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">

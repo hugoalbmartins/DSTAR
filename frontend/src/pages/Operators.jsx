@@ -424,7 +424,7 @@ export default function Operators() {
       </div>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)] max-w-lg">
+        <DialogContent className="bg-white border-slate-200 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-white font-['Manrope']">
               {editingOperator ? "Editar Operadora" : "Nova Operadora"}
@@ -450,7 +450,7 @@ export default function Operators() {
                   return (
                     <div
                       key={category.value}
-                      className="flex items-center space-x-2 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer"
+                      className="flex items-center space-x-2 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer"
                       onClick={() => handleCategoryToggle(category.value)}
                     >
                       <Checkbox
@@ -480,7 +480,7 @@ export default function Operators() {
                 {SALE_TYPES.map((type) => (
                   <div
                     key={type.value}
-                    className="flex items-center space-x-2 p-2 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer"
+                    className="flex items-center space-x-2 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer"
                     onClick={() => handleSaleTypeToggle(type.value)}
                   >
                     <Checkbox
@@ -500,7 +500,7 @@ export default function Operators() {
             </div>
 
             {isAdmin && (
-              <div className="flex items-center justify-between p-4 rounded-lg bg-white/5">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50">
                 <div className="flex-1">
                   <Label className="form-label mb-1">Comissões Visíveis para Backoffice</Label>
                   <p className="text-white/70 text-xs">
@@ -517,7 +517,7 @@ export default function Operators() {
             )}
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 rounded-lg bg-white/5">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50">
                 <div className="flex-1">
                   <Label className="form-label mb-1">Categorias de Cliente</Label>
                   <p className="text-white/70 text-xs">
@@ -534,7 +534,7 @@ export default function Operators() {
               </div>
 
               {formData.has_client_categories && (
-                <div className="p-4 rounded-lg bg-white/5 space-y-3">
+                <div className="p-4 rounded-lg bg-slate-50 space-y-3">
                   <div className="flex gap-2">
                     <Input
                       value={newCategoryName}
@@ -613,7 +613,7 @@ export default function Operators() {
       </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
+        <AlertDialogContent className="bg-white border-slate-200">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">Eliminar Operadora</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">

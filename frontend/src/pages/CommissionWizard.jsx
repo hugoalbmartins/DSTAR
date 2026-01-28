@@ -355,7 +355,7 @@ export default function CommissionWizard() {
                 <SelectTrigger className="form-input">
                   <SelectValue placeholder="Selecione a operadora" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1E293B] border-white/10">
+                <SelectContent className="bg-white border-slate-200">
                   {operators.map((op) => (
                     <SelectItem key={op.id} value={op.id} className="text-white hover:bg-white/10">
                       {op.name}
@@ -371,7 +371,7 @@ export default function CommissionWizard() {
                 <SelectTrigger className="form-input">
                   <SelectValue placeholder="Todos os parceiros" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1E293B] border-white/10">
+                <SelectContent className="bg-white border-slate-200">
                   <SelectItem value="all" className="text-white hover:bg-white/10">
                     Todos os parceiros
                   </SelectItem>
@@ -493,7 +493,7 @@ export default function CommissionWizard() {
               ) : (
                 <div className="space-y-6">
                   {rules.map((rule, index) => (
-                    <Card key={index} className="bg-white/5 border-white/10">
+                    <Card key={index} className="bg-slate-50 border-slate-200">
                       <CardContent className="p-4 space-y-4">
                         <div className="flex items-center justify-between mb-4">
                           <h4 className="text-[#172B4D] font-medium">Regra {index + 1}</h4>
@@ -517,7 +517,7 @@ export default function CommissionWizard() {
                               <SelectTrigger className="form-input">
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent className="bg-[#1E293B] border-white/10">
+                              <SelectContent className="bg-white border-slate-200">
                                 {SALE_TYPES.filter(t => allowedSaleTypes.includes(t.value)).map((type) => (
                                   <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
                                     {type.label}
@@ -537,7 +537,7 @@ export default function CommissionWizard() {
                                 <SelectTrigger className="form-input">
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-[#1E293B] border-white/10">
+                                <SelectContent className="bg-white border-slate-200">
                                   <SelectItem value="all" className="text-white hover:bg-white/10">
                                     Todas as Categorias
                                   </SelectItem>
@@ -560,7 +560,7 @@ export default function CommissionWizard() {
                               <SelectTrigger className="form-input">
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent className="bg-[#1E293B] border-white/10">
+                              <SelectContent className="bg-white border-slate-200">
                                 <SelectItem value="all" className="text-white hover:bg-white/10">
                                   Todos os Tipos
                                 </SelectItem>
@@ -583,7 +583,7 @@ export default function CommissionWizard() {
                               <SelectTrigger className="form-input">
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent className="bg-[#1E293B] border-white/10">
+                              <SelectContent className="bg-white border-slate-200">
                                 <SelectItem value="all" className="text-white hover:bg-white/10">
                                   Todos
                                 </SelectItem>
@@ -613,7 +613,7 @@ export default function CommissionWizard() {
                                 <SelectTrigger className="form-input">
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-[#1E293B] border-white/10">
+                                <SelectContent className="bg-white border-slate-200">
                                   <SelectItem value="all" className="text-white hover:bg-white/10">
                                     Todos os NIFs
                                   </SelectItem>
@@ -637,7 +637,7 @@ export default function CommissionWizard() {
                               <SelectTrigger className="form-input">
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent className="bg-[#1E293B] border-white/10">
+                              <SelectContent className="bg-white border-slate-200">
                                 <SelectItem value="per_contract" className="text-white hover:bg-white/10">
                                   Por Quantidade de Contratos
                                 </SelectItem>
@@ -664,7 +664,7 @@ export default function CommissionWizard() {
                                 <SelectTrigger className="form-input">
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-[#1E293B] border-white/10">
+                                <SelectContent className="bg-white border-slate-200">
                                   <SelectItem value="fixed_per_quantity" className="text-white hover:bg-white/10">
                                     Valor Fixo por Quantidade
                                   </SelectItem>
@@ -699,7 +699,7 @@ export default function CommissionWizard() {
                                 <SelectTrigger className="form-input">
                                   <SelectValue placeholder="Selecione" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-[#1E293B] border-white/10">
+                                <SelectContent className="bg-white border-slate-200">
                                   {LOYALTY_PERIODS.map((period) => (
                                     <SelectItem key={period} value={period.toString()} className="text-white hover:bg-white/10">
                                       {period === 0 ? 'Sem fidelização' : `${period} meses`}
@@ -719,7 +719,7 @@ export default function CommissionWizard() {
                               <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                   <thead>
-                                    <tr className="border-b border-white/10">
+                                    <tr className="border-b border-slate-200">
                                       <th className="text-left text-[#172B4D]/80 font-medium pb-2 px-2">Potência (kVA)</th>
                                       <th className="text-left text-[#172B4D]/80 font-medium pb-2 px-2">Comissão a Receber (€)</th>
                                     </tr>

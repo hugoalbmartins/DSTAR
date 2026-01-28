@@ -53,12 +53,12 @@ export const Layout = () => {
   const getPageTitle = () => {
     const path = location.pathname;
 
-    // Special routes
-    if (path.match(/^\/sales\/\d+\/edit$/)) return "Edição de venda";
-    if (path.match(/^\/sales\/\d+$/)) return "Detalhes da venda";
-    if (path.match(/^\/clients\/\d+\/edit$/)) return "Editar cliente";
-    if (path.match(/^\/clients\/\d+$/)) return "Detalhes do cliente";
-    if (path.match(/^\/leads\/\d+\/edit$/)) return "Editar lead";
+    // Special routes (UUID or numeric IDs)
+    if (path.match(/^\/sales\/[^/]+\/edit$/)) return "Edição de venda";
+    if (path.match(/^\/sales\/[^/]+$/) && !path.includes('/new')) return "Detalhes da venda";
+    if (path.match(/^\/clients\/[^/]+\/edit$/)) return "Editar cliente";
+    if (path.match(/^\/clients\/[^/]+$/) && !path.includes('/new')) return "Detalhes do cliente";
+    if (path.match(/^\/leads\/[^/]+\/edit$/)) return "Editar lead";
 
     // Standard navigation
     const activeNav = navigation.find(item => isActive(item.href));

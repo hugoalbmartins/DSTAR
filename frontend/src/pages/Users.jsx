@@ -298,7 +298,7 @@ export default function Users() {
                     onClick={() => openEditModal(user)}
                     variant="ghost"
                     size="sm"
-                    className="flex-1 text-[#172B4D]/70 hover:text-[#172B4D] hover:bg-white/5"
+                    className="flex-1 text-[#172B4D]/70 hover:text-[#172B4D] hover:bg-slate-50"
                     data-testid={`edit-user-${user.id}`}
                   >
                     <Edit2 size={16} className="mr-1" />
@@ -336,7 +336,7 @@ export default function Users() {
 
       {/* Create/Edit User Modal */}
       <Dialog open={modalOpen} onOpenChange={handleModalClose}>
-        <DialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
+        <DialogContent className="bg-white border-slate-200">
           <DialogHeader>
             <DialogTitle className="text-white font-['Manrope']">
               {editingUser ? "Editar Utilizador" : "Novo Utilizador"}
@@ -512,7 +512,7 @@ export default function Users() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent className="bg-[#1E293B] border-[rgba(11,165,217,0.2)]">
+        <AlertDialogContent className="bg-white border-slate-200">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">Eliminar Utilizador</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">

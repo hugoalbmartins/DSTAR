@@ -695,7 +695,7 @@ export default function SaleDetail({ editMode = false }) {
                           checked={allowCommissionOverride}
                           onCheckedChange={setAllowCommissionOverride}
                         />
-                        <Label htmlFor="allow-commission-override" className="text-slate-900/80 cursor-pointer text-sm">
+                        <Label htmlFor="allow-commission-override" className="text-slate-700 cursor-pointer text-sm">
                           Corrigir/alterar comissão (apenas administradores)
                         </Label>
                       </div>
@@ -775,8 +775,8 @@ export default function SaleDetail({ editMode = false }) {
               )}
               {user.role === 'backoffice' && sale?.operators && !sale.operators.commission_visible_to_bo && (
                 <div className="md:col-span-2">
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                    <p className="text-slate-900/80 text-sm flex items-center gap-2">
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <p className="text-slate-700 text-sm flex items-center gap-2">
                       <AlertTriangle size={16} />
                       Operadora sem comissão a contabilizar
                     </p>
@@ -1095,8 +1095,8 @@ export default function SaleDetail({ editMode = false }) {
                 )}
               </>
             ) : (
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                <p className="text-slate-900/80 text-sm flex items-center gap-2">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <p className="text-slate-700 text-sm flex items-center gap-2">
                   <AlertTriangle size={16} />
                   Operadora sem comissão a contabilizar
                 </p>
@@ -1214,7 +1214,7 @@ export default function SaleDetail({ editMode = false }) {
           {sale.notes && (
             <div className="mt-6 pt-6 border-t border-white/10">
               <p className="text-slate-600 text-sm mb-2">Notas</p>
-              <p className="text-slate-900/80 whitespace-pre-wrap">{sale.notes}</p>
+              <p className="text-slate-700 whitespace-pre-wrap">{sale.notes}</p>
             </div>
           )}
       </ModernCard>
