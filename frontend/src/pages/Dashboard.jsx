@@ -13,6 +13,7 @@ import RecentActivity from "@/components/RecentActivity";
 import LeadAlerts from "@/components/LeadAlerts";
 import { SkeletonKPI, SkeletonChart, SkeletonActivity } from "@/components/SkeletonLoader";
 import { leadsService } from "@/services/leadsService";
+import { useIdleTimeout } from "@/hooks/useIdleTimeout";
 import {
   TrendingUp,
   ShoppingCart,
@@ -76,13 +77,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchData();
-
-    const interval = setInterval(() => {
-      fetchData();
-    }, 60000);
-
-    return () => clearInterval(interval);
   }, [selectedMonth, selectedYear]);
+
+  useIdleTimeout(() => {
+    fetchData();
+  }, 300000);
 
   const fetchData = async () => {
     try {

@@ -29,6 +29,10 @@ export const leadsService = {
     return data;
   },
 
+  async getLeads() {
+    return this.getAllLeads();
+  },
+
   async getLeadById(id) {
     const { data, error } = await supabase
       .from('leads')
