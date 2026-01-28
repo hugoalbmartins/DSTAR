@@ -50,7 +50,7 @@ import { generatePassword } from "@/utils/passwordGenerator";
 const ROLES = [
   { value: "admin", label: "Administrador", color: "bg-blue-100 text-blue-700 border border-blue-200" },
   { value: "backoffice", label: "Backoffice", color: "bg-purple-100 text-purple-700 border border-purple-200" },
-  { value: "vendedor", label: "Vendedor", color: "bg-gray-100 text-gray-700 border border-gray-200" }
+  { value: "vendedor", label: "Vendedor", color: "bg-gray-100 text-[#172B4D] border border-gray-200" }
 ];
 
 export default function Users() {
@@ -287,7 +287,7 @@ export default function Users() {
                     {roleInfo.label}
                   </Badge>
                   {isCurrentUser && (
-                    <Badge className="ml-2 bg-gray-100 text-gray-600 border border-gray-200 text-xs">
+                    <Badge className="ml-2 bg-gray-100 text-[#172B4D] border border-gray-200 text-xs">
                       Você
                     </Badge>
                   )}

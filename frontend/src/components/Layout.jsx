@@ -46,7 +46,7 @@ export const Layout = () => {
     const badges = {
       admin: { text: "Admin", class: "bg-[#0052CC] text-white" },
       backoffice: { text: "Backoffice", class: "bg-blue-50 text-blue-700 border border-blue-200" },
-      vendedor: { text: "Vendedor", class: "bg-gray-100 text-gray-700 border border-gray-300" }
+      vendedor: { text: "Vendedor", class: "bg-gray-100 text-[#172B4D] border border-gray-300" }
     };
     return badges[role] || badges.vendedor;
   };
@@ -89,7 +89,7 @@ export const Layout = () => {
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
                     active
                       ? 'bg-[#0052CC] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-[#0052CC]'
+                      : 'text-[#172B4D] hover:bg-gray-50 hover:text-[#0052CC]'
                   }`}
                   data-testid={`nav-${item.name.toLowerCase().replace(/\s/g, '-')}`}
                 >
@@ -103,8 +103,8 @@ export const Layout = () => {
           {/* User info */}
           <div className="p-4 border-t border-gray-200 bg-gray-50">
             <div className="mb-4">
-              <p className="text-gray-900 font-semibold truncate text-sm">{user?.name}</p>
-              <p className="text-gray-500 text-xs truncate mt-0.5">{user?.email}</p>
+              <p className="text-[#172B4D] font-semibold truncate text-sm">{user?.name}</p>
+              <p className="text-[#172B4D] opacity-70 text-xs truncate mt-0.5">{user?.email}</p>
               <span className={`inline-block mt-2 px-2 py-1 rounded-md text-xs font-medium ${badge.class}`}>
                 {badge.text}
               </span>
@@ -112,7 +112,7 @@ export const Layout = () => {
             <Button
               onClick={logout}
               variant="ghost"
-              className="w-full justify-start text-gray-700 hover:text-[#0052CC] hover:bg-gray-100 transition-colors"
+              className="w-full justify-start text-[#172B4D] hover:text-[#0052CC] hover:bg-gray-100 transition-colors"
               data-testid="logout-btn"
             >
               <LogOut size={18} className="mr-2" />

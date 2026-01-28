@@ -127,7 +127,7 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
           className="w-full flex items-center gap-2 p-3 rounded-md border border-gray-300 bg-white hover:border-gray-400 transition-colors text-left"
         >
           <CalendarIcon className="h-4 w-4 text-blue-600 flex-shrink-0" />
-          <span className={`flex-1 text-sm ${selectedDate ? 'text-gray-900' : 'text-gray-500'}`}>
+          <span className={`flex-1 text-sm ${selectedDate ? 'text-[#172B4D]' : 'text-gray-500'}`}>
             {displayValue}
           </span>
           {selectedDate && (
@@ -137,7 +137,7 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
                 e.stopPropagation();
                 handleClear();
               }}
-              className="text-gray-500 hover:text-gray-900 text-xs px-2"
+              className="text-gray-500 hover:text-[#172B4D] text-xs px-2"
             >
               ✕
             </button>
@@ -146,10 +146,10 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[400px] bg-white border-gray-200 text-gray-900 p-0 overflow-hidden">
+        <DialogContent className="sm:max-w-[400px] bg-white border-gray-200 text-[#172B4D] p-0 overflow-hidden">
           <div className="p-6">
             <DialogHeader className="mb-4">
-              <DialogTitle className="text-gray-900 text-lg">Selecionar Data</DialogTitle>
+              <DialogTitle className="text-[#172B4D] text-lg">Selecionar Data</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4">
@@ -159,18 +159,18 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
                   variant="ghost"
                   size="icon"
                   onClick={handlePrevMonth}
-                  className="h-8 w-8 text-gray-700 hover:bg-gray-100"
+                  className="h-8 w-8 text-[#172B4D] hover:bg-gray-100"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
 
                 <Select value={viewMonth.toString()} onValueChange={(val) => setViewMonth(parseInt(val))}>
-                  <SelectTrigger className="flex-1 h-9 border-gray-300 bg-white text-gray-900">
+                  <SelectTrigger className="flex-1 h-9 border-gray-300 bg-white text-[#172B4D]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200 max-h-60">
                     {months.map((month, idx) => (
-                      <SelectItem key={idx} value={idx.toString()} className="text-gray-900 hover:bg-gray-100">
+                      <SelectItem key={idx} value={idx.toString()} className="text-[#172B4D] hover:bg-gray-100">
                         {month}
                       </SelectItem>
                     ))}
@@ -178,12 +178,12 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
                 </Select>
 
                 <Select value={viewYear.toString()} onValueChange={(val) => setViewYear(parseInt(val))}>
-                  <SelectTrigger className="w-[100px] h-9 border-gray-300 bg-white text-gray-900">
+                  <SelectTrigger className="w-[100px] h-9 border-gray-300 bg-white text-[#172B4D]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200 max-h-60">
                     {years.map((year) => (
-                      <SelectItem key={year} value={year.toString()} className="text-gray-900 hover:bg-gray-100">
+                      <SelectItem key={year} value={year.toString()} className="text-[#172B4D] hover:bg-gray-100">
                         {year}
                       </SelectItem>
                     ))}
@@ -195,7 +195,7 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
                   variant="ghost"
                   size="icon"
                   onClick={handleNextMonth}
-                  className="h-8 w-8 text-gray-700 hover:bg-gray-100"
+                  className="h-8 w-8 text-[#172B4D] hover:bg-gray-100"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -230,7 +230,7 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
                           ? 'bg-blue-600 text-white font-bold'
                           : isToday
                           ? 'bg-blue-50 text-blue-700 border border-blue-600'
-                          : 'text-gray-900 hover:bg-gray-100'
+                          : 'text-[#172B4D] hover:bg-gray-100'
                         }
                       `}
                     >
@@ -245,7 +245,7 @@ export function DatePickerPopup({ value, onChange, className, placeholder = "Sel
                   type="button"
                   variant="ghost"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 text-gray-700 hover:bg-gray-100"
+                  className="flex-1 text-[#172B4D] hover:bg-gray-100"
                 >
                   Cancelar
                 </Button>

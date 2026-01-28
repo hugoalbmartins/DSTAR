@@ -367,7 +367,7 @@ export default function Operators() {
                         {isAdmin ? "Comissões Visíveis BO" : "Com comissão a contabilizar"}
                       </Badge>
                     ) : (
-                      <Badge className="bg-gray-100 text-gray-600 border border-gray-200 text-xs">
+                      <Badge className="bg-gray-100 text-[#172B4D] border border-gray-200 text-xs">
                         {isAdmin ? "Comissões Ocultas BO" : "Sem comissão a contabilizar"}
                       </Badge>
                     )}

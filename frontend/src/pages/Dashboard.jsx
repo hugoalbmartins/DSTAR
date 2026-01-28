@@ -32,7 +32,7 @@ const STATUS_MAP = {
   perdido: { label: "Perdido", color: "bg-red-50 text-red-700 border-red-200" },
   pendente: { label: "Pendente", color: "bg-yellow-50 text-yellow-700 border-yellow-200" },
   ativo: { label: "Ativo", color: "bg-green-50 text-green-700 border-green-200" },
-  anulado: { label: "Anulado", color: "bg-gray-50 text-gray-700 border-gray-200" }
+  anulado: { label: "Anulado", color: "bg-gray-50 text-[#172B4D] border-gray-200" }
 };
 
 const CATEGORY_ICONS = {
