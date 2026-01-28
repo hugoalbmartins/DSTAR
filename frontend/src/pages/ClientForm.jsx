@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
+import { ModernCard, ModernButton } from '../components/modern';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { toast } from 'sonner';
 import { clientsService } from '../services/clientsService';
-import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, UserCircle, Building2 } from 'lucide-react';
 
 export default function ClientForm() {
   const navigate = useNavigate();
@@ -137,33 +136,38 @@ export default function ClientForm() {
   if (initialLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Button
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex items-center gap-4 mb-8">
+        <ModernButton
           variant="ghost"
           onClick={() => navigate(isEdit ? `/clients/${id}` : '/clients')}
-          className="mb-4"
+          icon={ArrowLeft}
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
           Voltar
-        </Button>
-        <h1 className="text-3xl font-bold">
-          {isEdit ? 'Editar Cliente' : 'Novo Cliente'}
-        </h1>
+        </ModernButton>
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
+            {isEdit ? 'Editar Cliente' : 'Novo Cliente'}
+          </h1>
+          <p className="text-slate-600 text-sm mt-1">
+            {isEdit ? 'Atualize as informações do cliente' : 'Preencha os dados para criar um novo cliente'}
+          </p>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Dados do Cliente</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <ModernCard
+          title="Dados do Cliente"
+          icon={UserCircle}
+          variant="gradient"
+          hover={false}
+        >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome Completo *</Label>
@@ -187,7 +191,7 @@ export default function ClientForm() {
                   disabled={loading || isEdit}
                 />
                 {isEdit && (
-                  <p className="text-xs text-gray-500">NIF não pode ser alterado</p>
+                  <p className="text-xs text-slate-500">NIF não pode ser alterado</p>
                 )}
               </div>
 
@@ -256,33 +260,26 @@ export default function ClientForm() {
                 </div>
               )}
             </div>
+        </ModernCard>
 
-            <div className="flex justify-end gap-4 pt-6 border-t">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate(isEdit ? `/clients/${id}` : '/clients')}
-                disabled={loading}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    A guardar...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    {isEdit ? 'Atualizar' : 'Criar'} Cliente
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+        <div className="flex justify-end gap-4 pt-4">
+          <ModernButton
+            type="button"
+            variant="secondary"
+            onClick={() => navigate(isEdit ? `/clients/${id}` : '/clients')}
+            disabled={loading}
+          >
+            Cancelar
+          </ModernButton>
+          <ModernButton
+            type="submit"
+            loading={loading}
+            icon={Save}
+          >
+            {isEdit ? 'Atualizar' : 'Criar'} Cliente
+          </ModernButton>
+        </div>
+      </form>
     </div>
   );
 }
