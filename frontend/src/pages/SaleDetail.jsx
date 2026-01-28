@@ -1106,14 +1106,7 @@ export default function SaleDetail({ editMode = false }) {
       </div>
 
       {/* Contract Details */}
-      <Card className="card-leiritrix">
-        <CardHeader className="border-b border-white/10 pb-4">
-          <CardTitle className="text-slate-900 font-['Manrope'] text-lg flex items-center gap-2">
-            <FileText size={20} className="text-brand-600" />
-            Detalhes do Contrato
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
+      <ModernCard title="Detalhes do Contrato" icon={FileText} variant="gradient" hover={false}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
               <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
@@ -1224,8 +1217,7 @@ export default function SaleDetail({ editMode = false }) {
               <p className="text-slate-900/80 whitespace-pre-wrap">{sale.notes}</p>
             </div>
           )}
-        </CardContent>
-      </Card>
+      </ModernCard>
     </div>
   );
 }

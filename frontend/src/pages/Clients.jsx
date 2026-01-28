@@ -4,7 +4,17 @@ import { ModernCard, ModernButton, ModernBadge, ModernTable } from '../component
 import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 import { clientsService } from '../services/clientsService';
-import { Plus, Search, Loader2, Eye, Users } from 'lucide-react';
+import { Plus, Search, Loader2, Eye, Users, Trash2, Edit2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../components/ui/alert-dialog";
 
 export default function Clients() {
   const navigate = useNavigate();
@@ -13,6 +23,7 @@ export default function Clients() {
   const [clients, setClients] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteId, setDeleteId] = useState(null);
 
   useEffect(() => {
     loadClients();
@@ -58,6 +69,22 @@ export default function Clients() {
   const formatDate = (date) => {
     if (!date) return '-';
     return new Date(date).toLocaleDateString('pt-PT');
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      await clientsService.deleteClient(deleteId);
+      toast.success('Cliente eliminado com sucesso');
+      setClients(clients.filter(c => c.id !== deleteId));
+      setFilteredClients(filteredClients.filter(c => c.id !== deleteId));
+    } catch (error) {
+      console.error('Error deleting client:', error);
+      toast.error('Erro ao eliminar cliente');
+    } finally {
+      setDeleteId(null);
+    }
   };
 
   if (loading) {
@@ -151,6 +178,25 @@ export default function Clients() {
                       }}
                       icon={Eye}
                     />
+                    <ModernButton
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/clients/${value}/edit`);
+                      }}
+                      icon={Edit2}
+                    />
+                    <ModernButton
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteId(value);
+                      }}
+                      icon={Trash2}
+                      className="text-red-600 hover:text-red-700"
+                    />
                   </div>
                 ) }
               ]}
@@ -161,6 +207,27 @@ export default function Clients() {
           )}
         </div>
       </ModernCard>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-900">Eliminar Cliente</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
+              Tem a certeza que pretende eliminar este cliente? Esta ação não pode ser revertida.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-slate-300">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

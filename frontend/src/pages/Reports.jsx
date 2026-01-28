@@ -3,9 +3,7 @@ import { useAuth } from "@/App";
 import { salesService } from "@/services/salesService";
 import { usersService } from "@/services/usersService";
 import { partnersService } from "@/services/partnersService";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ModernCard, ModernButton, ModernBadge, ModernKPI, ModernTable } from "@/components/modern";
 import { DatePickerPopup } from "@/components/ui/date-picker-popup";
 import {
   Select,
@@ -19,17 +17,21 @@ import {
   FileText,
   Download,
   Filter,
-  Loader2
+  Loader2,
+  TrendingUp,
+  DollarSign,
+  BarChart3
 } from "lucide-react";
+import { motion } from "framer-motion";
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 
 const STATUS_MAP = {
-  em_negociacao: { label: "Em Negociação", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  perdido: { label: "Perdido", color: "bg-red-500/20 text-red-400 border-red-500/30" },
-  pendente: { label: "Pendente", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-  ativo: { label: "Ativo", color: "bg-green-500/20 text-green-400 border-green-500/30" },
-  anulado: { label: "Anulado", color: "bg-gray-500/20 text-gray-400 border-gray-500/30" }
+  em_negociacao: { label: "Em Negociação", variant: "info" },
+  perdido: { label: "Perdido", variant: "danger" },
+  pendente: { label: "Pendente", variant: "warning" },
+  ativo: { label: "Ativo", variant: "success" },
+  anulado: { label: "Anulado", variant: "default" }
 };
 
 const CATEGORY_MAP = {
@@ -228,23 +230,26 @@ export default function Reports() {
   return (
     <div className="space-y-6" data-testid="reports-page">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-[#172B4D] font-['Manrope']">Relatórios</h1>
-        <p className="text-[#172B4D]/70 text-sm mt-1">Gere relatórios de vendas com filtros personalizados</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
+          Relatórios
+        </h1>
+        <p className="text-slate-600 text-sm mt-1">Gere relatórios de vendas com filtros personalizados</p>
+      </motion.div>
 
       {/* Filters */}
-      <Card className="card-leiritrix">
-        <CardHeader className="border-b border-white/5 pb-4">
-          <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg flex items-center gap-2">
-            <Filter size={20} className="text-blue-600" />
-            Filtros
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <ModernCard title="Filtros" icon={Filter} variant="gradient" hover={false}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="text-xs text-[#172B4D]/70 mb-1 block">Data Início</label>
+              <label className="text-xs text-slate-700 font-semibold mb-1 block">Data Início</label>
               <DatePickerPopup
                 value={startDate}
                 onChange={setStartDate}
@@ -254,7 +259,7 @@ export default function Reports() {
             </div>
 
             <div>
-              <label className="text-xs text-[#172B4D]/70 mb-1 block">Data Fim</label>
+              <label className="text-xs text-slate-700 font-semibold mb-1 block">Data Fim</label>
               <DatePickerPopup
                 value={endDate}
                 onChange={setEndDate}
@@ -268,10 +273,10 @@ export default function Reports() {
               <SelectTrigger className="form-input" data-testid="report-category-filter">
                 <SelectValue placeholder="Categoria" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1E293B] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todas</SelectItem>
+              <SelectContent className="bg-white">
+                <SelectItem value="all" className="text-slate-900">Todas</SelectItem>
                 {Object.entries(CATEGORY_MAP).map(([key, label]) => (
-                  <SelectItem key={key} value={key} className="text-white hover:bg-white/10">
+                  <SelectItem key={key} value={key} className="text-slate-900">
                     {label}
                   </SelectItem>
                 ))}
@@ -283,10 +288,10 @@ export default function Reports() {
               <SelectTrigger className="form-input" data-testid="report-status-filter">
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1E293B] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+              <SelectContent className="bg-white">
+                <SelectItem value="all" className="text-slate-900">Todos</SelectItem>
                 {Object.entries(STATUS_MAP).map(([key, s]) => (
-                  <SelectItem key={key} value={key} className="text-white hover:bg-white/10">
+                  <SelectItem key={key} value={key} className="text-slate-900">
                     {s.label}
                   </SelectItem>
                 ))}
@@ -298,10 +303,10 @@ export default function Reports() {
               <SelectTrigger className="form-input" data-testid="report-partner-filter">
                 <SelectValue placeholder="Parceiro" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1E293B] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+              <SelectContent className="bg-white">
+                <SelectItem value="all" className="text-slate-900">Todos</SelectItem>
                 {partners.map((partner) => (
-                  <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
+                  <SelectItem key={partner.id} value={partner.id} className="text-slate-900">
                     {partner.name}
                   </SelectItem>
                 ))}
@@ -313,10 +318,10 @@ export default function Reports() {
               <SelectTrigger className="form-input" data-testid="report-seller-filter">
                 <SelectValue placeholder="Vendedor" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1E293B] border-white/10">
-                <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
+              <SelectContent className="bg-white">
+                <SelectItem value="all" className="text-slate-900">Todos</SelectItem>
                 {sellers.map((seller) => (
-                  <SelectItem key={seller.id} value={seller.id} className="text-white hover:bg-white/10">
+                  <SelectItem key={seller.id} value={seller.id} className="text-slate-900">
                     {seller.name}
                   </SelectItem>
                 ))}
@@ -325,137 +330,162 @@ export default function Reports() {
           </div>
 
           <div className="flex justify-end mt-6">
-            <Button
+            <ModernButton
               onClick={generateReport}
-              disabled={loading}
-              className="btn-primary btn-primary-glow"
+              loading={loading}
+              icon={FileText}
+              variant="primary"
               data-testid="generate-report-btn"
             >
-              {loading ? (
-                <>
-                  <Loader2 size={18} className="mr-2 animate-spin" />
-                  A gerar...
-                </>
-              ) : (
-                <>
-                  <FileText size={18} className="mr-2" />
-                  Gerar Relatório
-                </>
-              )}
-            </Button>
+              Gerar Relatório
+            </ModernButton>
           </div>
-        </CardContent>
-      </Card>
+        </ModernCard>
+      </motion.div>
 
       {/* Report Results */}
       {report && (
-        <>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-6"
+        >
           {/* Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="metric-card border-l-4 border-l-blue-600" data-testid="report-total-count">
-              <CardContent className="p-0">
-                <p className="metric-value">{report.total_sales}</p>
-                <p className="metric-label">Total de Vendas</p>
-              </CardContent>
-            </Card>
-            <Card className="metric-card border-l-4 border-l-purple-600" data-testid="report-total-value">
-              <CardContent className="p-0">
-                <p className="metric-value font-mono">
-                  {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(report.total_value)}
-                </p>
-                <p className="metric-label">Valor Total</p>
-              </CardContent>
-            </Card>
-            <Card className="metric-card border-l-4 border-l-green-600" data-testid="report-total-commission">
-              <CardContent className="p-0">
-                <p className="metric-value font-mono text-green-400">
-                  {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(report.total_commission)}
-                </p>
-                <p className="metric-label">Total Comissões</p>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <ModernKPI
+              title="Total de Vendas"
+              value={report.total_sales}
+              icon={BarChart3}
+              variant="info"
+              data-testid="report-total-count"
+            />
+            <ModernKPI
+              title="Valor Total"
+              value={new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(report.total_value)}
+              icon={DollarSign}
+              variant="primary"
+              data-testid="report-total-value"
+            />
+            <ModernKPI
+              title="Total Comissões"
+              value={new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(report.total_commission)}
+              icon={TrendingUp}
+              variant="success"
+              data-testid="report-total-commission"
+            />
           </div>
 
           {/* Export Button */}
           <div className="flex justify-end">
-            <Button
+            <ModernButton
               onClick={exportToExcel}
-              className="btn-secondary flex items-center gap-2"
+              icon={Download}
+              variant="secondary"
               data-testid="export-excel-btn"
             >
-              <Download size={18} />
               Exportar Excel
-            </Button>
+            </ModernButton>
           </div>
 
           {/* Data Table */}
-          <Card className="card-leiritrix overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="data-table" data-testid="report-table">
-                <thead>
-                  <tr>
-                    <th>Cliente</th>
-                    <th>Categoria</th>
-                    <th>Parceiro</th>
-                    <th>Valor</th>
-                    <th>Comissão</th>
-                    <th>Estado</th>
-                    <th>Vendedor</th>
-                    <th>Data</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {report.sales.length > 0 ? (
-                    report.sales.map((sale) => {
-                      const statusInfo = STATUS_MAP[sale.status];
-                      return (
-                        <tr key={sale.id} className="table-row-hover">
-                          <td>
-                            <div>
-                              <p className="font-medium">{sale.client_name}</p>
-                              {sale.client_nif && (
-                                <p className="text-white/70 text-sm font-mono">{sale.client_nif}</p>
-                              )}
-                            </div>
-                          </td>
-                          <td className="text-white/80">{CATEGORY_MAP[sale.category]}</td>
-                          <td className="text-white/80">{sale.partner_name}</td>
-                          <td className="font-mono text-[#c8f31d]">
-                            {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
-                          </td>
-                          <td className="font-mono">
-                            {sale.commission !== null && sale.commission !== undefined ? (
-                              <span className="text-green-400">
-                                {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.commission)}
-                              </span>
-                            ) : (
-                              <span className="text-white/30">-</span>
-                            )}
-                          </td>
-                          <td>
-                            <Badge className={`${statusInfo?.color} border text-xs`}>
-                              {statusInfo?.label}
-                            </Badge>
-                          </td>
-                          <td className="text-white/80">{sale.seller_name}</td>
-                          <td className="text-white/70 text-sm">
-                            {new Date(sale.created_at).toLocaleDateString('pt-PT')}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={8} className="text-center py-12 text-white/70">
-                        Nenhuma venda encontrada com os filtros selecionados
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-        </>
+          <ModernCard title="Resultados do Relatório" icon={FileText} variant="gradient" hover={false}>
+            {report.sales.length > 0 ? (
+              <ModernTable
+                columns={[
+                  {
+                    key: 'client',
+                    label: 'Cliente',
+                    sortable: true,
+                    render: (_, row) => (
+                      <div>
+                        <p className="font-medium text-slate-900">{row.client_name}</p>
+                        {row.client_nif && (
+                          <p className="text-sm text-slate-500 font-mono">{row.client_nif}</p>
+                        )}
+                      </div>
+                    )
+                  },
+                  {
+                    key: 'category',
+                    label: 'Categoria',
+                    sortable: true,
+                    render: (value) => (
+                      <span className="text-sm text-slate-700">{CATEGORY_MAP[value]}</span>
+                    )
+                  },
+                  {
+                    key: 'partner_name',
+                    label: 'Parceiro',
+                    sortable: true,
+                    render: (value) => (
+                      <span className="text-sm text-slate-700">{value}</span>
+                    )
+                  },
+                  {
+                    key: 'contract_value',
+                    label: 'Valor',
+                    sortable: true,
+                    render: (value) => (
+                      <span className="font-mono text-sm text-brand-600 font-semibold">
+                        {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value)}
+                      </span>
+                    )
+                  },
+                  {
+                    key: 'commission',
+                    label: 'Comissão',
+                    sortable: true,
+                    render: (value) => {
+                      if (value !== null && value !== undefined) {
+                        return (
+                          <span className="font-mono text-sm text-green-600 font-semibold">
+                            {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value)}
+                          </span>
+                        );
+                      }
+                      return <span className="text-slate-300">-</span>;
+                    }
+                  },
+                  {
+                    key: 'status',
+                    label: 'Estado',
+                    sortable: true,
+                    render: (value) => {
+                      const statusInfo = STATUS_MAP[value];
+                      return <ModernBadge variant={statusInfo?.variant}>{statusInfo?.label}</ModernBadge>;
+                    }
+                  },
+                  {
+                    key: 'seller_name',
+                    label: 'Vendedor',
+                    sortable: true,
+                    render: (value) => (
+                      <span className="text-sm text-slate-700">{value}</span>
+                    )
+                  },
+                  {
+                    key: 'created_at',
+                    label: 'Data',
+                    sortable: true,
+                    render: (value) => (
+                      <span className="text-sm text-slate-600">
+                        {new Date(value).toLocaleDateString('pt-PT')}
+                      </span>
+                    )
+                  }
+                ]}
+                data={report.sales}
+                sortable={true}
+                hoverable={true}
+              />
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-slate-500">Nenhuma venda encontrada com os filtros selecionados</p>
+              </div>
+            )}
+          </ModernCard>
+        </motion.div>
       )}
     </div>
   );
