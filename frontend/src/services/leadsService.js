@@ -190,17 +190,17 @@ export const leadsService = {
           name
         )
       `)
-      .in('status', ['nova', 'em_contacto', 'qualificada'])
+      .in('status', ['nova', 'em_contacto'])
       .order('alert_date', { ascending: true });
 
     if (error) throw error;
     return data;
   },
 
-  async getLeadAlerts(daysAhead = 30) {
-    const today = new Date();
-    const futureDate = new Date();
-    futureDate.setDate(today.getDate() + daysAhead);
+  async getLeadAlerts(daysAhead = 1) {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + daysAhead);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
     const { data, error } = await supabase
       .from('leads')
@@ -218,8 +218,8 @@ export const leadsService = {
           name
         )
       `)
-      .in('status', ['nova', 'em_contacto', 'qualificada'])
-      .lte('alert_date', futureDate.toISOString().split('T')[0])
+      .in('status', ['nova', 'em_contacto'])
+      .lte('alert_date', tomorrowStr)
       .order('alert_date', { ascending: true });
 
     if (error) throw error;
@@ -237,10 +237,9 @@ export const leadsService = {
       total: allLeads.length,
       nova: allLeads.filter(l => l.status === 'nova').length,
       em_contacto: allLeads.filter(l => l.status === 'em_contacto').length,
-      qualificada: allLeads.filter(l => l.status === 'qualificada').length,
       convertida: allLeads.filter(l => l.status === 'convertida').length,
       perdida: allLeads.filter(l => l.status === 'perdida').length,
-      active: allLeads.filter(l => ['nova', 'em_contacto', 'qualificada'].includes(l.status)).length,
+      active: allLeads.filter(l => ['nova', 'em_contacto'].includes(l.status)).length,
       conversionRate: allLeads.length > 0
         ? ((allLeads.filter(l => l.status === 'convertida').length / allLeads.length) * 100).toFixed(1)
         : 0

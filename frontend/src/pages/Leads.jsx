@@ -5,13 +5,12 @@ import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { toast } from 'sonner';
 import { leadsService } from '../services/leadsService';
-import { Plus, Search, Loader2, Edit, Trash2, FileText } from 'lucide-react';
+import { Plus, Search, Loader2, Edit, Trash2, FileText, ShoppingCart } from 'lucide-react';
 
 const STATUS_MAP = {
   nova: { label: 'Nova', variant: 'info' },
   em_contacto: { label: 'Em Contacto', variant: 'warning' },
-  qualificada: { label: 'Qualificada', variant: 'success' },
-  convertida: { label: 'Convertida', variant: 'default' },
+  convertida: { label: 'Convertida', variant: 'success' },
   perdida: { label: 'Perdida', variant: 'danger' }
 };
 
@@ -156,7 +155,6 @@ export default function Leads() {
                 <SelectItem value="all">Todos os estados</SelectItem>
                 <SelectItem value="nova">Nova</SelectItem>
                 <SelectItem value="em_contacto">Em Contacto</SelectItem>
-                <SelectItem value="qualificada">Qualificada</SelectItem>
                 <SelectItem value="convertida">Convertida</SelectItem>
                 <SelectItem value="perdida">Perdida</SelectItem>
               </SelectContent>
@@ -203,39 +201,97 @@ export default function Leads() {
             </div>
           ) : (
             <ModernTable
-              headers={['Cliente', 'Tipo de Venda', 'Data de Alerta', 'Estado', 'Vendedor', 'Observações', '']}
-              data={filteredLeads.map((lead) => ({
-                id: lead.id,
-                cells: [
-                  <div key="client">
-                    <p className="font-medium text-slate-900">{lead.client?.name}</p>
-                    <p className="text-sm text-slate-500">{lead.client?.nif}</p>
-                  </div>,
-                  <ModernBadge key="type" variant="default">{lead.sale_type}</ModernBadge>,
-                  <div key="alert">
-                    <p>{formatDate(lead.alert_date)}</p>
-                    <p className="text-sm">{getDaysUntilAlert(lead.alert_date)}</p>
-                  </div>,
-                  getStatusBadge(lead.status),
-                  <span key="seller" className="text-slate-700">{lead.user?.name || '-'}</span>,
-                  <p key="obs" className="max-w-xs truncate text-slate-600">{lead.observations || '-'}</p>,
-                  <div key="actions" className="flex gap-2">
-                    <ModernButton
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate(`/leads/${lead.id}/edit`)}
-                      icon={Edit}
-                    />
-                    <ModernButton
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(lead.id)}
-                      icon={Trash2}
-                      className="text-red-600 hover:text-red-700"
-                    />
-                  </div>
-                ]
-              }))}
+              columns={[
+                {
+                  key: 'client',
+                  label: 'Cliente',
+                  sortable: false,
+                  render: (_, row) => (
+                    <div>
+                      <p className="font-medium text-slate-900">{row.client?.name}</p>
+                      <p className="text-sm text-slate-500">{row.client?.nif}</p>
+                    </div>
+                  )
+                },
+                {
+                  key: 'sale_type',
+                  label: 'Tipo de Venda',
+                  sortable: true,
+                  render: (value) => <ModernBadge variant="default">{value}</ModernBadge>
+                },
+                {
+                  key: 'alert_date',
+                  label: 'Data de Alerta',
+                  sortable: true,
+                  render: (value, row) => (
+                    <div>
+                      <p>{formatDate(value)}</p>
+                      <p className="text-sm">{getDaysUntilAlert(value)}</p>
+                    </div>
+                  )
+                },
+                {
+                  key: 'status',
+                  label: 'Estado',
+                  sortable: true,
+                  render: (value) => getStatusBadge(value)
+                },
+                {
+                  key: 'user',
+                  label: 'Vendedor',
+                  sortable: false,
+                  render: (value) => <span className="text-slate-700">{value?.name || '-'}</span>
+                },
+                {
+                  key: 'observations',
+                  label: 'Observações',
+                  sortable: false,
+                  render: (value) => <p className="max-w-xs truncate text-slate-600">{value || '-'}</p>
+                },
+                {
+                  key: 'id',
+                  label: '',
+                  sortable: false,
+                  render: (value, row) => (
+                    <div className="flex gap-2">
+                      {row.status !== 'convertida' && row.status !== 'perdida' && (
+                        <ModernButton
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/sales/new', { state: { leadId: value, clientId: row.client_id, leadData: row } });
+                          }}
+                          icon={ShoppingCart}
+                          className="text-green-600 hover:text-green-700"
+                        />
+                      )}
+                      <ModernButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/leads/${value}/edit`);
+                        }}
+                        icon={Edit}
+                      />
+                      <ModernButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(value);
+                        }}
+                        icon={Trash2}
+                        className="text-red-600 hover:text-red-700"
+                      />
+                    </div>
+                  )
+                }
+              ]}
+              data={filteredLeads}
+              sortable={true}
+              hoverable={true}
             />
           )}
         </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/App";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { salesService } from "@/services/salesService";
 import { partnersService } from "@/services/partnersService";
 import { operatorsService } from "@/services/operatorsService";
@@ -10,6 +10,7 @@ import { operatorClientCategoriesService } from "@/services/operatorClientCatego
 import { clientsService } from "@/services/clientsService";
 import { addressesService } from "@/services/addressesService";
 import { servicesService } from "@/services/servicesService";
+import { leadsService } from "@/services/leadsService";
 import { ModernCard, ModernButton, ModernBadge } from "@/components/modern";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -90,6 +91,7 @@ const ESCALOES_GAS = [
 export default function SaleForm() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(false);
@@ -118,6 +120,7 @@ export default function SaleForm() {
   const [currentClient, setCurrentClient] = useState(null);
   const [availableServices, setAvailableServices] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
+  const [sourceLead, setSourceLead] = useState(null);
 
   const [formData, setFormData] = useState({
     client_name: "",
@@ -158,11 +161,19 @@ export default function SaleForm() {
     fetchSellers();
     fetchOperators();
 
-    const clientId = searchParams.get('clientId');
-    if (clientId) {
-      loadClientData(clientId);
+    if (location.state?.leadId) {
+      const { leadId, clientId, leadData } = location.state;
+      setSourceLead({ id: leadId, data: leadData });
+      if (clientId) {
+        loadClientDataFromLead(clientId, leadData);
+      }
+    } else {
+      const clientId = searchParams.get('clientId');
+      if (clientId) {
+        loadClientData(clientId);
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, location.state]);
 
   const loadClientData = async (clientId) => {
     try {
@@ -184,6 +195,33 @@ export default function SaleForm() {
     } catch (error) {
       console.error('Error loading client data:', error);
       toast.error('Erro ao carregar dados do cliente');
+    }
+  };
+
+  const loadClientDataFromLead = async (clientId, leadData) => {
+    try {
+      const client = await clientsService.getClientById(clientId);
+      if (client) {
+        setNifInput(client.nif);
+        setCurrentClient(client);
+        setFormData(prev => ({
+          ...prev,
+          client_name: client.name,
+          client_email: client.email || '',
+          client_phone: client.phone || '',
+          client_nif: client.nif,
+          client_type: client.client_type || 'residencial',
+          portfolio_status: client.portfolio_status || '',
+          sale_type: leadData?.sale_type || '',
+          seller_id: leadData?.user_id || 'none',
+          notes: leadData?.observations || ''
+        }));
+        setShowForm(true);
+        toast.success('Dados da lead carregados automaticamente');
+      }
+    } catch (error) {
+      console.error('Error loading client data from lead:', error);
+      toast.error('Erro ao carregar dados da lead');
     }
   };
 
@@ -882,8 +920,20 @@ export default function SaleForm() {
         solar_panel_quantity: formData.solar_panel_quantity ? parseInt(formData.solar_panel_quantity) : null
       };
 
-      await salesService.createSale(payload);
-      toast.success("Venda criada com sucesso");
+      const createdSale = await salesService.createSale(payload);
+
+      if (sourceLead?.id && createdSale?.id) {
+        try {
+          await leadsService.convertLeadToSale(sourceLead.id, createdSale.id);
+          toast.success("Venda criada e lead convertida com sucesso");
+        } catch (leadError) {
+          console.error('Error converting lead:', leadError);
+          toast.success("Venda criada com sucesso (aviso: erro ao converter lead)");
+        }
+      } else {
+        toast.success("Venda criada com sucesso");
+      }
+
       navigate("/sales");
     } catch (error) {
       console.error('Erro ao criar venda:', error);

@@ -18,7 +18,7 @@ export default function LeadAlerts() {
   const loadLeadAlerts = async () => {
     try {
       setLoading(true);
-      const data = await leadsService.getLeadAlerts(30);
+      const data = await leadsService.getLeadAlerts(1);
       setLeads(data);
     } catch (error) {
       console.error('Error loading lead alerts:', error);
@@ -70,7 +70,7 @@ export default function LeadAlerts() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-500">Não há leads com alertas nos próximos 30 dias</p>
+          <p className="text-sm text-gray-500">Não há leads com alertas para amanhã</p>
         </CardContent>
       </Card>
     );

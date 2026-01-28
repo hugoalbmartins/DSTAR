@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ModernCard, ModernButton } from '../components/modern';
+import { ModernCard, ModernButton, ModernBadge } from '../components/modern';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { toast } from 'sonner';
 import { leadsService } from '../services/leadsService';
+import { leadContactHistoryService } from '../services/leadContactHistoryService';
 import { clientsService } from '../services/clientsService';
 import { usersService } from '../services/usersService';
-import { ArrowLeft, Save, Loader2, Search, ArrowRight, UserCircle, ClipboardList } from 'lucide-react';
+import { authService } from '../services/authService';
+import { ArrowLeft, Save, Loader2, Search, ArrowRight, UserCircle, ClipboardList, History, Calendar } from 'lucide-react';
 
 const SALE_TYPES = [
   { value: 'NI', label: 'NI (Nova Instalação)' },
@@ -24,7 +26,6 @@ const SALE_TYPES = [
 const LEAD_STATUSES = [
   { value: 'nova', label: 'Nova' },
   { value: 'em_contacto', label: 'Em Contacto' },
-  { value: 'qualificada', label: 'Qualificada' },
   { value: 'convertida', label: 'Convertida' },
   { value: 'perdida', label: 'Perdida' }
 ];
@@ -42,6 +43,9 @@ export default function LeadForm() {
   const [showForm, setShowForm] = useState(false);
   const [nifInput, setNifInput] = useState('');
   const [sellers, setSellers] = useState([]);
+  const [contactHistory, setContactHistory] = useState([]);
+  const [originalAlertDate, setOriginalAlertDate] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
 
   const [formData, setFormData] = useState({
     client_id: '',
@@ -59,6 +63,7 @@ export default function LeadForm() {
   });
 
   useEffect(() => {
+    loadCurrentUser();
     fetchSellers();
     if (isEdit) {
       setInitialLoading(true);
@@ -71,12 +76,30 @@ export default function LeadForm() {
     }
   }, [id, prefilledClientId]);
 
+  const loadCurrentUser = async () => {
+    try {
+      const user = await authService.getCurrentUser();
+      setCurrentUser(user);
+    } catch (error) {
+      console.error('Error loading current user:', error);
+    }
+  };
+
   const fetchSellers = async () => {
     try {
       const sellersData = await usersService.getUsersByRole('vendedor');
       setSellers(sellersData);
     } catch (error) {
       console.error('Error fetching sellers:', error);
+    }
+  };
+
+  const loadContactHistory = async (leadId) => {
+    try {
+      const history = await leadContactHistoryService.getHistoryByLeadId(leadId);
+      setContactHistory(history);
+    } catch (error) {
+      console.error('Error loading contact history:', error);
     }
   };
 
@@ -99,6 +122,8 @@ export default function LeadForm() {
           alert_date: lead.alert_date || '',
           status: lead.status || 'nova'
         });
+        setOriginalAlertDate(lead.alert_date || '');
+        await loadContactHistory(id);
       }
     } catch (error) {
       console.error('Error loading lead:', error);
@@ -251,6 +276,14 @@ export default function LeadForm() {
       };
 
       if (isEdit) {
+        if (originalAlertDate && originalAlertDate !== formData.alert_date && formData.status === 'em_contacto') {
+          await leadContactHistoryService.addContactHistory(
+            id,
+            originalAlertDate,
+            `Data de contacto anterior: ${new Date(originalAlertDate).toLocaleDateString('pt-PT')}`,
+            currentUser?.id
+          );
+        }
         await leadsService.updateLead(id, leadData);
         toast.success('Lead atualizada com sucesso');
       } else {
@@ -535,6 +568,48 @@ export default function LeadForm() {
               </div>
             </div>
         </ModernCard>
+
+        {isEdit && contactHistory.length > 0 && (
+          <ModernCard title="Histórico de Contactos" icon={History} variant="gradient" hover={false}>
+            <div className="space-y-3">
+              {contactHistory.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200"
+                >
+                  <div className="p-2 bg-brand-100 rounded-lg">
+                    <Calendar className="h-4 w-4 text-brand-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-semibold text-slate-900">
+                        {new Date(entry.contact_date).toLocaleDateString('pt-PT', {
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </p>
+                      <ModernBadge variant="info" size="sm">
+                        Contacto Anterior
+                      </ModernBadge>
+                    </div>
+                    {entry.observations && (
+                      <p className="text-sm text-slate-600 mb-2">{entry.observations}</p>
+                    )}
+                    <p className="text-xs text-slate-500">
+                      {entry.created_by_user?.name || 'Sistema'} • {' '}
+                      {new Date(entry.created_at).toLocaleDateString('pt-PT')} às{' '}
+                      {new Date(entry.created_at).toLocaleTimeString('pt-PT', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ModernCard>
+        )}
 
         <div className="flex justify-end gap-4 pt-4">
           <ModernButton
