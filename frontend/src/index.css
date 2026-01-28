@@ -9,6 +9,15 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color: #172B4D;
+}
+
+.text-on-white {
+    color: #172B4D;
+}
+
+.text-on-colored {
+    color: #FFFFFF;
 }
 
 code {

@@ -66,17 +66,17 @@ export default function Login() {
           />
         </div>
 
-        <h2 className="text-2xl font-bold text-white text-center mb-2 font-['Manrope']">
+        <h2 className="text-2xl font-bold text-[#172B4D] text-center mb-2 font-['Manrope']">
           Bem-vindo
         </h2>
-        <p className="text-white/70 text-center mb-8 text-sm">
+        <p className="text-gray-600 text-center mb-8 text-sm">
           Aceda à sua conta para continuar
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6" data-testid="login-form">
           <div>
             <Label htmlFor="email" className="form-label flex items-center gap-2">
-              <Mail size={16} style={{ color: '#00b4d8' }} />
+              <Mail size={16} style={{ color: '#0052CC' }} />
               Email
             </Label>
             <Input
@@ -92,7 +92,7 @@ export default function Login() {
 
           <div>
             <Label htmlFor="password" className="form-label flex items-center gap-2">
-              <Lock size={16} style={{ color: '#00b4d8' }} />
+              <Lock size={16} style={{ color: '#0052CC' }} />
               Palavra-passe
             </Label>
             <Input
