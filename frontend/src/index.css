@@ -1,106 +1,86 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-    margin: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: #172B4D;
-}
-
-.text-on-white {
-    color: #172B4D;
-}
-
-.text-on-colored {
-    color: #FFFFFF;
-}
-
-.text-on-gray {
-    color: #172B4D;
-}
-
-code {
-    font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, monospace;
-}
-
 @layer base {
     :root {
-        --background: 215 20% 97%;
-        --foreground: 215 25% 17%;
+        --background: 220 20% 98%;
+        --foreground: 220 15% 15%;
         --card: 0 0% 100%;
-        --card-foreground: 215 25% 17%;
+        --card-foreground: 220 15% 15%;
         --popover: 0 0% 100%;
-        --popover-foreground: 215 25% 17%;
-        --primary: 212 100% 40%;
+        --popover-foreground: 220 15% 15%;
+        --primary: 212 100% 45%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 215 16% 47%;
+        --secondary: 220 15% 50%;
         --secondary-foreground: 0 0% 100%;
-        --muted: 215 16% 93%;
-        --muted-foreground: 215 16% 47%;
-        --accent: 212 100% 40%;
+        --muted: 220 15% 95%;
+        --muted-foreground: 220 10% 45%;
+        --accent: 212 100% 50%;
         --accent-foreground: 0 0% 100%;
-        --destructive: 0 84.2% 60.2%;
+        --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 100%;
-        --border: 215 16% 87%;
+        --border: 220 15% 90%;
         --input: 0 0% 100%;
-        --ring: 212 100% 40%;
-        --chart-1: 212 100% 40%;
-        --chart-2: 212 100% 50%;
-        --chart-3: 212 100% 30%;
-        --chart-4: 212 80% 60%;
-        --chart-5: 212 60% 70%;
+        --ring: 212 100% 45%;
+        --chart-1: 212 100% 45%;
+        --chart-2: 212 100% 55%;
+        --chart-3: 212 100% 35%;
+        --chart-4: 212 80% 65%;
+        --chart-5: 212 60% 75%;
         --radius: 0.75rem;
 
-        --blue-primary: #0052CC;
-        --blue-hover: #0747A6;
-        --blue-light: #4C9AFF;
-        --gray-bg: #F4F5F7;
-        --gray-border: #DFE1E6;
-        --gray-text: #42526E;
+        --brand-primary: #0066e6;
+        --brand-secondary: #0052b8;
+        --brand-accent: #009fe6;
+        --gradient-primary: linear-gradient(135deg, #0066e6 0%, #003d8a 100%);
+        --gradient-hover: linear-gradient(135deg, #1a80ff 0%, #0052b8 100%);
     }
-}
 
-@layer base {
     * {
         @apply border-border;
     }
+
     body {
+        margin: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
         @apply bg-background text-foreground;
-        background-color: #F4F5F7;
     }
 
     h1, h2, h3, h4, h5, h6 {
-        font-family: 'Manrope', sans-serif;
-        color: #172B4D;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: hsl(var(--foreground));
     }
 
-    .font-mono {
-        font-family: 'JetBrains Mono', monospace;
+    code {
+        font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, monospace;
     }
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling - Modern and minimal */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #F4F5F7;
+    background: hsl(var(--background));
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #DFE1E6;
-    border-radius: 4px;
+    background: hsl(var(--border));
+    border-radius: 6px;
+    border: 2px solid hsl(var(--background));
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #B3BAC5;
+    background: hsl(var(--primary) / 0.5);
 }
 
 /* Custom animations */
@@ -157,28 +137,29 @@ code {
     @apply bg-gray-500/20 text-gray-400 border border-gray-500/30;
 }
 
-/* Card styles */
+/* Modern Card Styles */
 .card-leiritrix {
-    background-color: #FFFFFF;
-    border: 1px solid #DFE1E6;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-leiritrix:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 102, 230, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
-/* Button glow effect */
+/* Enhanced Button Glow Effect */
 .btn-primary-glow {
-    box-shadow: 0 2px 8px rgba(0, 82, 204, 0.25);
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(0, 102, 230, 0.35);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-primary-glow:hover {
-    box-shadow: 0 4px 16px rgba(0, 82, 204, 0.4);
-    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 0 35px rgba(0, 102, 230, 0.7);
+    transform: translateY(-2px);
 }
 
 /* Alert card with left border */
@@ -233,24 +214,41 @@ input:focus, select:focus, textarea:focus {
     color: #97A0AF;
 }
 
-/* Buttons */
+/* Modern Buttons with Glow Effect */
 .btn-primary {
-    background-color: #0052CC;
+    background: var(--gradient-primary);
     color: #FFFFFF;
     font-weight: 600;
     font-size: 0.875rem;
     padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+    border-radius: 0.75rem;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 82, 204, 0.25);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(0, 102, 230, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-hover);
+    opacity: 0;
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-primary:hover {
-    background-color: #0747A6;
-    box-shadow: 0 4px 16px rgba(0, 82, 204, 0.35);
-    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 0 30px rgba(0, 102, 230, 0.6);
+    transform: translateY(-2px);
+}
+
+.btn-primary:hover::before {
+    opacity: 1;
 }
 
 .btn-primary:active {
@@ -258,20 +256,21 @@ input:focus, select:focus, textarea:focus {
 }
 
 .btn-secondary {
-    background-color: #FFFFFF;
-    border: 2px solid #DFE1E6;
-    color: #172B4D;
+    background-color: transparent;
+    border: 2px solid hsl(var(--border));
+    color: hsl(var(--foreground));
     font-weight: 600;
     padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+    border-radius: 0.75rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-secondary:hover {
-    background-color: #F4F5F7;
-    border-color: #0052CC;
-    color: #0052CC;
+    background-color: hsl(var(--muted));
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
+    box-shadow: 0 4px 12px rgba(0, 102, 230, 0.15);
 }
 
 /* Skeleton loader */
@@ -287,19 +286,37 @@ input:focus, select:focus, textarea:focus {
     border-radius: 8px;
 }
 
-/* KPI Card */
+/* Modern KPI Card with Gradient */
 .kpi-card {
-    background: linear-gradient(135deg, #0052CC 0%, #0747A6 100%);
-    border-radius: 12px;
+    background: var(--gradient-primary);
+    border-radius: 1rem;
     padding: 1.5rem;
     color: white;
-    box-shadow: 0 4px 12px rgba(0, 82, 204, 0.2);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 102, 230, 0.25);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-hover);
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .kpi-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 82, 204, 0.3);
+    box-shadow: 0 12px 32px rgba(0, 102, 230, 0.4);
+}
+
+.kpi-card:hover::before {
+    opacity: 1;
 }
 
 @layer base {
