@@ -209,13 +209,15 @@ export const Layout = () => {
           {/* Top bar */}
           <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-4 lg:px-6 py-4 flex items-center justify-between shadow-sm">
             <div className="lg:hidden w-12"></div>
-            <motion.h1
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent"
-            >
-              {getPageTitle()}
-            </motion.h1>
+            <Link to="/dashboard">
+              <motion.h1
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent hover:from-brand-600 hover:to-brand-800 transition-all cursor-pointer"
+              >
+                CRM DOLPHIN+STAR
+              </motion.h1>
+            </Link>
             <div className="flex items-center gap-4">
               <NotificationBell userId={user?.id} />
             </div>
