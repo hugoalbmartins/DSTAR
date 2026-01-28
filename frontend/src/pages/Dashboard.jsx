@@ -383,7 +383,14 @@ export default function Dashboard() {
   ];
 
   const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
   const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
+
+  const isMonthDisabled = (monthValue) => {
+    if (selectedYear > currentYear) return true;
+    if (selectedYear === currentYear && monthValue > currentMonth) return true;
+    return false;
+  };
 
   if (loading) {
     return (
@@ -410,27 +417,44 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[#172B4D]">Dashboard</h1>
           <p className="text-[#172B4D]/70 mt-1">Visão geral do desempenho de vendas</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <Calendar className="h-5 w-5 text-[#0052CC]" />
           <select
             value={selectedMonth}
-            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-            className="form-input text-sm py-2"
+            onChange={(e) => {
+              const newMonth = parseInt(e.target.value);
+              if (!isMonthDisabled(newMonth)) {
+                setSelectedMonth(newMonth);
+              }
+            }}
+            className="form-input text-sm py-2 px-3 bg-white border-gray-200 rounded-lg font-medium text-[#172B4D] hover:border-[#0052CC] transition-colors shadow-sm focus:ring-2 focus:ring-[#0052CC]/20"
           >
             {months.map((month) => (
-              <option key={month.value} value={month.value}>
+              <option
+                key={month.value}
+                value={month.value}
+                disabled={isMonthDisabled(month.value)}
+                style={isMonthDisabled(month.value) ? { color: '#ccc' } : {}}
+              >
                 {month.label}
               </option>
             ))}
           </select>
           <select
             value={selectedYear}
-            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="form-input text-sm py-2"
+            onChange={(e) => {
+              const newYear = parseInt(e.target.value);
+              setSelectedYear(newYear);
+              if (newYear === currentYear && selectedMonth > currentMonth) {
+                setSelectedMonth(currentMonth);
+              }
+            }}
+            className="form-input text-sm py-2 px-3 bg-white border-gray-200 rounded-lg font-medium text-[#172B4D] hover:border-[#0052CC] transition-colors shadow-sm focus:ring-2 focus:ring-[#0052CC]/20"
           >
             {years.map((year) => (
               <option key={year} value={year}>
@@ -440,6 +464,22 @@ export default function Dashboard() {
           </select>
         </div>
       </div>
+
+      {metrics && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center gap-3">
+          <div className="bg-[#0052CC] rounded-full p-2">
+            <Calendar className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-[#172B4D]">
+              Período de Análise: {months.find(m => m.value === selectedMonth)?.label} {selectedYear}
+            </p>
+            <p className="text-xs text-[#172B4D]/60">
+              Visualizando {metrics.sales_this_month} {metrics.sales_this_month === 1 ? 'venda' : 'vendas'} neste período
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <KPICard
