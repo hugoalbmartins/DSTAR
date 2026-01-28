@@ -985,48 +985,48 @@ export default function SaleForm() {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 mt-4">
-              <Button
+              <ModernButton
                 onClick={() => handleSaleTypeSelection("NI")}
-                className="w-full bg-[#c8f31d] hover:bg-[#b5db1a] text-[#031819] font-['Manrope'] font-semibold py-6"
+                className="w-full bg-[#c8f31d] hover:bg-[#b5db1a] text-[#031819] font-semibold py-6"
               >
                 NI (Nova Instalação)
-              </Button>
-              <Button
+              </ModernButton>
+              <ModernButton
                 onClick={() => handleSaleTypeSelection("MC")}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6"
               >
                 MC (Mudança de Casa)
-              </Button>
-              <Button
+              </ModernButton>
+              <ModernButton
                 onClick={() => handleSaleTypeSelection("Refid")}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-6"
               >
                 Refid (Refidelização)
-              </Button>
-              <Button
+              </ModernButton>
+              <ModernButton
                 onClick={() => handleSaleTypeSelection("Refid_Acrescimo")}
-                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-6"
               >
                 Refid com Acréscimo
-              </Button>
-              <Button
+              </ModernButton>
+              <ModernButton
                 onClick={() => handleSaleTypeSelection("Refid_Decrescimo")}
-                className="w-full bg-purple-400 hover:bg-purple-500 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-purple-400 hover:bg-purple-500 text-white font-semibold py-6"
               >
                 Refid com Decréscimo
-              </Button>
-              <Button
+              </ModernButton>
+              <ModernButton
                 onClick={() => handleSaleTypeSelection("Up_sell")}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-6"
               >
                 Up-sell
-              </Button>
-              <Button
+              </ModernButton>
+              <ModernButton
                 onClick={() => handleSaleTypeSelection("Cross_sell")}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-['Manrope'] font-semibold py-6"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-6"
               >
                 Cross-sell
-              </Button>
+              </ModernButton>
             </div>
           </DialogContent>
         </Dialog>
