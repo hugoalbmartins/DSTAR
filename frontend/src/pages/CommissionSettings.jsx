@@ -112,15 +112,15 @@ export default function CommissionSettings() {
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="text-white/70 hover:text-white"
+            className="text-[#172B4D]/70 hover:text-[#172B4D]"
           >
             <ArrowLeft size={20} />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-white font-['Manrope']">
+            <h1 className="text-2xl font-bold text-[#172B4D] font-['Manrope']">
               Configurações de Comissões
             </h1>
-            <p className="text-white/70 text-sm mt-1">
+            <p className="text-[#172B4D]/70 text-sm mt-1">
               Gerir cálculo automático de comissões por operadora
             </p>
           </div>
@@ -160,9 +160,9 @@ export default function CommissionSettings() {
       {selectedOperator && settings.length === 0 && (
         <Card className="card-leiritrix">
           <CardContent className="p-8 text-center">
-            <Settings className="mx-auto mb-4 text-white/30" size={48} />
-            <p className="text-white mb-2">Nenhuma configuração definida</p>
-            <p className="text-white/70 text-sm mb-6">
+            <Settings className="mx-auto mb-4 text-[#172B4D]/30" size={48} />
+            <p className="text-[#172B4D] mb-2">Nenhuma configuração definida</p>
+            <p className="text-[#172B4D]/70 text-sm mb-6">
               Crie uma configuração para definir como as comissões serão calculadas para esta operadora
             </p>
             <Button
@@ -184,7 +184,7 @@ export default function CommissionSettings() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-4">
-                      <h3 className="text-lg font-semibold text-white font-['Manrope']">
+                      <h3 className="text-lg font-semibold text-[#172B4D] font-['Manrope']">
                         {getPartnerName(setting.partner_id)}
                       </h3>
                       <Badge className={
@@ -198,16 +198,16 @@ export default function CommissionSettings() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-white/70 mb-1">Diferenciação por NIF</p>
-                        <p className="text-white">
+                        <p className="text-[#172B4D]/70 mb-1">Diferenciação por NIF</p>
+                        <p className="text-[#172B4D]">
                           {setting.nif_differentiation ? 'Sim (5xx vs 1/2/3xxx)' : 'Não'}
                         </p>
                       </div>
                       <div>
-                        <p className="text-white/70 mb-1">Tipos de Venda Permitidos</p>
+                        <p className="text-[#172B4D]/70 mb-1">Tipos de Venda Permitidos</p>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {setting.allowed_sale_types?.map((type) => (
-                            <Badge key={type} variant="outline" className="text-xs text-white/80 border-white/30">
+                            <Badge key={type} variant="outline" className="text-xs text-[#172B4D]/80 border-[#172B4D]/30">
                               {type}
                             </Badge>
                           ))}
@@ -221,7 +221,7 @@ export default function CommissionSettings() {
                       onClick={() => navigate(`/settings/commissions/${setting.id}`)}
                       variant="ghost"
                       size="sm"
-                      className="text-white/70 hover:text-white"
+                      className="text-[#172B4D]/70 hover:text-[#172B4D]"
                     >
                       <Edit2 size={16} />
                     </Button>
