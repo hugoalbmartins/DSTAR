@@ -65,6 +65,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchData();
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, [selectedMonth, selectedYear]);
 
   const fetchData = async () => {
@@ -154,10 +160,9 @@ export default function Dashboard() {
         });
       }
 
-      const statusCounts = stats.byStatus || {};
       const totalCreated = currentMonthSales.length;
-      const totalPending = statusCounts.pendente || 0;
-      const totalCompleted = statusCounts.ativo || 0;
+      const totalPending = currentMonthSales.filter(s => s.status === 'pendente').length;
+      const totalCompleted = currentMonthSales.filter(s => s.status === 'ativo').length;
 
       const funnelData = [
         { name: 'Criadas', value: totalCreated, fill: '#3B82F6' },
@@ -189,7 +194,7 @@ export default function Dashboard() {
 
       const calcPartnerCommissionsActive = (salesList) => {
         return salesList
-          .filter(s => s.status === 'ativo' && s.operators?.commission_visible_to_bo)
+          .filter(s => s.status === 'ativo')
           .reduce((sum, s) => sum + (s.commission_partner || 0), 0);
       };
 
