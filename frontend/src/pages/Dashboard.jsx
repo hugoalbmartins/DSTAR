@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useAuth } from "@/App";
 import { Link } from "react-router-dom";
 import { salesService } from "@/services/salesService";
@@ -7,6 +7,10 @@ import { operatorsService } from "@/services/operatorsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import KPICard from "@/components/KPICard";
+import { SalesLineChart, SalesBarChart, ConversionFunnelChart } from "@/components/SalesChart";
+import RecentActivity from "@/components/RecentActivity";
+import { SkeletonKPI, SkeletonChart, SkeletonActivity } from "@/components/SkeletonLoader";
 import {
   TrendingUp,
   ShoppingCart,
@@ -17,31 +21,18 @@ import {
   Phone,
   Sun,
   Calendar,
-  Clock,
-  CheckCircle,
   Users,
-  EyeOff
+  EyeOff,
+  CheckCircle,
+  TrendingDown
 } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend
-} from "recharts";
 
 const STATUS_MAP = {
-  em_negociacao: { label: "Em Negociação", color: "bg-blue-100 text-blue-700 border-blue-200" },
-  perdido: { label: "Perdido", color: "bg-red-100 text-red-700 border-red-200" },
-  pendente: { label: "Pendente", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-  ativo: { label: "Ativo", color: "bg-green-100 text-green-700 border-green-200" },
-  anulado: { label: "Anulado", color: "bg-gray-100 text-gray-700 border-gray-200" }
+  em_negociacao: { label: "Em Negociação", color: "bg-blue-50 text-blue-700 border-blue-200" },
+  perdido: { label: "Perdido", color: "bg-red-50 text-red-700 border-red-200" },
+  pendente: { label: "Pendente", color: "bg-yellow-50 text-yellow-700 border-yellow-200" },
+  ativo: { label: "Ativo", color: "bg-green-50 text-green-700 border-green-200" },
+  anulado: { label: "Anulado", color: "bg-gray-50 text-gray-700 border-gray-200" }
 };
 
 const CATEGORY_ICONS = {
@@ -56,13 +47,14 @@ const CATEGORY_LABELS = {
   paineis_solares: "Painéis Solares"
 };
 
-const PIE_COLORS = ["#3b82f6", "#10b981", "#f59e0b"];
-
 export default function Dashboard() {
   const { user } = useAuth();
   const now = new Date();
   const [metrics, setMetrics] = useState(null);
   const [monthlyStats, setMonthlyStats] = useState([]);
+  const [operatorStats, setOperatorStats] = useState([]);
+  const [conversionData, setConversionData] = useState([]);
+  const [recentActivities, setRecentActivities] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasSellers, setHasSellers] = useState(false);
@@ -124,16 +116,31 @@ export default function Dashboard() {
       });
 
       const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-      const yoyData = monthNames.map((month, index) => {
-        const currentYearMonthSales = currentYearSales.filter(s => new Date(s.sale_date || s.created_at).getMonth() === index);
-        const lastYearMonthSales = lastYearSales.filter(s => new Date(s.sale_date || s.created_at).getMonth() === index);
-
+      const chartData = monthNames.map((month, index) => {
+        const count = currentYearSales.filter(s => new Date(s.sale_date || s.created_at).getMonth() === index).length;
         return {
-          month,
-          anoCorrente: currentYearMonthSales.length,
-          anoAnterior: lastYearMonthSales.length,
+          name: month,
+          vendas: count
         };
       });
+
+      const operatorCounts = {};
+      currentMonthSales.forEach(sale => {
+        const operatorName = sale.operators?.name || 'Outros';
+        operatorCounts[operatorName] = (operatorCounts[operatorName] || 0) + 1;
+      });
+
+      const operatorChartData = Object.entries(operatorCounts)
+        .map(([name, vendas]) => ({ name, vendas }))
+        .sort((a, b) => b.vendas - a.vendas)
+        .slice(0, 5);
+
+      const statusCounts = stats.byStatus || {};
+      const funnelData = [
+        { name: 'Em Negociação', value: statusCounts.em_negociacao || 0 },
+        { name: 'Pendente', value: statusCounts.pendente || 0 },
+        { name: 'Ativo', value: statusCounts.ativo || 0 }
+      ];
 
       const calcMensalidadesTelecom = (salesList) => {
         return salesList
@@ -255,6 +262,17 @@ export default function Dashboard() {
         };
       }).sort((a, b) => a.days_until_end - b.days_until_end);
 
+      const activities = currentMonthSales
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 5)
+        .map(sale => ({
+          type: sale.status === 'ativo' ? 'sale' : sale.status === 'perdido' ? 'cancelled' : 'pending',
+          title: sale.client_name,
+          description: `${sale.operators?.name || 'N/A'} - ${formatCurrency(sale.contract_value || 0)}`,
+          time: formatRelativeTime(sale.created_at),
+          status: STATUS_MAP[sale.status]?.label
+        }));
+
       setMetrics({
         sales_this_month: currentMonthSales.length,
         total_mensalidades: currentMonthMensalidades,
@@ -264,7 +282,10 @@ export default function Dashboard() {
         ...metricsData
       });
 
-      setMonthlyStats(yoyData);
+      setMonthlyStats(chartData);
+      setOperatorStats(operatorChartData);
+      setConversionData(funnelData);
+      setRecentActivities(activities);
       setAlerts(expiringSoon);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -273,31 +294,25 @@ export default function Dashboard() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="spinner"></div>
-      </div>
-    );
-  }
-
-  const categoryData = metrics?.sales_by_category ? 
-    Object.entries(metrics.sales_by_category).map(([key, value]) => ({
-      name: CATEGORY_LABELS[key] || key,
-      value
-    })) : [];
-
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value || 0);
+  };
+
+  const formatRelativeTime = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+
+    if (diffInHours < 1) return 'Agora mesmo';
+    if (diffInHours < 24) return `Há ${diffInHours}h`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `Há ${diffInDays}d`;
+    return date.toLocaleDateString('pt-PT');
   };
 
   const formatPercentage = (value) => {
     const sign = value >= 0 ? '+' : '';
     return `${sign}${value.toFixed(1)}%`;
-  };
-
-  const getPercentageColor = (value) => {
-    return value >= 0 ? 'text-green-600' : 'text-red-600';
   };
 
   const months = [
@@ -318,477 +333,209 @@ export default function Dashboard() {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
 
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <div className="flex gap-2">
+            <div className="skeleton h-10 w-32"></div>
+            <div className="skeleton h-10 w-24"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <SkeletonKPI key={i} />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <SkeletonChart />
+          <SkeletonChart />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6" data-testid="dashboard">
-      {/* Month/Year Filter */}
-      <div className="flex justify-end items-center gap-2 mb-2">
-        <select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-          className="bg-[#1E293B] border border-white/10 text-white text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-[#0BA5D9] focus:ring-2 focus:ring-[#0BA5D9]/20 transition-all font-medium shadow-sm"
-        >
-          {months.map((month) => (
-            <option key={month.value} value={month.value}>
-              {month.label}
-            </option>
-          ))}
-        </select>
-        <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-          className="bg-[#1E293B] border border-white/10 text-white text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-[#0BA5D9] focus:ring-2 focus:ring-[#0BA5D9]/20 transition-all font-medium shadow-sm"
-        >
-          {years.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Metrics Grid - Main KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
-        <Card className="metric-card w-full border-l-4 border-l-blue-600" data-testid="metric-mensalidades">
-          <CardContent className="p-0">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="metric-value font-mono text-xl">
-                  {formatCurrency(metrics?.total_mensalidades)}
-                </p>
-                <p className="metric-label">
-                  Mensalidades Telecom
-                  {metrics?.mensalidades_yoy !== undefined && (
-                    <span className={`block mt-1 text-xs font-mono ${getPercentageColor(metrics.mensalidades_yoy)}`}>
-                      {formatPercentage(metrics.mensalidades_yoy)} vs ano anterior
-                    </span>
-                  )}
-                </p>
-              </div>
-              <div className="bg-blue-100 p-3 rounded-lg">
-                <Phone className="text-blue-600" size={24} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {user.role === 'admin' ? (
-          <>
-            {hasSellers && (
-              <Card className="metric-card w-full border-l-4 border-l-purple-600" data-testid="metric-seller-commissions">
-                <CardContent className="p-0">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="metric-value font-mono text-xl">
-                        {formatCurrency(metrics?.seller_commissions)}
-                      </p>
-                      <p className="metric-label">
-                        Comissões Vendedores
-                        {metrics?.seller_commissions_yoy !== undefined && (
-                          <span className={`block mt-1 text-xs font-mono ${getPercentageColor(metrics.seller_commissions_yoy)}`}>
-                            {formatPercentage(metrics.seller_commissions_yoy)} vs ano anterior
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                    <div className="bg-purple-100 p-3 rounded-lg">
-                      <Users className="text-purple-600" size={24} />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {hasHiddenOperators && (
-              <Card className="metric-card w-full border-l-4 border-l-gray-600" data-testid="metric-non-visible-commissions">
-                <CardContent className="p-0">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="metric-value font-mono text-xl">
-                        {formatCurrency(metrics?.non_visible_commissions)}
-                      </p>
-                      <p className="metric-label">
-                        Comissões Operadoras Ocultas
-                        {metrics?.non_visible_commissions_yoy !== undefined && (
-                          <span className={`block mt-1 text-xs font-mono ${getPercentageColor(metrics.non_visible_commissions_yoy)}`}>
-                            {formatPercentage(metrics.non_visible_commissions_yoy)} vs ano anterior
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                    <div className="bg-gray-100 p-3 rounded-lg">
-                      <EyeOff className="text-gray-600" size={24} />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </>
-        ) : user.role === 'backoffice' ? (
-          <>
-            <Card className="metric-card w-full border-l-4 border-l-blue-600" data-testid="metric-backoffice-commission">
-              <CardContent className="p-0">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="metric-value font-mono text-xl text-blue-600">
-                      {formatCurrency(metrics?.backoffice_commission)}
-                    </p>
-                    <p className="metric-label">
-                      Comissão Backoffice
-                      {metrics?.backoffice_commission_yoy !== undefined && (
-                        <span className={`block mt-1 text-xs font-mono ${getPercentageColor(metrics.backoffice_commission_yoy)}`}>
-                          {formatPercentage(metrics.backoffice_commission_yoy)} vs ano anterior
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="bg-blue-100 p-3 rounded-lg">
-                    <Euro className="text-blue-600" size={24} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="metric-card w-full border-l-4 border-l-amber-600" data-testid="metric-partner-commissions">
-              <CardContent className="p-0">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="metric-value font-mono text-xl">
-                      {formatCurrency(metrics?.partner_commissions)}
-                    </p>
-                    <p className="metric-label">
-                      Comissões Operadoras
-                      {metrics?.partner_commissions_yoy !== undefined && (
-                        <span className={`block mt-1 text-xs font-mono ${getPercentageColor(metrics.partner_commissions_yoy)}`}>
-                          {formatPercentage(metrics.partner_commissions_yoy)} vs ano anterior
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="bg-amber-100 p-3 rounded-lg">
-                    <Euro className="text-amber-600" size={24} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </>
-        ) : null}
-      </div>
-
-      {/* Second row for admin - partner and active commissions */}
-      {user.role === 'admin' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-fr">
-          <Card className="metric-card w-full border-l-4 border-l-yellow-500" data-testid="metric-partner-commissions">
-            <CardContent className="p-0">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <p className="metric-value font-mono text-xl">
-                    {formatCurrency(metrics?.partner_commissions)}
-                  </p>
-                  <p className="metric-label">
-                    Comissões previstas
-                    {metrics?.partner_commissions_yoy !== undefined && (
-                      <span className={`block mt-1 text-xs font-mono ${getPercentageColor(metrics.partner_commissions_yoy)}`}>
-                        {formatPercentage(metrics.partner_commissions_yoy)} vs ano anterior
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div className="bg-yellow-500/10 p-2 rounded-lg">
-                  <Euro className="text-yellow-400" size={20} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="metric-card w-full border-l-4 border-l-green-600" data-testid="metric-active-commissions">
-            <CardContent className="p-0">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <p className="metric-value font-mono text-xl text-green-600">
-                    {formatCurrency(metrics?.active_commissions)}
-                  </p>
-                  <p className="metric-label">
-                    Comissões vendas ativas
-                    {metrics?.active_commissions_yoy !== undefined && (
-                      <span className={`block mt-1 text-xs font-mono ${getPercentageColor(metrics.active_commissions_yoy)}`}>
-                        {formatPercentage(metrics.active_commissions_yoy)} vs ano anterior
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div className="bg-green-100 p-3 rounded-lg">
-                  <CheckCircle className="text-green-600" size={24} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-500 mt-1">Visão geral do desempenho de vendas</p>
         </div>
-      )}
-
-      {/* Active commissions for backoffice */}
-      {user.role === 'backoffice' && (
-        <div className="grid grid-cols-1 gap-4">
-          <Card className="metric-card w-full border-l-4 border-l-green-600" data-testid="metric-active-commissions">
-            <CardContent className="p-0">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <p className="metric-value font-mono text-xl text-green-600">
-                    {formatCurrency(metrics?.active_commissions)}
-                  </p>
-                  <p className="metric-label">
-                    Comissões Ativas
-                    {metrics?.active_commissions_yoy !== undefined && (
-                      <span className={`block mt-1 text-xs font-mono ${getPercentageColor(metrics.active_commissions_yoy)}`}>
-                        {formatPercentage(metrics.active_commissions_yoy)} vs ano anterior
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div className="bg-green-100 p-3 rounded-lg">
-                  <CheckCircle className="text-green-600" size={24} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="flex gap-2">
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+            className="form-input text-sm py-2"
+          >
+            {months.map((month) => (
+              <option key={month.value} value={month.value}>
+                {month.label}
+              </option>
+            ))}
+          </select>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+            className="form-input text-sm py-2"
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
         </div>
-      )}
-
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Year-over-Year Line Chart */}
-        <Card className="card-leiritrix lg:col-span-2 border-l-4 border-l-blue-600" data-testid="monthly-chart">
-          <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <TrendingUp className="text-blue-600" size={20} />
-              Evolução de Vendas (Ano Corrente vs Ano Anterior)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={monthlyStats}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis
-                    dataKey="month"
-                    tick={{ fill: '#64748b', fontSize: 12 }}
-                    axisLine={{ stroke: '#e5e7eb' }}
-                  />
-                  <YAxis
-                    tick={{ fill: '#64748b', fontSize: 12 }}
-                    axisLine={{ stroke: '#e5e7eb' }}
-                  />
-                  <Tooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        const current = data.anoCorrente || 0;
-                        const previous = data.anoAnterior || 0;
-                        const change = previous > 0 ? ((current - previous) / previous * 100) : (current > 0 ? 100 : 0);
-                        const changeText = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-                        const changeColor = change >= 0 ? '#16a34a' : '#dc2626';
-
-                        return (
-                          <div className="bg-white border border-gray-200 rounded-lg p-3 text-gray-900 text-sm shadow-lg">
-                            <p className="font-bold mb-2">{data.month}</p>
-                            <p className="text-blue-600">Ano Corrente: {current}</p>
-                            <p className="text-purple-600">Ano Anterior: {previous}</p>
-                            <p style={{ color: changeColor }} className="font-bold mt-1">
-                              {changeText} {change >= 0 ? '↑' : '↓'}
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Legend
-                    wrapperStyle={{ paddingTop: '20px' }}
-                    iconType="line"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="anoCorrente"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                    name="Ano Corrente"
-                    dot={{ fill: '#3b82f6', r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="anoAnterior"
-                    stroke="#a855f7"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    name="Ano Anterior"
-                    dot={{ fill: '#a855f7', r: 3 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Category Pie Chart */}
-        <Card className="card-leiritrix border-l-4 border-l-green-600" data-testid="category-chart">
-          <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <ShoppingCart className="text-green-600" size={20} />
-              Por Categoria
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="h-64">
-              {categoryData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={categoryData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={40}
-                      outerRadius={80}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '0.5rem',
-                        color: '#1e293b',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full text-white/40">
-                  Sem dados
-                </div>
-              )}
-            </div>
-
-            {/* Total Sales */}
-            {categoryData.length > 0 && (
-              <div className="text-center mt-4 mb-2">
-                <p className="text-white/50 text-sm">Total de Vendas do Mês</p>
-                <p className="text-white text-2xl font-bold font-mono">
-                  {categoryData.reduce((sum, item) => sum + item.value, 0)}
-                </p>
-              </div>
-            )}
-
-            {/* Legend */}
-            <div className="flex flex-wrap justify-center gap-4 mt-4">
-              {categoryData.map((item, index) => (
-                <div key={item.name} className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                  />
-                  <span className="text-sm text-white/70">{item.name}: {item.value}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
-      {/* Status Summary and Alerts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <KPICard
+          title="Vendas do Mês"
+          value={metrics?.sales_this_month || 0}
+          icon={ShoppingCart}
+          trend={metrics?.sales_this_month > 0 ? 'up' : 'down'}
+          trendValue={`${metrics?.sales_this_month || 0} vendas`}
+          color="blue"
+        />
+
+        <KPICard
+          title="Mensalidades Telecom"
+          value={formatCurrency(metrics?.total_mensalidades)}
+          icon={Phone}
+          trend={metrics?.mensalidades_yoy >= 0 ? 'up' : 'down'}
+          trendValue={formatPercentage(metrics?.mensalidades_yoy || 0)}
+          color="green"
+        />
+
+        {user.role === 'admin' && hasSellers && (
+          <KPICard
+            title="Comissões Vendedores"
+            value={formatCurrency(metrics?.seller_commissions)}
+            icon={Users}
+            trend={metrics?.seller_commissions_yoy >= 0 ? 'up' : 'down'}
+            trendValue={formatPercentage(metrics?.seller_commissions_yoy || 0)}
+            color="purple"
+          />
+        )}
+
+        {user.role === 'admin' && (
+          <KPICard
+            title="Comissões Ativas"
+            value={formatCurrency(metrics?.active_commissions)}
+            icon={CheckCircle}
+            trend={metrics?.active_commissions_yoy >= 0 ? 'up' : 'down'}
+            trendValue={formatPercentage(metrics?.active_commissions_yoy || 0)}
+            color="green"
+          />
+        )}
+
+        {user.role === 'backoffice' && (
+          <>
+            <KPICard
+              title="Comissão Backoffice"
+              value={formatCurrency(metrics?.backoffice_commission)}
+              icon={Euro}
+              trend={metrics?.backoffice_commission_yoy >= 0 ? 'up' : 'down'}
+              trendValue={formatPercentage(metrics?.backoffice_commission_yoy || 0)}
+              color="blue"
+            />
+            <KPICard
+              title="Comissões Operadoras"
+              value={formatCurrency(metrics?.partner_commissions)}
+              icon={TrendingUp}
+              trend={metrics?.partner_commissions_yoy >= 0 ? 'up' : 'down'}
+              trendValue={formatPercentage(metrics?.partner_commissions_yoy || 0)}
+              color="orange"
+            />
+          </>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Status Summary */}
-        <Card className="card-leiritrix border-l-4 border-l-purple-600" data-testid="status-summary">
-          <CardHeader className="border-b border-white/5 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <CheckCircle className="text-purple-600" size={20} />
-              Por Estado
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
+        <Suspense fallback={<SkeletonChart />}>
+          <SalesLineChart data={monthlyStats} title="Evolução de Vendas Mensal" />
+        </Suspense>
+
+        <Suspense fallback={<SkeletonChart />}>
+          <SalesBarChart data={operatorStats} title="Top 5 Operadoras do Mês" />
+        </Suspense>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Suspense fallback={<SkeletonChart />}>
+          <ConversionFunnelChart data={conversionData} />
+        </Suspense>
+
+        <div className="lg:col-span-2">
+          <Suspense fallback={<SkeletonActivity />}>
+            <RecentActivity activities={recentActivities} />
+          </Suspense>
+        </div>
+      </div>
+
+      <Card className="card-leiritrix">
+        <CardHeader className="border-b border-gray-200 flex flex-row items-center justify-between">
+          <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <AlertTriangle className="text-orange-500" size={20} />
+            Alertas de Fidelização
+          </CardTitle>
+          {alerts.length > 0 && (
+            <Badge className="bg-orange-50 text-orange-700 border border-orange-200 font-semibold">
+              {alerts.length}
+            </Badge>
+          )}
+        </CardHeader>
+        <CardContent className="p-6">
+          {alerts.length > 0 ? (
             <div className="space-y-3">
-              {Object.entries(STATUS_MAP).map(([key, status]) => {
-                const count = metrics?.sales_by_status?.[key] || 0;
+              {alerts.slice(0, 5).map((alert) => {
+                const CategoryIcon = CATEGORY_ICONS[alert.category] || Zap;
                 return (
-                  <div key={key} className="flex items-center justify-between py-2">
-                    <span className={`badge ${status.color} border`}>
-                      {status.label}
-                    </span>
-                    <span className="text-white font-mono font-bold">{count}</span>
-                  </div>
+                  <Link
+                    key={alert.id}
+                    to={`/sales/${alert.id}`}
+                    className="flex items-start justify-between p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="bg-blue-50 p-2 rounded-lg">
+                        <CategoryIcon className="text-[#0052CC]" size={18} />
+                      </div>
+                      <div>
+                        <p className="text-gray-900 font-medium">{alert.client_name}</p>
+                        <p className="text-gray-500 text-sm">{alert.partner_name}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-orange-600 font-bold text-sm">
+                        {alert.days_until_end} dias
+                      </p>
+                      <p className="text-gray-400 text-xs flex items-center gap-1 justify-end mt-1">
+                        <Calendar size={12} />
+                        {new Date(alert.loyalty_end_date).toLocaleDateString('pt-PT')}
+                      </p>
+                    </div>
+                  </Link>
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          ) : (
+            <div className="text-center py-8 text-gray-400">
+              <AlertTriangle size={32} className="mx-auto mb-2 opacity-50" />
+              <p>Sem alertas de fidelização</p>
+            </div>
+          )}
 
-        {/* Loyalty Alerts */}
-        <Card className="card-leiritrix border-l-4 border-l-amber-600" data-testid="loyalty-alerts">
-          <CardHeader className="border-b border-white/5 pb-4 flex flex-row items-center justify-between">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <AlertTriangle className="text-amber-600" size={20} />
-              Alertas de Fidelização
-            </CardTitle>
-            <Badge className="bg-amber-100 text-amber-700 border border-amber-200 font-semibold">
-              {alerts.length}
-            </Badge>
-          </CardHeader>
-          <CardContent className="pt-4 max-h-72 overflow-y-auto">
-            {alerts.length > 0 ? (
-              <div className="space-y-3">
-                {alerts.slice(0, 5).map((alert) => {
-                  const CategoryIcon = CATEGORY_ICONS[alert.category] || Zap;
-                  return (
-                    <Link
-                      key={alert.id}
-                      to={`/sales/${alert.id}`}
-                      className="alert-item block"
-                      data-testid={`alert-${alert.id}`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3">
-                          <CategoryIcon className="text-[#0BA5D9] mt-0.5" size={18} />
-                          <div>
-                            <p className="text-white font-medium">{alert.client_name}</p>
-                            <p className="text-white/50 text-sm">{alert.partner_name}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-amber-600 font-mono font-bold">
-                            {alert.days_until_end} dias
-                          </p>
-                          <p className="text-white/40 text-xs flex items-center gap-1 justify-end">
-                            <Calendar size={12} />
-                            {new Date(alert.loyalty_end_date).toLocaleDateString('pt-PT')}
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-white/40">
-                <AlertTriangle size={32} className="mx-auto mb-2 opacity-50" />
-                <p>Sem alertas de fidelização</p>
-              </div>
-            )}
-
-            {alerts.length > 5 && (
-              <Link to="/sales?filter=alerts">
-                <Button variant="ghost" className="w-full mt-4 text-[#0BA5D9] hover:bg-white/5">
-                  Ver todos ({alerts.length})
-                  <ArrowRight size={16} className="ml-2" />
-                </Button>
-              </Link>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+          {alerts.length > 5 && (
+            <Link to="/sales?filter=alerts">
+              <Button variant="ghost" className="w-full mt-4 text-[#0052CC] hover:bg-blue-50">
+                Ver todos ({alerts.length})
+                <ArrowRight size={16} className="ml-2" />
+              </Button>
+            </Link>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -44,9 +44,9 @@ export const Layout = () => {
 
   const getRoleBadge = (role) => {
     const badges = {
-      admin: { text: "Admin", class: "bg-[#0BA5D9] text-white" },
-      backoffice: { text: "Backoffice", class: "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" },
-      vendedor: { text: "Vendedor", class: "bg-white/10 text-white/70" }
+      admin: { text: "Admin", class: "bg-[#0052CC] text-white" },
+      backoffice: { text: "Backoffice", class: "bg-blue-50 text-blue-700 border border-blue-200" },
+      vendedor: { text: "Vendedor", class: "bg-gray-100 text-gray-700 border border-gray-300" }
     };
     return badges[role] || badges.vendedor;
   };
@@ -54,21 +54,21 @@ export const Layout = () => {
   const badge = getRoleBadge(user?.role);
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
+    <div className="min-h-screen bg-[#F4F5F7]">
       {/* Mobile menu button */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md shadow-lg text-white bg-[#0BA5D9]"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg shadow-lg text-white bg-[#0052CC] transition-all hover:bg-[#0747A6]"
         data-testid="mobile-menu-btn"
       >
         {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
       {/* Sidebar */}
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''} lg:translate-x-0`}>
+      <aside className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 z-40 transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 shadow-sm`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-white/5 flex items-center justify-center">
+          <div className="p-6 border-b border-gray-200 flex items-center justify-center bg-[#0052CC]">
             <img
               src={LOGO_URL}
               alt="CRM Dolphin+Star"
@@ -78,7 +78,7 @@ export const Layout = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1" data-testid="sidebar-nav">
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto" data-testid="sidebar-nav">
             {navigation.filter(item => item.show).map((item) => {
               const active = isActive(item.href);
               return (
@@ -86,7 +86,11 @@ export const Layout = () => {
                   key={item.name}
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
-                  className={`sidebar-item flex items-center gap-3 px-4 py-3 ${active ? 'active' : ''}`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
+                    active
+                      ? 'bg-[#0052CC] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-[#0052CC]'
+                  }`}
                   data-testid={`nav-${item.name.toLowerCase().replace(/\s/g, '-')}`}
                 >
                   <item.icon size={20} />
@@ -97,18 +101,18 @@ export const Layout = () => {
           </nav>
 
           {/* User info */}
-          <div className="p-4 border-t border-white/5">
+          <div className="p-4 border-t border-gray-200 bg-gray-50">
             <div className="mb-4">
-              <p className="text-white font-semibold truncate text-sm">{user?.name}</p>
-              <p className="text-white/50 text-xs truncate mt-0.5">{user?.email}</p>
-              <span className={`inline-block mt-2 px-2 py-0.5 rounded text-xs font-medium ${badge.class}`}>
+              <p className="text-gray-900 font-semibold truncate text-sm">{user?.name}</p>
+              <p className="text-gray-500 text-xs truncate mt-0.5">{user?.email}</p>
+              <span className={`inline-block mt-2 px-2 py-1 rounded-md text-xs font-medium ${badge.class}`}>
                 {badge.text}
               </span>
             </div>
             <Button
               onClick={logout}
               variant="ghost"
-              className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
+              className="w-full justify-start text-gray-700 hover:text-[#0052CC] hover:bg-gray-100 transition-colors"
               data-testid="logout-btn"
             >
               <LogOut size={18} className="mr-2" />
@@ -119,11 +123,11 @@ export const Layout = () => {
       </aside>
 
       {/* Main content */}
-      <main className="main-content">
+      <main className="lg:ml-64 min-h-screen">
         {/* Top bar */}
-        <div className="top-bar px-6 py-4 flex items-center justify-between">
+        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="lg:hidden w-8"></div>
-          <h1 className="text-xl font-bold text-white font-['Manrope']">
+          <h1 className="text-xl font-bold text-gray-900 font-['Manrope']">
             {navigation.find(item => isActive(item.href))?.name || "CRM Leiritrix"}
           </h1>
           <div className="flex items-center gap-4">
@@ -140,7 +144,7 @@ export const Layout = () => {
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          className="lg:hidden fixed inset-0 bg-black/30 z-30"
           onClick={() => setSidebarOpen(false)}
         />
       )}
