@@ -6,9 +6,7 @@ import { partnersService } from "@/services/partnersService";
 import { usersService } from "@/services/usersService";
 import { operatorsService } from "@/services/operatorsService";
 import { commissionsService } from "@/services/commissionsService";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ModernCard, ModernButton, ModernBadge } from "@/components/modern";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,15 +35,16 @@ import {
   Sun,
   AlertTriangle,
   Save,
-  Loader2
+  Loader2,
+  ShoppingBag
 } from "lucide-react";
 
 const STATUS_MAP = {
-  em_negociacao: { label: "Em Negociação", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  perdido: { label: "Perdido", color: "bg-red-500/20 text-red-400 border-red-500/30" },
-  pendente: { label: "Pendente", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-  ativo: { label: "Ativo", color: "bg-green-500/20 text-green-400 border-green-500/30" },
-  anulado: { label: "Anulado", color: "bg-gray-500/20 text-gray-400 border-gray-500/30" }
+  em_negociacao: { label: "Em Negociação", variant: "info" },
+  perdido: { label: "Perdido", variant: "danger" },
+  pendente: { label: "Pendente", variant: "warning" },
+  ativo: { label: "Ativo", variant: "success" },
+  anulado: { label: "Anulado", variant: "default" }
 };
 
 const CATEGORY_MAP = {
@@ -405,98 +404,91 @@ export default function SaleDetail({ editMode = false }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6" data-testid="sale-detail-page">
+    <div className="max-w-7xl mx-auto space-y-6" data-testid="sale-detail-page">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button
+          <ModernButton
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="text-white/60 hover:text-white"
+            icon={ArrowLeft}
             data-testid="back-btn"
-          >
-            <ArrowLeft size={20} />
-          </Button>
+          />
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-white font-['Manrope']">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
                 {sale.client_name}
               </h1>
-              <Badge className={`${status?.color} border`}>
+              <ModernBadge variant={status?.variant}>
                 {status?.label}
-              </Badge>
+              </ModernBadge>
             </div>
-            <p className="text-white/60 text-sm mt-1">
+            <p className="text-slate-600 text-sm mt-1">
               ID: <span className="font-mono">{sale.id.slice(0, 8)}</span>
             </p>
           </div>
         </div>
         {!isEditing ? (
-          <Button 
+          <ModernButton
             onClick={() => setIsEditing(true)}
-            className="btn-primary btn-primary-glow flex items-center gap-2" 
+            variant="primary"
+            icon={Edit2}
             data-testid="edit-sale-btn"
           >
-            <Edit2 size={16} />
             Editar
-          </Button>
+          </ModernButton>
         ) : (
           <div className="flex gap-2">
-            <Button
+            <ModernButton
               onClick={() => setIsEditing(false)}
-              variant="ghost"
-              className="btn-secondary"
+              variant="secondary"
             >
               Cancelar
-            </Button>
-            <Button 
+            </ModernButton>
+            <ModernButton
               onClick={handleSave}
-              disabled={saving}
-              className="btn-primary btn-primary-glow flex items-center gap-2"
+              loading={saving}
+              icon={Save}
+              variant="primary"
               data-testid="save-btn"
             >
-              {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
               Guardar
-            </Button>
+            </ModernButton>
           </div>
         )}
       </div>
 
       {/* Alert for loyalty ending soon */}
       {daysUntilEnd !== null && daysUntilEnd <= 210 && sale.status === "ativo" && (
-        <Card className="card-leiritrix border-l-4 border-l-[#c8f31d]" data-testid="loyalty-alert">
-          <CardContent className="p-4 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <AlertTriangle className="text-cyan-600" size={24} />
+        <ModernCard variant="gradient" className="border-l-4 border-l-brand-500" data-testid="loyalty-alert">
+          <div className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <AlertTriangle className="text-orange-600" size={24} />
+              </div>
               <div>
-                <p className="text-white font-medium">Fidelização a terminar</p>
-                <p className="text-white/80 text-sm">
-                  Este contrato termina em <span className="text-cyan-600 font-bold">{daysUntilEnd} dias</span>.
+                <p className="font-semibold text-slate-900">Fidelização a terminar</p>
+                <p className="text-slate-600 text-sm mt-1">
+                  Este contrato termina em <span className="text-brand-600 font-bold">{daysUntilEnd} dias</span>.
                   Inicie a negociação para renovação.
                 </p>
               </div>
             </div>
-            <Button
+            <ModernButton
               onClick={() => navigate(`/sales/new?refid_from=${sale.id}`)}
-              className="btn-primary btn-primary-glow whitespace-nowrap"
+              variant="primary"
+              className="whitespace-nowrap"
               data-testid="create-refid-btn"
             >
               Inserir Venda Refid
-            </Button>
-          </CardContent>
-        </Card>
+            </ModernButton>
+          </div>
+        </ModernCard>
       )}
 
       {/* Edit Form (if editing) */}
       {isEditing && (
-        <Card className="card-leiritrix border-2 border-cyan-200">
-          <CardHeader className="border-b border-white/10 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <Edit2 size={20} className="text-cyan-600" />
-              Editar Venda
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
+        <ModernCard title="Editar Venda" icon={Edit2} variant="gradient" hover={false}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label className="form-label">Estado</Label>
@@ -506,7 +498,7 @@ export default function SaleDetail({ editMode = false }) {
                   </SelectTrigger>
                   <SelectContent className="bg-[#1E293B] border-white/10">
                     {STATUSES.map((s) => (
-                      <SelectItem key={s.value} value={s.value} className="text-white hover:bg-white/10">
+                      <SelectItem key={s.value} value={s.value} className="text-slate-900 hover:bg-white/10">
                         {s.label}
                       </SelectItem>
                     ))}
@@ -522,7 +514,7 @@ export default function SaleDetail({ editMode = false }) {
                   </SelectTrigger>
                   <SelectContent className="bg-[#1E293B] border-white/10">
                     {CATEGORIES.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-white/10">
+                      <SelectItem key={cat.value} value={cat.value} className="text-slate-900 hover:bg-white/10">
                         {cat.label}
                       </SelectItem>
                     ))}
@@ -541,7 +533,7 @@ export default function SaleDetail({ editMode = false }) {
                   </SelectTrigger>
                   <SelectContent className="bg-[#1E293B] border-white/10">
                     {operators.map((operator) => (
-                      <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10">
+                      <SelectItem key={operator.id} value={operator.id} className="text-slate-900 hover:bg-white/10">
                         {operator.name}
                       </SelectItem>
                     ))}
@@ -567,7 +559,7 @@ export default function SaleDetail({ editMode = false }) {
                   </SelectTrigger>
                   <SelectContent className="bg-[#1E293B] border-white/10">
                     {getFilteredPartners().map((partner) => (
-                      <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10">
+                      <SelectItem key={partner.id} value={partner.id} className="text-slate-900 hover:bg-white/10">
                         {partner.name}
                       </SelectItem>
                     ))}
@@ -583,14 +575,14 @@ export default function SaleDetail({ editMode = false }) {
                   </SelectTrigger>
                   <SelectContent className="bg-[#1E293B] border-white/10">
                     {availableSaleTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value} className="text-white hover:bg-white/10">
+                      <SelectItem key={type.value} value={type.value} className="text-slate-900 hover:bg-white/10">
                         {type.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 {availableSaleTypes.length < SALE_TYPES.length && (
-                  <p className="text-white/50 text-xs mt-1">
+                  <p className="text-slate-900/50 text-xs mt-1">
                     Apenas tipos permitidos para esta operadora
                   </p>
                 )}
@@ -604,7 +596,7 @@ export default function SaleDetail({ editMode = false }) {
                   </SelectTrigger>
                   <SelectContent className="bg-[#1E293B] border-white/10">
                     {LOYALTY_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value} className="text-white hover:bg-white/10">
+                      <SelectItem key={option.value} value={option.value} className="text-slate-900 hover:bg-white/10">
                         {option.label}
                       </SelectItem>
                     ))}
@@ -635,7 +627,7 @@ export default function SaleDetail({ editMode = false }) {
                   maxDate={new Date()}
                   data-testid="edit-sale-date"
                 />
-                <p className="text-white/50 text-xs mt-1">
+                <p className="text-slate-900/50 text-xs mt-1">
                   Data usada para contabilização mensal
                 </p>
               </div>
@@ -703,7 +695,7 @@ export default function SaleDetail({ editMode = false }) {
                           checked={allowCommissionOverride}
                           onCheckedChange={setAllowCommissionOverride}
                         />
-                        <Label htmlFor="allow-commission-override" className="text-white/80 cursor-pointer text-sm">
+                        <Label htmlFor="allow-commission-override" className="text-slate-900/80 cursor-pointer text-sm">
                           Corrigir/alterar comissão (apenas administradores)
                         </Label>
                       </div>
@@ -712,10 +704,10 @@ export default function SaleDetail({ editMode = false }) {
                   {sale.is_backoffice ? (
                     <div>
                       <Label className="form-label flex items-center gap-2">
-                        <Euro size={14} className="text-cyan-600" />
+                        <Euro size={14} className="text-brand-600" />
                         Comissão Backoffice (€)
                         {commissionType === 'automatic' && !allowCommissionOverride && (
-                          <span className="text-xs text-white/50">(automático)</span>
+                          <span className="text-xs text-slate-900/50">(automático)</span>
                         )}
                       </Label>
                       <Input
@@ -736,10 +728,10 @@ export default function SaleDetail({ editMode = false }) {
                       {sellers && sellers.length > 0 && (
                         <div>
                           <Label className="form-label flex items-center gap-2">
-                            <Euro size={14} className="text-cyan-600" />
+                            <Euro size={14} className="text-brand-600" />
                             Comissão Vendedor (€)
                             {commissionType === 'automatic' && !allowCommissionOverride && (
-                              <span className="text-xs text-white/50">(automático)</span>
+                              <span className="text-xs text-slate-900/50">(automático)</span>
                             )}
                           </Label>
                           <Input
@@ -758,10 +750,10 @@ export default function SaleDetail({ editMode = false }) {
                       )}
                       <div>
                         <Label className="form-label flex items-center gap-2">
-                          <Euro size={14} className="text-cyan-600" />
+                          <Euro size={14} className="text-brand-600" />
                           Comissão a receber (€)
                           {commissionType === 'automatic' && !allowCommissionOverride && (
-                            <span className="text-xs text-white/50">(automático)</span>
+                            <span className="text-xs text-slate-900/50">(automático)</span>
                           )}
                         </Label>
                         <Input
@@ -784,7 +776,7 @@ export default function SaleDetail({ editMode = false }) {
               {user.role === 'backoffice' && sale?.operators && !sale.operators.commission_visible_to_bo && (
                 <div className="md:col-span-2">
                   <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                    <p className="text-white/80 text-sm flex items-center gap-2">
+                    <p className="text-slate-900/80 text-sm flex items-center gap-2">
                       <AlertTriangle size={16} />
                       Operadora sem comissão a contabilizar
                     </p>
@@ -810,10 +802,10 @@ export default function SaleDetail({ editMode = false }) {
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1E293B] border-white/10">
-                    <SelectItem value="residencial" className="text-white hover:bg-white/10">
+                    <SelectItem value="residencial" className="text-slate-900 hover:bg-white/10">
                       Residencial
                     </SelectItem>
-                    <SelectItem value="empresarial" className="text-white hover:bg-white/10">
+                    <SelectItem value="empresarial" className="text-slate-900 hover:bg-white/10">
                       Empresarial
                     </SelectItem>
                   </SelectContent>
@@ -828,13 +820,13 @@ export default function SaleDetail({ editMode = false }) {
                       <SelectValue placeholder="Selecione o encarteiramento" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1E293B] border-white/10">
-                      <SelectItem value="novo" className="text-white hover:bg-white/10">
+                      <SelectItem value="novo" className="text-slate-900 hover:bg-white/10">
                         Novo
                       </SelectItem>
-                      <SelectItem value="cliente_carteira" className="text-white hover:bg-white/10">
+                      <SelectItem value="cliente_carteira" className="text-slate-900 hover:bg-white/10">
                         Cliente Carteira
                       </SelectItem>
-                      <SelectItem value="fora_carteira" className="text-white hover:bg-white/10">
+                      <SelectItem value="fora_carteira" className="text-slate-900 hover:bg-white/10">
                         Fora Carteira
                       </SelectItem>
                     </SelectContent>
@@ -992,40 +984,32 @@ export default function SaleDetail({ editMode = false }) {
                 />
               </div>
             </div>
-          </CardContent>
-        </Card>
+        </ModernCard>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Client Info */}
-        <Card className="card-leiritrix lg:col-span-2">
-          <CardHeader className="border-b border-white/10 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <User size={20} className="text-cyan-600" />
-              Dados do Cliente
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
+        <ModernCard title="Dados do Cliente" icon={User} variant="gradient" hover={false} className="lg:col-span-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <p className="text-white/60 text-sm mb-1">Nome</p>
-                <p className="text-white font-medium">{sale.client_name}</p>
+                <p className="text-slate-600 text-sm mb-1">Nome</p>
+                <p className="text-slate-900 font-medium">{sale.client_name}</p>
               </div>
               <div>
-                <p className="text-white/60 text-sm mb-1">NIF</p>
-                <p className="text-white font-mono">{sale.client_nif || "-"}</p>
+                <p className="text-slate-600 text-sm mb-1">NIF</p>
+                <p className="text-slate-900 font-mono">{sale.client_nif || "-"}</p>
               </div>
               <div>
-                <p className="text-white/60 text-sm mb-1">Tipo de Cliente</p>
-                <p className="text-white">
+                <p className="text-slate-600 text-sm mb-1">Tipo de Cliente</p>
+                <p className="text-slate-900">
                   {sale.client_type === 'residencial' ? 'Residencial' :
                    sale.client_type === 'empresarial' ? 'Empresarial' : '-'}
                 </p>
               </div>
               {sale.client_type === 'empresarial' && (
                 <div>
-                  <p className="text-white/60 text-sm mb-1">Encarteiramento</p>
-                  <p className="text-white">
+                  <p className="text-slate-600 text-sm mb-1">Encarteiramento</p>
+                  <p className="text-slate-900">
                     {sale.portfolio_status === 'novo' ? 'Novo' :
                      sale.portfolio_status === 'cliente_carteira' ? 'Cliente Carteira' :
                      sale.portfolio_status === 'fora_carteira' ? 'Fora Carteira' : '-'}
@@ -1033,41 +1017,33 @@ export default function SaleDetail({ editMode = false }) {
                 </div>
               )}
               <div>
-                <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
+                <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
                   <Mail size={14} /> Email
                 </p>
-                <p className="text-white">{sale.client_email || "-"}</p>
+                <p className="text-slate-900">{sale.client_email || "-"}</p>
               </div>
               <div>
-                <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
+                <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
                   <Phone size={14} /> Telefone
                 </p>
-                <p className="text-white">{sale.client_phone || "-"}</p>
+                <p className="text-slate-900">{sale.client_phone || "-"}</p>
               </div>
               <div className="md:col-span-2">
-                <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
+                <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
                   <MapPin size={14} /> Morada
                 </p>
-                <p className="text-white">{sale.client_address || "-"}</p>
+                <p className="text-slate-900">{sale.client_address || "-"}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+        </ModernCard>
 
         {/* Values & Commission */}
-        <Card className="card-leiritrix">
-          <CardHeader className="border-b border-white/10 pb-4">
-            <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-              <Euro size={20} className="text-cyan-600" />
-              Valores
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6">
+        <ModernCard title="Valores" icon={Euro} variant="gradient" hover={false}>
             {/* Mensalidade - apenas para Telecomunicações */}
             {isTelecom && (
               <div>
-                <p className="text-white/60 text-sm mb-1">Mensalidade Contratada</p>
-                <p className="text-2xl font-bold text-cyan-600 font-mono">
+                <p className="text-slate-600 text-sm mb-1">Mensalidade Contratada</p>
+                <p className="text-2xl font-bold text-brand-600 font-mono">
                   {formatCurrency(sale.contract_value)}
                 </p>
               </div>
@@ -1078,40 +1054,40 @@ export default function SaleDetail({ editMode = false }) {
               <>
                 {sale.is_backoffice ? (
                   <div>
-                    <p className="text-white/60 text-sm mb-1">Comissão Backoffice</p>
+                    <p className="text-slate-600 text-sm mb-1">Comissão Backoffice</p>
                     {sale.commission_backoffice !== null && sale.commission_backoffice !== undefined ? (
-                      <p className="text-2xl font-bold text-cyan-600 font-mono">
+                      <p className="text-2xl font-bold text-brand-600 font-mono">
                         {formatCurrency(sale.commission_backoffice)}
                       </p>
                     ) : (
-                      <p className="text-white/40">Não definida</p>
+                      <p className="text-slate-900/40">Não definida</p>
                     )}
                   </div>
                 ) : (
                   <>
                     <div>
-                      <p className="text-white/60 text-sm mb-1">Comissão Vendedor</p>
+                      <p className="text-slate-600 text-sm mb-1">Comissão Vendedor</p>
                       {sale.commission_seller !== null && sale.commission_seller !== undefined ? (
                         <p className="text-2xl font-bold text-green-600 font-mono">
                           {formatCurrency(sale.commission_seller)}
                         </p>
                       ) : (
-                        <p className="text-white/40">Não definida</p>
+                        <p className="text-slate-900/40">Não definida</p>
                       )}
                     </div>
                     <div>
-                      <p className="text-white/60 text-sm mb-1">Comissão a receber</p>
+                      <p className="text-slate-600 text-sm mb-1">Comissão a receber</p>
                       {sale.commission_partner !== null && sale.commission_partner !== undefined ? (
                         <p className="text-2xl font-bold text-green-600 font-mono">
                           {formatCurrency(sale.commission_partner)}
                         </p>
                       ) : (
-                        <p className="text-white/40">Não definida</p>
+                        <p className="text-slate-900/40">Não definida</p>
                       )}
                     </div>
                     <div className="pt-2 border-t border-white/10">
-                      <p className="text-white/60 text-sm mb-1">Comissão Total</p>
-                      <p className="text-xl font-bold text-cyan-600 font-mono">
+                      <p className="text-slate-600 text-sm mb-1">Comissão Total</p>
+                      <p className="text-xl font-bold text-brand-600 font-mono">
                         {formatCurrency((sale.commission_seller || 0) + (sale.commission_partner || 0))}
                       </p>
                     </div>
@@ -1120,76 +1096,75 @@ export default function SaleDetail({ editMode = false }) {
               </>
             ) : (
               <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                <p className="text-white/80 text-sm flex items-center gap-2">
+                <p className="text-slate-900/80 text-sm flex items-center gap-2">
                   <AlertTriangle size={16} />
                   Operadora sem comissão a contabilizar
                 </p>
               </div>
             )}
-          </CardContent>
-        </Card>
+        </ModernCard>
       </div>
 
       {/* Contract Details */}
       <Card className="card-leiritrix">
         <CardHeader className="border-b border-white/10 pb-4">
-          <CardTitle className="text-white font-['Manrope'] text-lg flex items-center gap-2">
-            <FileText size={20} className="text-cyan-600" />
+          <CardTitle className="text-slate-900 font-['Manrope'] text-lg flex items-center gap-2">
+            <FileText size={20} className="text-brand-600" />
             Detalhes do Contrato
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
-              <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
+              <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
                 <CalendarIcon size={14} /> Data de Venda
               </p>
-              <p className="text-white">
+              <p className="text-slate-900">
                 {sale.sale_date ? new Date(sale.sale_date).toLocaleDateString('pt-PT') : "-"}
               </p>
             </div>
             <div>
-              <p className="text-white/60 text-sm mb-1">Categoria</p>
+              <p className="text-slate-600 text-sm mb-1">Categoria</p>
               <div className="flex items-center gap-2">
-                <CategoryIcon size={18} className="text-cyan-600" />
-                <p className="text-white">{category?.label}</p>
+                <CategoryIcon size={18} className="text-brand-600" />
+                <p className="text-slate-900">{category?.label}</p>
               </div>
             </div>
             <div>
-              <p className="text-white/60 text-sm mb-1">Tipo</p>
-              <p className="text-white">{TYPE_MAP[sale.sale_type] || "-"}</p>
+              <p className="text-slate-600 text-sm mb-1">Tipo</p>
+              <p className="text-slate-900">{TYPE_MAP[sale.sale_type] || "-"}</p>
             </div>
             <div>
-              <p className="text-white/60 text-sm mb-1">Parceiro</p>
-              <p className="text-white">{sale.partner_name}</p>
+              <p className="text-slate-600 text-sm mb-1">Parceiro</p>
+              <p className="text-slate-900">{sale.partner_name}</p>
             </div>
             <div>
-              <p className="text-white/60 text-sm mb-1">Vendedor</p>
-              <p className="text-white">{sale.seller_name}</p>
+              <p className="text-slate-600 text-sm mb-1">Vendedor</p>
+              <p className="text-slate-900">{sale.seller_name}</p>
             </div>
             <div>
-              <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
+              <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
                 <Clock size={14} /> Prazo Fidelização
               </p>
-              <p className="text-white">{sale.loyalty_months ? `${sale.loyalty_months} meses` : "-"}</p>
+              <p className="text-slate-900">{sale.loyalty_months ? `${sale.loyalty_months} meses` : "-"}</p>
             </div>
             <div>
-              <p className="text-white/60 text-sm mb-1 flex items-center gap-1">
+              <p className="text-slate-600 text-sm mb-1 flex items-center gap-1">
                 <CalendarIcon size={14} /> Data de Ativação
               </p>
-              <p className="text-white">
+              <p className="text-slate-900">
                 {sale.active_date ? new Date(sale.active_date).toLocaleDateString('pt-PT') : "-"}
               </p>
             </div>
             <div>
-              <p className="text-white/60 text-sm mb-1">Fim da Fidelização</p>
-              <p className="text-white">
+              <p className="text-slate-600 text-sm mb-1">Fim da Fidelização</p>
+              <p className="text-slate-900">
                 {sale.loyalty_end_date ? new Date(sale.loyalty_end_date).toLocaleDateString('pt-PT') : "-"}
               </p>
             </div>
             <div>
-              <p className="text-white/60 text-sm mb-1">Data de Criação</p>
-              <p className="text-white">
+              <p className="text-slate-600 text-sm mb-1">Data de Criação</p>
+              <p className="text-slate-900">
                 {new Date(sale.created_at).toLocaleDateString('pt-PT')}
               </p>
             </div>
@@ -1197,8 +1172,8 @@ export default function SaleDetail({ editMode = false }) {
             {/* Telecom REQ */}
             {isTelecom && sale.req && (
               <div>
-                <p className="text-white/60 text-sm mb-1">REQ</p>
-                <p className="text-white font-mono">{sale.req}</p>
+                <p className="text-slate-600 text-sm mb-1">REQ</p>
+                <p className="text-slate-900 font-mono">{sale.req}</p>
               </div>
             )}
           </div>
@@ -1206,36 +1181,36 @@ export default function SaleDetail({ editMode = false }) {
           {/* Energy Details */}
           {isEnergy && sale.energy_type && (
             <div className="mt-6 pt-6 border-t border-white/10">
-              <h4 className="text-white font-medium mb-4 flex items-center gap-2">
-                <Zap size={16} className="text-cyan-600" />
+              <h4 className="text-slate-900 font-medium mb-4 flex items-center gap-2">
+                <Zap size={16} className="text-brand-600" />
                 Dados de Energia
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div>
-                  <p className="text-white/60 text-sm mb-1">Tipo de Energia</p>
-                  <p className="text-white">{ENERGY_TYPE_MAP[sale.energy_type]}</p>
+                  <p className="text-slate-600 text-sm mb-1">Tipo de Energia</p>
+                  <p className="text-slate-900">{ENERGY_TYPE_MAP[sale.energy_type]}</p>
                 </div>
                 {(sale.energy_type === "eletricidade" || sale.energy_type === "dual") && (
                   <>
                     <div>
-                      <p className="text-white/60 text-sm mb-1">CPE</p>
-                      <p className="text-white font-mono">{sale.cpe || "-"}</p>
+                      <p className="text-slate-600 text-sm mb-1">CPE</p>
+                      <p className="text-slate-900 font-mono">{sale.cpe || "-"}</p>
                     </div>
                     <div>
-                      <p className="text-white/60 text-sm mb-1">Potência</p>
-                      <p className="text-white">{sale.potencia ? `${sale.potencia} kVA` : "-"}</p>
+                      <p className="text-slate-600 text-sm mb-1">Potência</p>
+                      <p className="text-slate-900">{sale.potencia ? `${sale.potencia} kVA` : "-"}</p>
                     </div>
                   </>
                 )}
                 {(sale.energy_type === "gas" || sale.energy_type === "dual") && (
                   <>
                     <div>
-                      <p className="text-white/60 text-sm mb-1">CUI</p>
-                      <p className="text-white font-mono">{sale.cui || "-"}</p>
+                      <p className="text-slate-600 text-sm mb-1">CUI</p>
+                      <p className="text-slate-900 font-mono">{sale.cui || "-"}</p>
                     </div>
                     <div>
-                      <p className="text-white/60 text-sm mb-1">Escalão</p>
-                      <p className="text-white">{sale.escalao || "-"}</p>
+                      <p className="text-slate-600 text-sm mb-1">Escalão</p>
+                      <p className="text-slate-900">{sale.escalao || "-"}</p>
                     </div>
                   </>
                 )}
@@ -1245,8 +1220,8 @@ export default function SaleDetail({ editMode = false }) {
 
           {sale.notes && (
             <div className="mt-6 pt-6 border-t border-white/10">
-              <p className="text-white/60 text-sm mb-2">Notas</p>
-              <p className="text-white/80 whitespace-pre-wrap">{sale.notes}</p>
+              <p className="text-slate-600 text-sm mb-2">Notas</p>
+              <p className="text-slate-900/80 whitespace-pre-wrap">{sale.notes}</p>
             </div>
           )}
         </CardContent>

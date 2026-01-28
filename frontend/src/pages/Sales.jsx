@@ -1,14 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/App";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { salesService } from "@/services/salesService";
 import { partnersService } from "@/services/partnersService";
 import { operatorsService } from "@/services/operatorsService";
-import { ModernCard, ModernButton, ModernBadge } from "@/components/modern";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ModernCard, ModernButton, ModernBadge, ModernTable } from "@/components/modern";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -28,11 +25,9 @@ import {
   Sun,
   X,
   Filter,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
   Search,
-  Loader2
+  Loader2,
+  ShoppingBag
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -78,6 +73,7 @@ const removeAccents = (str) => {
 
 export default function Sales() {
   const { user, isAdminOrBackoffice } = useAuth();
+  const navigate = useNavigate();
   const [sales, setSales] = useState([]);
   const [allSales, setAllSales] = useState([]);
   const [partners, setPartners] = useState([]);
@@ -96,11 +92,6 @@ export default function Sales() {
 
   const [showFilters, setShowFilters] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortColumn, setSortColumn] = useState("sale_date");
-  const [sortDirection, setSortDirection] = useState("desc");
-
-  const ITEMS_PER_PAGE = 10;
 
   const fetchData = useCallback(async () => {
     try {
@@ -208,55 +199,7 @@ export default function Sales() {
     setDateType("none");
     setDateFrom(null);
     setDateTo(null);
-    setCurrentPage(1);
   };
-
-  const handleSort = (column) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortDirection("asc");
-    }
-    setCurrentPage(1);
-  };
-
-  const sortedSales = [...sales].sort((a, b) => {
-    let aValue = a[sortColumn];
-    let bValue = b[sortColumn];
-
-    if (sortColumn === "client_name") {
-      aValue = a.client_name || "";
-      bValue = b.client_name || "";
-    } else if (sortColumn === "category") {
-      aValue = CATEGORY_MAP[a.category]?.label || "";
-      bValue = CATEGORY_MAP[b.category]?.label || "";
-    } else if (sortColumn === "partner_name") {
-      aValue = a.partner_name || "";
-      bValue = b.partner_name || "";
-    } else if (sortColumn === "contract_value") {
-      aValue = a.contract_value || 0;
-      bValue = b.contract_value || 0;
-    } else if (sortColumn === "commission") {
-      aValue = a.commission || 0;
-      bValue = b.commission || 0;
-    } else if (sortColumn === "status") {
-      aValue = STATUS_MAP[a.status]?.label || "";
-      bValue = STATUS_MAP[b.status]?.label || "";
-    } else if (sortColumn === "sale_date") {
-      aValue = new Date(a.sale_date || a.created_at).getTime();
-      bValue = new Date(b.sale_date || b.created_at).getTime();
-    }
-
-    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-    return 0;
-  });
-
-  const totalPages = Math.ceil(sortedSales.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedSales = sortedSales.slice(startIndex, endIndex);
 
   const hasFilters = (searchType && searchType !== "none") || searchText || (statusFilter && statusFilter !== "all") || (categoryFilter && categoryFilter !== "all") || (partnerFilter && partnerFilter !== "all") || (operatorFilter && operatorFilter !== "all") || (dateType && dateType !== "none") || dateFrom || dateTo;
 
@@ -284,16 +227,15 @@ export default function Sales() {
             {sales.length} {sales.length === 1 ? 'registo encontrado' : 'registos encontrados'}
           </p>
         </div>
-        <Link to="/sales/new">
-          <ModernButton
-            variant="primary"
-            icon={Plus}
-            iconPosition="left"
-            data-testid="new-sale-btn"
-          >
-            Nova Venda
-          </ModernButton>
-        </Link>
+        <ModernButton
+          onClick={() => navigate('/sales/new')}
+          variant="primary"
+          icon={Plus}
+          iconPosition="left"
+          data-testid="new-sale-btn"
+        >
+          Nova Venda
+        </ModernButton>
       </motion.div>
 
       {/* Filters */}
@@ -501,310 +443,139 @@ export default function Sales() {
         </AnimatePresence>
       </motion.div>
 
-      {/* Desktop Table */}
+      {/* Sales Table */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="hidden lg:block"
       >
-        <ModernCard variant="white" className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gradient-to-r from-slate-50 to-blue-50/30 border-b border-slate-200">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
-                    <button onClick={() => handleSort("client_name")} className="flex items-center gap-2 hover:text-brand-600">
-                      Cliente
-                      <ArrowUpDown size={14} className={sortColumn === "client_name" ? "text-brand-600" : "text-slate-400"} />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
-                    <button onClick={() => handleSort("category")} className="flex items-center gap-2 hover:text-brand-600">
-                      Categoria
-                      <ArrowUpDown size={14} className={sortColumn === "category" ? "text-brand-600" : "text-slate-400"} />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">Tipo</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
-                    <button onClick={() => handleSort("partner_name")} className="flex items-center gap-2 hover:text-brand-600">
-                      Parceiro
-                      <ArrowUpDown size={14} className={sortColumn === "partner_name" ? "text-brand-600" : "text-slate-400"} />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
-                    <button onClick={() => handleSort("contract_value")} className="flex items-center gap-2 hover:text-brand-600">
-                      Valor
-                      <ArrowUpDown size={14} className={sortColumn === "contract_value" ? "text-brand-600" : "text-slate-400"} />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">Comissão</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
-                    <button onClick={() => handleSort("status")} className="flex items-center gap-2 hover:text-brand-600">
-                      Estado
-                      <ArrowUpDown size={14} className={sortColumn === "status" ? "text-brand-600" : "text-slate-400"} />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
-                    <button onClick={() => handleSort("sale_date")} className="flex items-center gap-2 hover:text-brand-600">
-                      Data
-                      <ArrowUpDown size={14} className={sortColumn === "sale_date" ? "text-brand-600" : "text-slate-400"} />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-bold text-slate-700 uppercase">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200">
-                {paginatedSales.length > 0 ? (
-                  paginatedSales.map((sale, index) => {
-                    const category = CATEGORY_MAP[sale.category];
-                    const CategoryIcon = category?.icon || Zap;
-                    const status = STATUS_MAP[sale.status];
-
-                    return (
-                      <motion.tr
-                        key={sale.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: index * 0.02 }}
-                        className="hover:bg-brand-50/30 transition-colors"
-                        data-testid={`sale-row-${sale.id}`}
-                      >
-                        <td className="px-4 py-3">
-                          <div>
-                            <p className="font-semibold text-slate-900">{sale.client_name}</p>
-                            {sale.client_nif && (
-                              <p className="text-slate-500 text-xs font-mono mt-0.5">{sale.client_nif}</p>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <CategoryIcon size={18} className={category?.color} />
-                            <span className="text-sm font-medium text-slate-700">{category?.label}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-sm text-slate-600">{TYPE_MAP[sale.sale_type] || "-"}</span>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-slate-700">
-                          {sale.partners?.name || sale.partner_name || "-"}
-                        </td>
-                        <td className="px-4 py-3 font-mono text-sm text-brand-600 font-semibold">
-                          {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
-                        </td>
-                        <td className="px-4 py-3 font-mono text-sm">
-                          {(() => {
-                            const shouldShowCommission =
-                              user.role === 'admin' ||
-                              (user.role === 'backoffice' && sale.operators?.commission_visible_to_bo);
-
-                            if (!shouldShowCommission) return <span className="text-slate-300">-</span>;
-                            if (sale.commission !== null && sale.commission !== undefined) {
-                              return (
-                                <span className="text-green-600 font-semibold">
-                                  {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.commission)}
-                                </span>
-                              );
-                            }
-                            return <span className="text-slate-300">-</span>;
-                          })()}
-                        </td>
-                        <td className="px-4 py-3">
-                          <ModernBadge variant={status?.color} size="sm">
-                            {status?.label}
-                          </ModernBadge>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-slate-600">
-                          {new Date(sale.sale_date || sale.created_at).toLocaleDateString('pt-PT')}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center justify-end gap-1">
-                            <Link to={`/sales/${sale.id}`}>
-                              <Button variant="ghost" size="sm" className="text-slate-600 hover:text-brand-600" data-testid={`view-sale-${sale.id}`}>
-                                <Eye size={16} />
-                              </Button>
-                            </Link>
-                            <Link to={`/sales/${sale.id}/edit`}>
-                              <Button variant="ghost" size="sm" className="text-slate-600 hover:text-blue-600" data-testid={`edit-sale-${sale.id}`}>
-                                <Edit2 size={16} />
-                              </Button>
-                            </Link>
-                            {isAdminOrBackoffice && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-slate-600 hover:text-red-600"
-                                onClick={() => setDeleteId(sale.id)}
-                                data-testid={`delete-sale-${sale.id}`}
-                              >
-                                <Trash2 size={16} />
-                              </Button>
-                            )}
-                          </div>
-                        </td>
-                      </motion.tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={9} className="text-center py-12 text-slate-500">
-                      Nenhuma venda encontrada
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </ModernCard>
-      </motion.div>
-
-      {/* Mobile Cards */}
-      <div className="lg:hidden space-y-3">
-        {paginatedSales.length > 0 ? (
-          paginatedSales.map((sale, index) => {
-            const category = CATEGORY_MAP[sale.category];
-            const CategoryIcon = category?.icon || Zap;
-            const status = STATUS_MAP[sale.status];
-
-            return (
-              <motion.div
-                key={sale.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <ModernCard variant="white" hover className="p-4">
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-slate-900">{sale.client_name}</h3>
-                        {sale.client_nif && (
-                          <p className="text-xs text-slate-500 font-mono mt-0.5">{sale.client_nif}</p>
-                        )}
-                      </div>
-                      <ModernBadge variant={status?.color} size="sm">
-                        {status?.label}
-                      </ModernBadge>
+        <ModernCard title="Gestão de Vendas" icon={ShoppingBag} variant="gradient">
+          {sales.length === 0 ? (
+            <div className="text-center py-12">
+              {hasFilters ? (
+                <>
+                  <p className="text-slate-500 mb-4">Nenhuma venda encontrada com os filtros aplicados</p>
+                  <ModernButton variant="secondary" onClick={clearFilters}>
+                    Limpar Filtros
+                  </ModernButton>
+                </>
+              ) : (
+                <>
+                  <p className="text-slate-500 mb-4">Ainda não existem vendas registadas</p>
+                  <ModernButton onClick={() => navigate('/sales/new')} variant="primary" icon={Plus}>
+                    Criar Primeira Venda
+                  </ModernButton>
+                </>
+              )}
+            </div>
+          ) : (
+            <ModernTable
+              columns={[
+                {
+                  key: 'client',
+                  label: 'Cliente',
+                  sortable: true,
+                  render: (_, row) => (
+                    <div>
+                      <p className="font-medium text-slate-900">{row.client_name}</p>
+                      <p className="text-sm text-slate-500 font-mono">{row.client_nif}</p>
                     </div>
+                  )
+                },
+                {
+                  key: 'sale_type',
+                  label: 'Tipo de Ativação',
+                  sortable: true,
+                  render: (value) => (
+                    <span className="text-sm text-slate-700">{TYPE_MAP[value] || "-"}</span>
+                  )
+                },
+                {
+                  key: 'contract_value',
+                  label: 'Mensalidade',
+                  sortable: true,
+                  render: (value) => (
+                    <span className="font-mono text-sm text-brand-600 font-semibold">
+                      {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value)}
+                    </span>
+                  )
+                },
+                {
+                  key: 'commission',
+                  label: 'Comissão',
+                  sortable: true,
+                  render: (value, row) => {
+                    const shouldShowCommission =
+                      user.role === 'admin' ||
+                      (user.role === 'backoffice' && row.operators?.commission_visible_to_bo);
 
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>
-                        <p className="text-slate-500 text-xs">Categoria</p>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <CategoryIcon size={16} className={category?.color} />
-                          <span className="font-medium">{category?.label}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-slate-500 text-xs">Valor</p>
-                        <p className="font-mono font-bold text-brand-600 mt-0.5">
-                          {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-slate-500 text-xs">Parceiro</p>
-                        <p className="font-medium text-slate-700 mt-0.5">{sale.partners?.name || sale.partner_name || "-"}</p>
-                      </div>
-                      <div>
-                        <p className="text-slate-500 text-xs">Data</p>
-                        <p className="font-medium text-slate-700 mt-0.5">
-                          {new Date(sale.sale_date || sale.created_at).toLocaleDateString('pt-PT')}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 pt-2 border-t border-slate-200">
-                      <Link to={`/sales/${sale.id}`} className="flex-1">
-                        <ModernButton variant="secondary" size="sm" icon={Eye} className="w-full">
-                          Ver
-                        </ModernButton>
-                      </Link>
-                      <Link to={`/sales/${sale.id}/edit`} className="flex-1">
-                        <ModernButton variant="secondary" size="sm" icon={Edit2} className="w-full">
-                          Editar
-                        </ModernButton>
-                      </Link>
+                    if (!shouldShowCommission) return <span className="text-slate-300">-</span>;
+                    if (value !== null && value !== undefined) {
+                      return (
+                        <span className="font-mono text-sm text-green-600 font-semibold">
+                          {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value)}
+                        </span>
+                      );
+                    }
+                    return <span className="text-slate-300">-</span>;
+                  }
+                },
+                {
+                  key: 'status',
+                  label: 'Estado',
+                  sortable: true,
+                  render: (value) => {
+                    const status = STATUS_MAP[value];
+                    return <ModernBadge variant={status?.color}>{status?.label}</ModernBadge>;
+                  }
+                },
+                {
+                  key: 'id',
+                  label: '',
+                  sortable: false,
+                  render: (value) => (
+                    <div className="flex gap-2">
+                      <ModernButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/sales/${value}`);
+                        }}
+                        icon={Eye}
+                      />
+                      <ModernButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/sales/${value}/edit`);
+                        }}
+                        icon={Edit2}
+                      />
                       {isAdminOrBackoffice && (
                         <ModernButton
-                          variant="danger"
+                          variant="ghost"
                           size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteId(value);
+                          }}
                           icon={Trash2}
-                          onClick={() => setDeleteId(sale.id)}
+                          className="text-red-600 hover:text-red-700"
                         />
                       )}
                     </div>
-                  </div>
-                </ModernCard>
-              </motion.div>
-            );
-          })
-        ) : (
-          <ModernCard variant="white" className="p-12 text-center">
-            <p className="text-slate-500">Nenhuma venda encontrada</p>
-          </ModernCard>
-        )}
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-between gap-4"
-        >
-          <p className="text-slate-600 text-sm">
-            Página {currentPage} de {totalPages} ({sortedSales.length} vendas)
-          </p>
-          <div className="flex gap-2">
-            <ModernButton
-              variant="secondary"
-              size="sm"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              icon={ChevronLeft}
-            >
-              Anterior
-            </ModernButton>
-
-            <div className="hidden sm:flex gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                if (
-                  page === 1 ||
-                  page === totalPages ||
-                  (page >= currentPage - 1 && page <= currentPage + 1)
-                ) {
-                  return (
-                    <ModernButton
-                      key={page}
-                      variant={page === currentPage ? "primary" : "secondary"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                    >
-                      {page}
-                    </ModernButton>
-                  );
-                } else if (page === currentPage - 2 || page === currentPage + 2) {
-                  return <span key={page} className="text-slate-400 px-2">...</span>;
+                  )
                 }
-                return null;
-              })}
-            </div>
-
-            <ModernButton
-              variant="secondary"
-              size="sm"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              icon={ChevronRight}
-              iconPosition="right"
-            >
-              Seguinte
-            </ModernButton>
-          </div>
-        </motion.div>
-      )}
+              ]}
+              data={sales}
+              sortable={true}
+              hoverable={true}
+            />
+          )}
+        </ModernCard>
+      </motion.div>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
