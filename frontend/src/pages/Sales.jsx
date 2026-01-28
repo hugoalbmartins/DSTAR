@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/App";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { salesService } from "@/services/salesService";
 import { partnersService } from "@/services/partnersService";
 import { operatorsService } from "@/services/operatorsService";
+import { ModernCard, ModernButton, ModernBadge } from "@/components/modern";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,7 +30,9 @@ import {
   Filter,
   ArrowUpDown,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Search,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -43,22 +47,29 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const STATUS_MAP = {
-  em_negociacao: { label: "Em Negociação", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  perdido: { label: "Perdido", color: "bg-red-500/20 text-red-400 border-red-500/30" },
-  pendente: { label: "Pendente", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-  ativo: { label: "Ativo", color: "bg-green-500/20 text-green-400 border-green-500/30" },
-  anulado: { label: "Anulado", color: "bg-gray-500/20 text-gray-400 border-gray-500/30" }
+  em_negociacao: { label: "Em Negociação", color: "info", gradient: "from-blue-500 to-blue-600" },
+  perdido: { label: "Perdido", color: "danger", gradient: "from-red-500 to-red-600" },
+  pendente: { label: "Pendente", color: "warning", gradient: "from-yellow-500 to-yellow-600" },
+  ativo: { label: "Ativo", color: "success", gradient: "from-green-500 to-green-600" },
+  anulado: { label: "Anulado", color: "default", gradient: "from-slate-500 to-slate-600" }
 };
 
 const CATEGORY_MAP = {
-  energia: { label: "Energia", icon: Zap },
-  telecomunicacoes: { label: "Telecomunicações", icon: Phone },
-  paineis_solares: { label: "Painéis Solares", icon: Sun }
+  energia: { label: "Energia", icon: Zap, color: "text-yellow-500" },
+  telecomunicacoes: { label: "Telecomunicações", icon: Phone, color: "text-blue-500" },
+  paineis_solares: { label: "Painéis Solares", icon: Sun, color: "text-orange-500" }
 };
 
 const TYPE_MAP = {
   nova_instalacao: "Nova Instalação",
-  refid: "Refid"
+  refid: "Refid",
+  NI: "Nova Instalação",
+  MC: "Mudança de Casa",
+  Refid: "Refid",
+  Refid_Acrescimo: "Refid c/ Acréscimo",
+  Refid_Decrescimo: "Refid c/ Decréscimo",
+  Up_sell: "Up-sell",
+  Cross_sell: "Cross-sell"
 };
 
 const removeAccents = (str) => {
@@ -252,7 +263,7 @@ export default function Sales() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="spinner"></div>
+        <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
       </div>
     );
   }
@@ -260,413 +271,504 @@ export default function Sales() {
   return (
     <div className="space-y-6" data-testid="sales-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center"
+      >
         <div>
-          <h1 className="text-2xl font-bold text-[#172B4D] font-['Manrope']">Vendas</h1>
-          <p className="text-[#172B4D]/70 text-sm mt-1">{sales.length} registos encontrados</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-brand-700 bg-clip-text text-transparent">
+            Vendas
+          </h1>
+          <p className="text-slate-600 text-sm mt-1">
+            {sales.length} {sales.length === 1 ? 'registo encontrado' : 'registos encontrados'}
+          </p>
         </div>
         <Link to="/sales/new">
-          <Button className="btn-primary btn-primary-glow flex items-center gap-2" data-testid="new-sale-btn">
-            <Plus size={18} />
+          <ModernButton
+            variant="primary"
+            icon={Plus}
+            iconPosition="left"
+            data-testid="new-sale-btn"
+          >
             Nova Venda
-          </Button>
+          </ModernButton>
         </Link>
-      </div>
+      </motion.div>
 
       {/* Filters */}
-      <div className="space-y-3">
-        <div className="flex gap-2 items-center">
-          <Button
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="space-y-3"
+      >
+        <div className="flex flex-wrap gap-2 items-center">
+          <ModernButton
             onClick={() => setShowFilters(!showFilters)}
-            variant="outline"
-            className="bg-white/5 border-white/10 text-[#172B4D] hover:bg-white/10 h-10 px-4"
+            variant={showFilters ? "primary" : "secondary"}
+            icon={Filter}
+            iconPosition="left"
+            size="md"
           >
-            <Filter size={16} className="mr-2" />
             Filtros
-          </Button>
+          </ModernButton>
 
           {hasFilters && (
             <>
-              <Button
+              <ModernButton
                 onClick={clearFilters}
-                variant="outline"
-                className="bg-white/5 border-white/10 text-[#172B4D]/70 hover:bg-white/10 hover:text-[#172B4D] h-10 px-4"
+                variant="ghost"
+                icon={X}
+                iconPosition="left"
+                size="md"
                 data-testid="clear-filters-btn"
               >
-                <X size={16} className="mr-2" />
                 Limpar
-              </Button>
-              <p className="text-[#172B4D]/70 text-sm">
+              </ModernButton>
+              <ModernBadge variant="primary" size="md">
                 {sales.length} resultado{sales.length !== 1 ? 's' : ''}
-              </p>
+              </ModernBadge>
             </>
           )}
         </div>
 
-        {showFilters && (
-          <Card className="card-leiritrix border-l-4 border-l-blue-600">
-            <CardContent className="p-4 space-y-4">
-              {/* Pesquisa por NIF ou Nome */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div>
-                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Tipo de Pesquisa</label>
-                  <Select value={searchType || "none"} onValueChange={(value) => {
-                    setSearchType(value === "none" ? "" : value);
-                    setSearchText("");
-                  }}>
-                    <SelectTrigger className="form-input h-9 text-sm">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10 z-50">
-                      <SelectItem value="none" className="text-white hover:bg-white/10">Nenhum</SelectItem>
-                      <SelectItem value="nif" className="text-white hover:bg-white/10">NIF</SelectItem>
-                      <SelectItem value="name" className="text-white hover:bg-white/10">Nome</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ModernCard
+                variant="gradient"
+                className="overflow-hidden"
+              >
+                <div className="p-6 space-y-4">
+                  {/* Search */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 mb-2 block">
+                        Tipo de Pesquisa
+                      </label>
+                      <Select value={searchType || "none"} onValueChange={(value) => {
+                        setSearchType(value === "none" ? "" : value);
+                        setSearchText("");
+                      }}>
+                        <SelectTrigger className="h-10 border-slate-300 focus:border-brand-500 focus:ring-brand-500">
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Nenhum</SelectItem>
+                          <SelectItem value="nif">NIF</SelectItem>
+                          <SelectItem value="name">Nome</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                {searchType && searchType !== "none" && (
-                  <div className="md:col-span-3">
-                    <label className="text-xs text-[#172B4D]/70 mb-1 block">
-                      {searchType === "nif" ? "NIF do Cliente" : "Nome do Cliente"}
-                    </label>
-                    <Input
-                      value={searchText}
-                      onChange={(e) => setSearchText(e.target.value)}
-                      placeholder={searchType === "nif" ? "Digite o NIF..." : "Digite o nome (parcial ou completo)..."}
-                      className="form-input h-9 text-sm"
-                      data-testid="search-text-input"
-                    />
+                    {searchType && searchType !== "none" && (
+                      <div className="md:col-span-3">
+                        <label className="text-xs font-semibold text-slate-700 mb-2 block">
+                          {searchType === "nif" ? "NIF do Cliente" : "Nome do Cliente"}
+                        </label>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                          <Input
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
+                            placeholder={searchType === "nif" ? "Digite o NIF..." : "Digite o nome..."}
+                            className="h-10 pl-10 border-slate-300 focus:border-brand-500 focus:ring-brand-500"
+                            data-testid="search-text-input"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              {/* Filtros: Estado, Categoria, Operadora, Parceiro */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div>
-                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Estado</label>
-                  <Select value={statusFilter || "all"} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="form-input h-9 text-sm" data-testid="status-filter">
-                      <SelectValue placeholder="Todos" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10 z-50">
-                      <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
-                      {Object.entries(STATUS_MAP).map(([key, status]) => (
-                        <SelectItem key={key} value={key} className="text-white hover:bg-white/10 text-sm">
-                          {status.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Categoria</label>
-                  <Select value={categoryFilter || "all"} onValueChange={setCategoryFilter}>
-                    <SelectTrigger className="form-input h-9 text-sm" data-testid="category-filter">
-                      <SelectValue placeholder="Todas" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10 z-50">
-                      <SelectItem value="all" className="text-white hover:bg-white/10">Todas</SelectItem>
-                      {Object.entries(CATEGORY_MAP).map(([key, cat]) => (
-                        <SelectItem key={key} value={key} className="text-white hover:bg-white/10 text-sm">
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Operadora</label>
-                  <Select value={operatorFilter || "all"} onValueChange={setOperatorFilter}>
-                    <SelectTrigger className="form-input h-9 text-sm" data-testid="operator-filter">
-                      <SelectValue placeholder="Todas" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10 z-50 max-h-60">
-                      <SelectItem value="all" className="text-white hover:bg-white/10">Todas</SelectItem>
-                      {filteredOperators.map((operator) => (
-                        <SelectItem key={operator.id} value={operator.id} className="text-white hover:bg-white/10 text-sm">
-                          {operator.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Parceiro</label>
-                  <Select value={partnerFilter || "all"} onValueChange={setPartnerFilter}>
-                    <SelectTrigger className="form-input h-9 text-sm" data-testid="partner-filter">
-                      <SelectValue placeholder="Todos" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10 z-50">
-                      <SelectItem value="all" className="text-white hover:bg-white/10">Todos</SelectItem>
-                      {partners.map((partner) => (
-                        <SelectItem key={partner.id} value={partner.id} className="text-white hover:bg-white/10 text-sm">
-                          {partner.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Filtros de Data */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-[#172B4D]/70 mb-1 block">Tipo de Data</label>
-                  <Select value={dateType || "none"} onValueChange={(value) => {
-                    setDateType(value);
-                    if (value === "none") {
-                      setDateFrom(null);
-                      setDateTo(null);
-                    }
-                  }}>
-                    <SelectTrigger className="form-input h-9 text-sm">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-white/10 z-50">
-                      <SelectItem value="none" className="text-white hover:bg-white/10">Nenhuma</SelectItem>
-                      <SelectItem value="sale_date" className="text-white hover:bg-white/10">Data de Venda</SelectItem>
-                      <SelectItem value="active_date" className="text-white hover:bg-white/10">Data de Ativação</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {dateType && dateType !== "none" && (
-                  <>
+                  {/* Filters */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div>
-                      <label className="text-xs text-[#172B4D]/70 mb-1 block">Data De</label>
-                      <DatePickerPopup
-                        value={dateFrom}
-                        onChange={setDateFrom}
-                        placeholder="Data inicial"
-                        className="w-full"
-                      />
+                      <label className="text-xs font-semibold text-slate-700 mb-2 block">Estado</label>
+                      <Select value={statusFilter || "all"} onValueChange={setStatusFilter}>
+                        <SelectTrigger className="h-10" data-testid="status-filter">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todos</SelectItem>
+                          {Object.entries(STATUS_MAP).map(([key, status]) => (
+                            <SelectItem key={key} value={key}>{status.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
+
                     <div>
-                      <label className="text-xs text-[#172B4D]/70 mb-1 block">Data Até</label>
-                      <DatePickerPopup
-                        value={dateTo}
-                        onChange={setDateTo}
-                        placeholder="Hoje"
-                        className="w-full"
-                      />
+                      <label className="text-xs font-semibold text-slate-700 mb-2 block">Categoria</label>
+                      <Select value={categoryFilter || "all"} onValueChange={setCategoryFilter}>
+                        <SelectTrigger className="h-10" data-testid="category-filter">
+                          <SelectValue placeholder="Todas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todas</SelectItem>
+                          {Object.entries(CATEGORY_MAP).map(([key, cat]) => (
+                            <SelectItem key={key} value={key}>{cat.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 mb-2 block">Operadora</label>
+                      <Select value={operatorFilter || "all"} onValueChange={setOperatorFilter}>
+                        <SelectTrigger className="h-10" data-testid="operator-filter">
+                          <SelectValue placeholder="Todas" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          <SelectItem value="all">Todas</SelectItem>
+                          {filteredOperators.map((operator) => (
+                            <SelectItem key={operator.id} value={operator.id}>{operator.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 mb-2 block">Parceiro</label>
+                      <Select value={partnerFilter || "all"} onValueChange={setPartnerFilter}>
+                        <SelectTrigger className="h-10" data-testid="partner-filter">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todos</SelectItem>
+                          {partners.map((partner) => (
+                            <SelectItem key={partner.id} value={partner.id}>{partner.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Date Filters */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 mb-2 block">Tipo de Data</label>
+                      <Select value={dateType || "none"} onValueChange={(value) => {
+                        setDateType(value);
+                        if (value === "none") {
+                          setDateFrom(null);
+                          setDateTo(null);
+                        }
+                      }}>
+                        <SelectTrigger className="h-10">
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Nenhuma</SelectItem>
+                          <SelectItem value="sale_date">Data de Venda</SelectItem>
+                          <SelectItem value="active_date">Data de Ativação</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {dateType && dateType !== "none" && (
+                      <>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-2 block">Data De</label>
+                          <DatePickerPopup
+                            value={dateFrom}
+                            onChange={setDateFrom}
+                            placeholder="Data inicial"
+                            className="w-full h-10"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-2 block">Data Até</label>
+                          <DatePickerPopup
+                            value={dateTo}
+                            onChange={setDateTo}
+                            placeholder="Hoje"
+                            className="w-full h-10"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </ModernCard>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Desktop Table */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="hidden lg:block"
+      >
+        <ModernCard variant="white" className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-slate-50 to-blue-50/30 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
+                    <button onClick={() => handleSort("client_name")} className="flex items-center gap-2 hover:text-brand-600">
+                      Cliente
+                      <ArrowUpDown size={14} className={sortColumn === "client_name" ? "text-brand-600" : "text-slate-400"} />
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
+                    <button onClick={() => handleSort("category")} className="flex items-center gap-2 hover:text-brand-600">
+                      Categoria
+                      <ArrowUpDown size={14} className={sortColumn === "category" ? "text-brand-600" : "text-slate-400"} />
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">Tipo</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
+                    <button onClick={() => handleSort("partner_name")} className="flex items-center gap-2 hover:text-brand-600">
+                      Parceiro
+                      <ArrowUpDown size={14} className={sortColumn === "partner_name" ? "text-brand-600" : "text-slate-400"} />
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
+                    <button onClick={() => handleSort("contract_value")} className="flex items-center gap-2 hover:text-brand-600">
+                      Valor
+                      <ArrowUpDown size={14} className={sortColumn === "contract_value" ? "text-brand-600" : "text-slate-400"} />
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">Comissão</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
+                    <button onClick={() => handleSort("status")} className="flex items-center gap-2 hover:text-brand-600">
+                      Estado
+                      <ArrowUpDown size={14} className={sortColumn === "status" ? "text-brand-600" : "text-slate-400"} />
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-700 uppercase">
+                    <button onClick={() => handleSort("sale_date")} className="flex items-center gap-2 hover:text-brand-600">
+                      Data
+                      <ArrowUpDown size={14} className={sortColumn === "sale_date" ? "text-brand-600" : "text-slate-400"} />
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-bold text-slate-700 uppercase">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {paginatedSales.length > 0 ? (
+                  paginatedSales.map((sale, index) => {
+                    const category = CATEGORY_MAP[sale.category];
+                    const CategoryIcon = category?.icon || Zap;
+                    const status = STATUS_MAP[sale.status];
+
+                    return (
+                      <motion.tr
+                        key={sale.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: index * 0.02 }}
+                        className="hover:bg-brand-50/30 transition-colors"
+                        data-testid={`sale-row-${sale.id}`}
+                      >
+                        <td className="px-4 py-3">
+                          <div>
+                            <p className="font-semibold text-slate-900">{sale.client_name}</p>
+                            {sale.client_nif && (
+                              <p className="text-slate-500 text-xs font-mono mt-0.5">{sale.client_nif}</p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <CategoryIcon size={18} className={category?.color} />
+                            <span className="text-sm font-medium text-slate-700">{category?.label}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm text-slate-600">{TYPE_MAP[sale.sale_type] || "-"}</span>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-slate-700">
+                          {sale.partners?.name || sale.partner_name || "-"}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-sm text-brand-600 font-semibold">
+                          {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-sm">
+                          {(() => {
+                            const shouldShowCommission =
+                              user.role === 'admin' ||
+                              (user.role === 'backoffice' && sale.operators?.commission_visible_to_bo);
+
+                            if (!shouldShowCommission) return <span className="text-slate-300">-</span>;
+                            if (sale.commission !== null && sale.commission !== undefined) {
+                              return (
+                                <span className="text-green-600 font-semibold">
+                                  {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.commission)}
+                                </span>
+                              );
+                            }
+                            return <span className="text-slate-300">-</span>;
+                          })()}
+                        </td>
+                        <td className="px-4 py-3">
+                          <ModernBadge variant={status?.color} size="sm">
+                            {status?.label}
+                          </ModernBadge>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-slate-600">
+                          {new Date(sale.sale_date || sale.created_at).toLocaleDateString('pt-PT')}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center justify-end gap-1">
+                            <Link to={`/sales/${sale.id}`}>
+                              <Button variant="ghost" size="sm" className="text-slate-600 hover:text-brand-600" data-testid={`view-sale-${sale.id}`}>
+                                <Eye size={16} />
+                              </Button>
+                            </Link>
+                            <Link to={`/sales/${sale.id}/edit`}>
+                              <Button variant="ghost" size="sm" className="text-slate-600 hover:text-blue-600" data-testid={`edit-sale-${sale.id}`}>
+                                <Edit2 size={16} />
+                              </Button>
+                            </Link>
+                            {isAdminOrBackoffice && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-slate-600 hover:text-red-600"
+                                onClick={() => setDeleteId(sale.id)}
+                                data-testid={`delete-sale-${sale.id}`}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={9} className="text-center py-12 text-slate-500">
+                      Nenhuma venda encontrada
+                    </td>
+                  </tr>
                 )}
-              </div>
-            </CardContent>
-          </Card>
+              </tbody>
+            </table>
+          </div>
+        </ModernCard>
+      </motion.div>
+
+      {/* Mobile Cards */}
+      <div className="lg:hidden space-y-3">
+        {paginatedSales.length > 0 ? (
+          paginatedSales.map((sale, index) => {
+            const category = CATEGORY_MAP[sale.category];
+            const CategoryIcon = category?.icon || Zap;
+            const status = STATUS_MAP[sale.status];
+
+            return (
+              <motion.div
+                key={sale.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <ModernCard variant="white" hover className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-900">{sale.client_name}</h3>
+                        {sale.client_nif && (
+                          <p className="text-xs text-slate-500 font-mono mt-0.5">{sale.client_nif}</p>
+                        )}
+                      </div>
+                      <ModernBadge variant={status?.color} size="sm">
+                        {status?.label}
+                      </ModernBadge>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <p className="text-slate-500 text-xs">Categoria</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <CategoryIcon size={16} className={category?.color} />
+                          <span className="font-medium">{category?.label}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-slate-500 text-xs">Valor</p>
+                        <p className="font-mono font-bold text-brand-600 mt-0.5">
+                          {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500 text-xs">Parceiro</p>
+                        <p className="font-medium text-slate-700 mt-0.5">{sale.partners?.name || sale.partner_name || "-"}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500 text-xs">Data</p>
+                        <p className="font-medium text-slate-700 mt-0.5">
+                          {new Date(sale.sale_date || sale.created_at).toLocaleDateString('pt-PT')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-2 border-t border-slate-200">
+                      <Link to={`/sales/${sale.id}`} className="flex-1">
+                        <ModernButton variant="secondary" size="sm" icon={Eye} className="w-full">
+                          Ver
+                        </ModernButton>
+                      </Link>
+                      <Link to={`/sales/${sale.id}/edit`} className="flex-1">
+                        <ModernButton variant="secondary" size="sm" icon={Edit2} className="w-full">
+                          Editar
+                        </ModernButton>
+                      </Link>
+                      {isAdminOrBackoffice && (
+                        <ModernButton
+                          variant="danger"
+                          size="sm"
+                          icon={Trash2}
+                          onClick={() => setDeleteId(sale.id)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </ModernCard>
+              </motion.div>
+            );
+          })
+        ) : (
+          <ModernCard variant="white" className="p-12 text-center">
+            <p className="text-slate-500">Nenhuma venda encontrada</p>
+          </ModernCard>
         )}
       </div>
 
-      {/* Sales Table */}
-      <Card className="card-leiritrix overflow-hidden border-l-4 border-l-green-600">
-        <div className="overflow-x-auto" style={{maxHeight: showFilters ? '500px' : '600px', overflowY: 'auto'}}>
-          <table className="data-table" data-testid="sales-table">
-            <thead>
-              <tr>
-                <th>
-                  <button
-                    onClick={() => handleSort("client_name")}
-                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
-                  >
-                    Cliente
-                    <ArrowUpDown size={14} className={sortColumn === "client_name" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
-                  </button>
-                </th>
-                <th>
-                  <button
-                    onClick={() => handleSort("category")}
-                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
-                  >
-                    Categoria
-                    <ArrowUpDown size={14} className={sortColumn === "category" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
-                  </button>
-                </th>
-                <th>Tipo</th>
-                <th>
-                  <button
-                    onClick={() => handleSort("partner_name")}
-                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
-                  >
-                    Parceiro
-                    <ArrowUpDown size={14} className={sortColumn === "partner_name" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
-                  </button>
-                </th>
-                <th>
-                  <button
-                    onClick={() => handleSort("contract_value")}
-                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
-                  >
-                    Valor
-                    <ArrowUpDown size={14} className={sortColumn === "contract_value" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
-                  </button>
-                </th>
-                <th>
-                  <button
-                    onClick={() => handleSort("commission")}
-                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
-                  >
-                    Comissão
-                    <ArrowUpDown size={14} className={sortColumn === "commission" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
-                  </button>
-                </th>
-                <th>
-                  <button
-                    onClick={() => handleSort("status")}
-                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
-                  >
-                    Estado
-                    <ArrowUpDown size={14} className={sortColumn === "status" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
-                  </button>
-                </th>
-                <th>
-                  <button
-                    onClick={() => handleSort("sale_date")}
-                    className="flex items-center gap-1 hover:text-[#0BA5D9] transition-colors"
-                  >
-                    Data de Venda
-                    <ArrowUpDown size={14} className={sortColumn === "sale_date" ? "text-[#0BA5D9]" : "text-[#172B4D]/40"} />
-                  </button>
-                </th>
-                <th className="text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedSales.length > 0 ? (
-                paginatedSales.map((sale) => {
-                  const category = CATEGORY_MAP[sale.category];
-                  const CategoryIcon = category?.icon || Zap;
-                  const status = STATUS_MAP[sale.status];
-                  
-                  return (
-                    <tr key={sale.id} className="table-row-hover" data-testid={`sale-row-${sale.id}`}>
-                      <td>
-                        <div>
-                          <p className="font-medium">{sale.client_name}</p>
-                          {sale.client_nif && (
-                            <p className="text-[#172B4D]/60 text-sm font-mono">{sale.client_nif}</p>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="flex items-center gap-2">
-                          <CategoryIcon size={16} className="text-[#0BA5D9]" />
-                          <span className="text-[#172B4D]/80">{category?.label}</span>
-                        </div>
-                      </td>
-                      <td>
-                        {sale.sale_type ? (
-                          <span className="text-[#172B4D]/60 text-sm">
-                            {TYPE_MAP[sale.sale_type]}
-                          </span>
-                        ) : "-"}
-                      </td>
-                      <td className="text-[#172B4D]/80">{sale.partners?.name || sale.partner_name || "-"}</td>
-                      <td className="font-mono text-[#0BA5D9]">
-                        {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value)}
-                      </td>
-                      <td className="font-mono">
-                        {(() => {
-                          const shouldShowCommission =
-                            user.role === 'admin' ||
-                            (user.role === 'backoffice' && sale.operators?.commission_visible_to_bo);
-
-                          if (!shouldShowCommission) {
-                            return <span className="text-[#172B4D]/30">-</span>;
-                          }
-
-                          if (sale.commission !== null && sale.commission !== undefined) {
-                            const colorClass = user.role === 'admin' ? 'text-[#0BA5D9]' : 'text-green-400';
-                            return (
-                              <span className={colorClass}>
-                                {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.commission)}
-                              </span>
-                            );
-                          }
-
-                          return <span className="text-[#172B4D]/30">-</span>;
-                        })()}
-                      </td>
-                      <td>
-                        <Badge className={`${status?.color} border text-xs`}>
-                          {status?.label}
-                        </Badge>
-                      </td>
-                      <td className="text-[#172B4D]/60 text-sm">
-                        {new Date(sale.sale_date || sale.created_at).toLocaleDateString('pt-PT')}
-                      </td>
-                      <td>
-                        <div className="flex items-center justify-end gap-1">
-                          <Link to={`/sales/${sale.id}`}>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-[#172B4D]/60 hover:text-[#172B4D]"
-                              data-testid={`view-sale-${sale.id}`}
-                            >
-                              <Eye size={16} />
-                            </Button>
-                          </Link>
-                          <Link to={`/sales/${sale.id}/edit`}>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-[#172B4D]/60 hover:text-[#0BA5D9]"
-                              data-testid={`edit-sale-${sale.id}`}
-                            >
-                              <Edit2 size={16} />
-                            </Button>
-                          </Link>
-                          {isAdminOrBackoffice && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-[#172B4D]/60 hover:text-red-400"
-                              onClick={() => setDeleteId(sale.id)}
-                              data-testid={`delete-sale-${sale.id}`}
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={9} className="text-center py-12 text-[#172B4D]">
-                    Nenhuma venda encontrada
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-[#172B4D]/60 text-sm">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center justify-between gap-4"
+        >
+          <p className="text-slate-600 text-sm">
             Página {currentPage} de {totalPages} ({sortedSales.length} vendas)
           </p>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
+            <ModernButton
+              variant="secondary"
               size="sm"
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="border-white/10 text-[#172B4D] hover:bg-white/5 disabled:opacity-30"
+              icon={ChevronLeft}
             >
-              <ChevronLeft size={16} />
               Anterior
-            </Button>
-            <div className="flex gap-1">
+            </ModernButton>
+
+            <div className="hidden sm:flex gap-1">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
                 if (
                   page === 1 ||
@@ -674,57 +776,50 @@ export default function Sales() {
                   (page >= currentPage - 1 && page <= currentPage + 1)
                 ) {
                   return (
-                    <Button
+                    <ModernButton
                       key={page}
-                      variant={page === currentPage ? "default" : "outline"}
+                      variant={page === currentPage ? "primary" : "secondary"}
                       size="sm"
                       onClick={() => setCurrentPage(page)}
-                      className={
-                        page === currentPage
-                          ? "bg-[#c8f31d] text-[#082d32] hover:bg-[#c8f31d]/90"
-                          : "border-white/10 text-[#172B4D] hover:bg-white/5"
-                      }
                     >
                       {page}
-                    </Button>
+                    </ModernButton>
                   );
-                } else if (
-                  page === currentPage - 2 ||
-                  page === currentPage + 2
-                ) {
-                  return <span key={page} className="text-[#172B4D]/40 px-2">...</span>;
+                } else if (page === currentPage - 2 || page === currentPage + 2) {
+                  return <span key={page} className="text-slate-400 px-2">...</span>;
                 }
                 return null;
               })}
             </div>
-            <Button
-              variant="outline"
+
+            <ModernButton
+              variant="secondary"
               size="sm"
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="border-white/10 text-[#172B4D] hover:bg-white/5 disabled:opacity-30"
+              icon={ChevronRight}
+              iconPosition="right"
             >
               Seguinte
-              <ChevronRight size={16} />
-            </Button>
+            </ModernButton>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent className="bg-white border-white/10">
+        <AlertDialogContent className="bg-white">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#172B4D]">Eliminar Venda</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#172B4D]/60">
+            <AlertDialogTitle className="text-slate-900">Eliminar Venda</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
               Tem a certeza que pretende eliminar esta venda? Esta ação não pode ser revertida.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="btn-secondary">Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogCancel className="border-slate-300">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
               onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600 text-[#172B4D]"
+              className="bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700"
             >
               Eliminar
             </AlertDialogAction>
