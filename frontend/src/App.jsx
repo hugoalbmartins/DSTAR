@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect, useRef, createContext, useContext } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
@@ -6,6 +6,9 @@ import { toast } from "sonner";
 import { authService } from "@/services/authService";
 import { PasswordChangeModal } from "@/components/PasswordChangeModal";
 import { useIdleTimeout } from "@/hooks/useIdleTimeout";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import BackupAlert from "@/components/BackupAlert";
+import { pushNotificationService } from "@/services/pushNotificationService";
 
 // Pages
 import Login from "@/pages/Login";
@@ -104,6 +107,24 @@ const AuthProvider = ({ children }) => {
   };
 
   useIdleTimeout(user ? handleIdleTimeout : null, 1800000);
+
+  const notifIntervalRef = useRef(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      pushNotificationService.processAllNotifications(user.id);
+
+      notifIntervalRef.current = setInterval(() => {
+        pushNotificationService.processAllNotifications(user.id);
+      }, 300000);
+    }
+
+    return () => {
+      if (notifIntervalRef.current) {
+        clearInterval(notifIntervalRef.current);
+      }
+    };
+  }, [user?.id]);
 
   const handlePasswordChanged = async (currentPassword, newPassword) => {
     await authService.changePassword(currentPassword, newPassword);
@@ -263,6 +284,8 @@ function App() {
           }}
         />
         <AppRoutes />
+        <PWAInstallPrompt />
+        <BackupAlert />
       </AuthProvider>
     </BrowserRouter>
   );

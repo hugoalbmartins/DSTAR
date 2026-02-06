@@ -15,10 +15,16 @@ import {
   Radio,
   Settings,
   UserCircle,
-  ClipboardList
+  ClipboardList,
+  Bell,
+  Download,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NotificationBell from "@/components/NotificationBell";
+import NotificationPreferences from "@/components/NotificationPreferences";
+import { backupService } from "@/services/backupService";
+import { toast } from "sonner";
 
 const LOGO_URL = "/logo_dstar_semfundo.png";
 
@@ -26,6 +32,21 @@ export const Layout = () => {
   const { user, logout, isAdmin, isAdminOrBackoffice } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showNotifPrefs, setShowNotifPrefs] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportBackup = async () => {
+    setExporting(true);
+    try {
+      const result = await backupService.exportSalesToExcel(user.id);
+      toast.success(`Backup concluido: ${result.recordCount} vendas exportadas`);
+    } catch (err) {
+      console.error('Backup error:', err);
+      toast.error('Erro ao exportar vendas');
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, show: true },
@@ -154,15 +175,34 @@ export const Layout = () => {
                 {badge.text}
               </span>
             </div>
-            <Button
-              onClick={logout}
-              variant="ghost"
-              className="w-full justify-start text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 transition-all hover:shadow-md"
-              data-testid="logout-btn"
-            >
-              <LogOut size={18} className="mr-2" />
-              <span>Sair</span>
-            </Button>
+            <div className="space-y-1">
+              <Button
+                onClick={() => { setShowNotifPrefs(true); setSidebarOpen(false); }}
+                variant="ghost"
+                className="w-full justify-start text-slate-700 hover:text-brand-700 hover:bg-brand-50 transition-all"
+              >
+                <Bell size={18} className="mr-2" />
+                <span>Notificacoes</span>
+              </Button>
+              <Button
+                onClick={() => { handleExportBackup(); setSidebarOpen(false); }}
+                variant="ghost"
+                disabled={exporting}
+                className="w-full justify-start text-slate-700 hover:text-brand-700 hover:bg-brand-50 transition-all"
+              >
+                {exporting ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Download size={18} className="mr-2" />}
+                <span>{exporting ? 'A exportar...' : 'Backup Vendas'}</span>
+              </Button>
+              <Button
+                onClick={logout}
+                variant="ghost"
+                className="w-full justify-start text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 transition-all hover:shadow-md"
+                data-testid="logout-btn"
+              >
+                <LogOut size={18} className="mr-2" />
+                <span>Sair</span>
+              </Button>
+            </div>
           </div>
         </div>
       </aside>
@@ -211,6 +251,8 @@ export const Layout = () => {
           />
         )}
       </AnimatePresence>
+
+      <NotificationPreferences open={showNotifPrefs} onOpenChange={setShowNotifPrefs} />
     </div>
   );
 };

@@ -34,6 +34,7 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks: {
             recharts: ['recharts'],
+            xlsx: ['xlsx'],
             'ui-components': [
               '@/components/ui/card',
               '@/components/ui/button',
