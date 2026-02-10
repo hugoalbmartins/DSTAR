@@ -496,10 +496,9 @@ export default function Sales() {
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900">{sale.id}</h3>
-                        <p className="text-sm text-slate-500">
-                          {sale.sale_date ? new Date(sale.sale_date).toLocaleDateString('pt-PT') : '-'}
-                        </p>
+                        <h3 className="text-lg font-bold text-slate-900">
+                          {sale.sale_date ? new Date(sale.sale_date).toLocaleDateString('pt-PT') : 'Sem data'}
+                        </h3>
                       </div>
                       <ModernBadge variant={status?.color}>{status?.label}</ModernBadge>
                     </div>
