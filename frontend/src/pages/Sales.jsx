@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { salesService } from "@/services/salesService";
 import { partnersService } from "@/services/partnersService";
 import { operatorsService } from "@/services/operatorsService";
-import { ModernCard, ModernButton, ModernBadge, ModernTable } from "@/components/modern";
+import { ModernCard, ModernButton, ModernBadge } from "@/components/modern";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -469,127 +469,120 @@ export default function Sales() {
               )}
             </div>
           ) : (
-            <ModernTable
-              columns={[
-                {
-                  key: 'client',
-                  label: 'Cliente',
-                  sortable: true,
-                  render: (_, row) => (
-                    <div>
-                      <p className="font-medium text-slate-900">{row.client_name}</p>
-                      <p className="text-sm text-slate-500 font-mono">{row.client_nif}</p>
+            <div className="grid grid-cols-1 gap-4">
+              {sales.map((sale) => {
+                const status = STATUS_MAP[sale.status];
+                const categoryInfo = CATEGORY_MAP[sale.category];
+                const CategoryIcon = categoryInfo?.icon;
+
+                let commission = 0;
+                let showCommission = false;
+
+                if (user.role === 'admin' || user.role === 'backoffice') {
+                  const shouldShowCommission = user.role === 'admin' || sale.operators?.commission_visible_to_bo;
+                  if (shouldShowCommission) {
+                    commission = sale.commission_partner || 0;
+                    showCommission = true;
+                  }
+                } else if (user.role === 'vendedor') {
+                  commission = sale.commission_seller || 0;
+                  showCommission = true;
+                }
+
+                return (
+                  <div
+                    key={sale.id}
+                    className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-4 hover:shadow-md transition-all duration-200"
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-slate-900">{sale.id}</h3>
+                        <p className="text-sm text-slate-500">
+                          {sale.sale_date ? new Date(sale.sale_date).toLocaleDateString('pt-PT') : '-'}
+                        </p>
+                      </div>
+                      <ModernBadge variant={status?.color}>{status?.label}</ModernBadge>
                     </div>
-                  )
-                },
-                {
-                  key: 'sale_type',
-                  label: 'Tipo de Ativação',
-                  sortable: true,
-                  render: (value) => (
-                    <span className="text-sm text-slate-700">{TYPE_MAP[value] || "-"}</span>
-                  )
-                },
-                {
-                  key: 'sale_date',
-                  label: 'Data de Venda',
-                  sortable: true,
-                  render: (value) => {
-                    if (!value) return <span className="text-slate-400">-</span>;
-                    return (
-                      <span className="text-sm text-slate-700">
-                        {new Date(value).toLocaleDateString('pt-PT')}
-                      </span>
-                    );
-                  }
-                },
-                {
-                  key: 'contract_value',
-                  label: 'Mensalidade',
-                  sortable: true,
-                  render: (value) => (
-                    <span className="font-mono text-sm text-brand-600 font-semibold">
-                      {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value)}
-                    </span>
-                  )
-                },
-                {
-                  key: 'commission',
-                  label: 'Comissão',
-                  sortable: true,
-                  render: (_, row) => {
-                    let commission = 0;
 
-                    if (user.role === 'admin' || user.role === 'backoffice') {
-                      const shouldShowCommission = user.role === 'admin' || row.operators?.commission_visible_to_bo;
-                      if (!shouldShowCommission) {
-                        return <span className="text-slate-400 text-sm">-</span>;
-                      }
-                      commission = row.commission_partner || 0;
-                    } else if (user.role === 'vendedor') {
-                      commission = row.commission_seller || 0;
-                    }
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Cliente</p>
+                        <p className="font-semibold text-slate-900">{sale.client_name}</p>
+                      </div>
 
-                    return (
-                      <span className="font-mono text-sm text-green-600 font-semibold">
-                        {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(commission)}
-                      </span>
-                    );
-                  }
-                },
-                {
-                  key: 'status',
-                  label: 'Estado',
-                  sortable: true,
-                  render: (value) => {
-                    const status = STATUS_MAP[value];
-                    return <ModernBadge variant={status?.color}>{status?.label}</ModernBadge>;
-                  }
-                },
-                {
-                  key: 'id',
-                  label: '',
-                  sortable: false,
-                  render: (value) => (
-                    <div className="flex gap-2">
-                      <ModernButton
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/sales/${value}`);
-                        }}
-                        icon={Eye}
-                      />
-                      <ModernButton
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/sales/${value}/edit`);
-                        }}
-                        icon={Edit2}
-                      />
-                      {isAdminOrBackoffice && (
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Parceiro</p>
+                        <p className="text-slate-700">{sale.partners?.name || '-'}</p>
+                      </div>
+
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Operadora</p>
+                        <p className="text-slate-700">{sale.operators?.name || '-'}</p>
+                      </div>
+
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Âmbito</p>
+                        <div className="flex items-center gap-2">
+                          {CategoryIcon && <CategoryIcon size={16} className={categoryInfo?.color} />}
+                          <p className="text-slate-700">{categoryInfo?.label || '-'}</p>
+                        </div>
+                      </div>
+
+                      {sale.tariff && (
+                        <div className="md:col-span-2">
+                          <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Tarifário</p>
+                          <p className="text-slate-700">{sale.tariff}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex justify-between items-center pt-3 border-t border-slate-200">
+                      <div className="flex gap-4">
+                        {showCommission && (
+                          <div>
+                            <p className="text-xs text-slate-500">Comissão</p>
+                            <p className="font-mono text-lg text-brand-600 font-bold">
+                              {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(commission)}
+                            </p>
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-xs text-slate-500">Valor</p>
+                          <p className="font-mono text-lg text-slate-900 font-bold">
+                            {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(sale.contract_value || 0)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <ModernButton
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate(`/sales/${sale.id}/edit`)}
+                        >
+                          Editar
+                        </ModernButton>
                         <ModernButton
                           variant="ghost"
                           size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteId(value);
-                          }}
-                          icon={Trash2}
-                          className="text-red-600 hover:text-red-700"
+                          onClick={() => navigate(`/sales/${sale.id}`)}
+                          icon={Eye}
                         />
-                      )}
+                        {isAdminOrBackoffice && (
+                          <ModernButton
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDeleteId(sale.id)}
+                            icon={Trash2}
+                            className="text-red-600 hover:text-red-700"
+                          />
+                        )}
+                      </div>
                     </div>
-                  )
-                }
-              ]}
-              data={sales}
-              sortable={true}
-              hoverable={true}
-            />
+                  </div>
+                );
+              })}
+            </div>
           )}
         </ModernCard>
       </motion.div>

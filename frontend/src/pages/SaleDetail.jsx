@@ -142,6 +142,7 @@ export default function SaleDetail({ editMode = false }) {
   const [isEditing, setIsEditing] = useState(editMode);
   const [editClientType, setEditClientType] = useState("");
   const [editPortfolioStatus, setEditPortfolioStatus] = useState("");
+  const [editTariff, setEditTariff] = useState("");
 
   const fetchSale = useCallback(async () => {
     try {
@@ -173,6 +174,7 @@ export default function SaleDetail({ editMode = false }) {
       setEditOperatorId(saleData.operator_id || "");
       setEditClientType(saleData.client_type || "");
       setEditPortfolioStatus(saleData.portfolio_status || "");
+      setEditTariff(saleData.tariff || "");
 
       const loyaltyMonths = saleData.loyalty_months?.toString() || "0";
       if (["0", "12", "24", "36"].includes(loyaltyMonths)) {
@@ -334,7 +336,8 @@ export default function SaleDetail({ editMode = false }) {
         solar_power: editSolarPower ? parseFloat(editSolarPower) : null,
         solar_panel_quantity: editSolarPanelQuantity ? parseInt(editSolarPanelQuantity) : null,
         client_type: editClientType || null,
-        portfolio_status: editClientType === 'empresarial' ? editPortfolioStatus : null
+        portfolio_status: editClientType === 'empresarial' ? editPortfolioStatus : null,
+        tariff: editTariff || null
       };
 
       if (isAdminOrBackoffice && (user.role === 'admin' || sale?.operators?.commission_visible_to_bo)) {
@@ -617,6 +620,18 @@ export default function SaleDetail({ editMode = false }) {
                   />
                 </div>
               )}
+
+              <div className="md:col-span-2">
+                <Label className="form-label">Tarifário</Label>
+                <Input
+                  type="text"
+                  value={editTariff}
+                  onChange={(e) => setEditTariff(e.target.value)}
+                  className="form-input"
+                  placeholder="Insira o tarifário da venda"
+                  data-testid="edit-tariff-input"
+                />
+              </div>
 
               <div>
                 <Label className="form-label">Data de Venda</Label>
@@ -1161,6 +1176,13 @@ export default function SaleDetail({ editMode = false }) {
                 {new Date(sale.created_at).toLocaleDateString('pt-PT')}
               </p>
             </div>
+
+            {sale.tariff && (
+              <div className="md:col-span-2">
+                <p className="text-slate-600 text-sm mb-1">Tarifário</p>
+                <p className="text-slate-900">{sale.tariff}</p>
+              </div>
+            )}
 
             {/* Telecom REQ */}
             {isTelecom && sale.req && (

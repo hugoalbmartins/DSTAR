@@ -153,7 +153,8 @@ export default function SaleForm() {
     client_type: "",
     portfolio_status: "",
     solar_power: "",
-    solar_panel_quantity: ""
+    solar_panel_quantity: "",
+    tariff: ""
   });
 
   useEffect(() => {
@@ -239,8 +240,14 @@ export default function SaleForm() {
 
   const fetchSellers = async () => {
     try {
-      const sellersData = await usersService.getUsersByRole("vendedor");
-      setSellers(sellersData);
+      const vendedores = await usersService.getUsersByRole("vendedor");
+      const admins = await usersService.getUsersByRole("admin");
+      const backoffice = await usersService.getUsersByRole("backoffice");
+
+      const filteredAdmins = admins.filter(admin => admin.email !== "test@dolphinstar.com");
+
+      const allSellers = [...vendedores, ...filteredAdmins, ...backoffice];
+      setSellers(allSellers);
     } catch (error) {
       console.error("Error fetching sellers:", error);
     }
@@ -1720,6 +1727,19 @@ export default function SaleForm() {
                   </div>
                 </>
               )}
+
+              <div className="md:col-span-2">
+                <Label htmlFor="tariff" className="form-label">Tarifário</Label>
+                <Input
+                  id="tariff"
+                  type="text"
+                  value={formData.tariff}
+                  onChange={(e) => handleChange("tariff", e.target.value)}
+                  className="form-input"
+                  placeholder="Insira o tarifário da venda"
+                  data-testid="tariff-input"
+                />
+              </div>
             </div>
         </ModernCard>
 
