@@ -34,10 +34,15 @@ export const salesService = {
       query = query.eq('partner_id', filters.partnerId);
     }
 
-    const { data, error } = await query.order('created_at', { ascending: false });
+    const { data, error } = await query.order('sale_date', { ascending: false, nullsFirst: false });
 
     if (error) throw error;
-    return data;
+
+    return data.sort((a, b) => {
+      const dateA = a.sale_date ? new Date(a.sale_date) : new Date(a.created_at);
+      const dateB = b.sale_date ? new Date(b.sale_date) : new Date(b.created_at);
+      return dateB - dateA;
+    });
   },
 
   async getSaleById(saleId) {

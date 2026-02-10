@@ -93,8 +93,12 @@ export default function Sales() {
   const [showFilters, setShowFilters] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (showLoading = true) => {
     try {
+      if (showLoading) {
+        setLoading(true);
+      }
+
       const [partnersData, operatorsData, salesData] = await Promise.all([
         partnersService.getPartners(),
         operatorsService.getOperators(),
@@ -152,14 +156,26 @@ export default function Sales() {
       setSales(filtered);
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Erro ao carregar dados");
+      if (showLoading) {
+        toast.error("Erro ao carregar dados");
+      }
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   }, [searchType, searchText, statusFilter, categoryFilter, partnerFilter, operatorFilter, dateType, dateFrom, dateTo]);
 
   useEffect(() => {
     fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchData(false);
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [fetchData]);
 
   const filteredOperators = categoryFilter && categoryFilter !== "all"
