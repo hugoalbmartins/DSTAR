@@ -74,6 +74,25 @@ Deno.serve(async (req: Request) => {
       throw new Error('Missing required fields: email, password, name');
     }
 
+    // Verificar se o email já existe em auth.users
+    const { data: existingUsers } = await supabaseClient.auth.admin.listUsers();
+    const emailExists = existingUsers?.users.some(u => u.email?.toLowerCase() === email.toLowerCase());
+
+    if (emailExists) {
+      throw new Error('Um utilizador com este email já existe');
+    }
+
+    // Verificar também na tabela users (caso haja inconsistência)
+    const { data: existingUser } = await supabaseClient
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingUser) {
+      throw new Error('Um utilizador com este email já existe na base de dados');
+    }
+
     const { data: authData, error: createError } = await supabaseClient.auth.admin.createUser({
       email,
       password,
@@ -85,7 +104,7 @@ Deno.serve(async (req: Request) => {
 
     if (createError) {
       console.error('Error creating auth user:', createError);
-      throw createError;
+      throw new Error(createError.message || 'Erro ao criar utilizador no sistema de autenticação');
     }
 
     if (!authData.user) {
