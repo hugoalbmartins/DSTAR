@@ -28,20 +28,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import {
-  Radio,
-  Plus,
-  Edit2,
-  Trash2,
-  Power,
-  PowerOff,
-  Loader2,
-  Zap,
-  Phone,
-  Sun,
-  X,
-  Tags
-} from "lucide-react";
+import { Radio, Plus, CreditCard as Edit2, Trash2, Power, PowerOff, Loader as Loader2, Zap, Phone, Sun, X, Tags } from "lucide-react";
 
 const CATEGORY_OPTIONS = [
   { value: "energia_eletricidade", label: "Energia - Eletricidade", icon: Zap },

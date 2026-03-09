@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, AlertCircle, User, FileText } from 'lucide-react';
+import { CircleCheck as CheckCircle2, Circle as XCircle, CircleAlert as AlertCircle, User, FileText } from 'lucide-react';
 
 const activityIcons = {
   sale: CheckCircle2,

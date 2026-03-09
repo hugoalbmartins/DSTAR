@@ -15,14 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  Settings,
-  Plus,
-  Edit2,
-  Trash2,
-  Loader2
-} from "lucide-react";
+import { ArrowLeft, Settings, Plus, CreditCard as Edit2, Trash2, Loader as Loader2 } from "lucide-react";
 
 export default function CommissionSettings() {
   const { user } = useAuth();

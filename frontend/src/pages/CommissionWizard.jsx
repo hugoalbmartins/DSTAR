@@ -18,14 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  Save,
-  Loader2,
-  Plus,
-  Trash2,
-  CheckCircle2
-} from "lucide-react";
+import { ArrowLeft, Save, Loader as Loader2, Plus, Trash2, CircleCheck as CheckCircle2 } from "lucide-react";
 
 const SALE_TYPES = [
   { value: 'NI', label: 'NI (Nova Instalação)' },

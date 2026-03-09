@@ -17,23 +17,7 @@ import { SkeletonKPI, SkeletonChart, SkeletonActivity } from "@/components/Skele
 import { leadsService } from "@/services/leadsService";
 import { useIdleTimeout } from "@/hooks/useIdleTimeout";
 import { ModernTable, ModernBadge } from "@/components/modern";
-import {
-  TrendingUp,
-  ShoppingCart,
-  Euro,
-  AlertTriangle,
-  ArrowRight,
-  Zap,
-  Phone,
-  Sun,
-  Calendar,
-  Users,
-  EyeOff,
-  CheckCircle,
-  TrendingDown,
-  Search,
-  X
-} from "lucide-react";
+import { TrendingUp, ShoppingCart, Euro, TriangleAlert as AlertTriangle, ArrowRight, Zap, Phone, Sun, Calendar, Users, EyeOff, CircleCheck as CheckCircle, TrendingDown, Search, X } from "lucide-react";
 
 const STATUS_MAP = {
   em_negociacao: { label: "Em Negociação", color: "bg-blue-50 text-blue-700 border-blue-200" },
