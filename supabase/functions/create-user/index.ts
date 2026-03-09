@@ -31,11 +31,16 @@ Deno.serve(async (req: Request) => {
     const token = authHeader.replace('Bearer ', '');
     console.log('[CREATE-USER] Token received, length:', token.length);
 
-    // Create admin client first to validate the user token
-    const supabaseAdmin = createClient(
+    // Create a client with the user's token to validate it
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
+        global: {
+          headers: {
+            Authorization: authHeader,
+          },
+        },
         auth: {
           autoRefreshToken: false,
           persistSession: false,
@@ -43,18 +48,19 @@ Deno.serve(async (req: Request) => {
       }
     );
 
-    // Verify the JWT using admin client
-    const { data: { user: requestingUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
+    // Verify the JWT by getting the user
+    const { data: { user: requestingUser }, error: authError } = await supabaseClient.auth.getUser();
 
     if (authError || !requestingUser) {
       console.error('[CREATE-USER] Auth validation failed:', {
         error: authError?.message,
         hasUser: !!requestingUser,
-        errorCode: authError?.status
+        errorCode: authError?.status,
+        errorName: authError?.name
       });
       return new Response(
         JSON.stringify({
-          error: 'Unauthorized - Invalid or expired token',
+          error: 'Token inválido ou expirado',
           details: authError?.message
         }),
         {
@@ -66,6 +72,18 @@ Deno.serve(async (req: Request) => {
 
     console.log('[CREATE-USER] User validated:', requestingUser.email);
     console.log('[CREATE-USER] Request from:', requestingUser.email);
+
+    // Create admin client for admin operations
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
 
     // Check if requesting user is admin
     const { data: requestingUserProfile, error: profileError } = await supabaseAdmin
