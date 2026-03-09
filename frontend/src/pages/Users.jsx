@@ -32,20 +32,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import {
-  Users as UsersIcon,
-  Plus,
-  Edit2,
-  Trash2,
-  UserCheck,
-  UserX,
-  Shield,
-  Loader2,
-  Eye,
-  EyeOff,
-  RefreshCw,
-  Mail
-} from "lucide-react";
+import { Users as UsersIcon, Plus, CreditCard as Edit2, Trash2, UserCheck, UserX, Shield, Loader as Loader2, Eye, EyeOff, RefreshCw, Mail } from "lucide-react";
 import { generatePassword } from "@/utils/passwordGenerator";
 
 const ROLES = [
