@@ -173,6 +173,9 @@ Deno.serve(async (req: Request) => {
       user_metadata: {
         name,
       },
+      app_metadata: {
+        role: role || 'vendedor',
+      },
     });
 
     if (createError) {
@@ -198,44 +201,43 @@ Deno.serve(async (req: Request) => {
     }
 
     console.log('[CREATE-USER] Auth user created with ID:', authData.user.id);
+    console.log('[CREATE-USER] Trigger will handle public.users insertion');
 
-    const insertData: any = {
-      id: authData.user.id,
-      email,
-      name,
-      role: role || 'vendedor',
-      active: true,
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const updateData: any = {
       must_change_password: true,
     };
 
     if (commission_percentage !== undefined && commission_percentage !== null) {
-      insertData.commission_percentage = commission_percentage;
+      updateData.commission_percentage = commission_percentage;
     }
     if (commission_threshold !== undefined && commission_threshold !== null) {
-      insertData.commission_threshold = commission_threshold;
+      updateData.commission_threshold = commission_threshold;
     }
 
-    console.log('[CREATE-USER] Inserting user profile data:', insertData);
+    console.log('[CREATE-USER] Updating user profile with additional fields:', updateData);
 
-    const { data: profileData, error: profileInsertError } = await supabaseAdmin
+    const { data: profileData, error: profileUpdateError } = await supabaseAdmin
       .from('users')
-      .insert([insertData])
+      .update(updateData)
+      .eq('id', authData.user.id)
       .select()
       .single();
 
-    if (profileInsertError) {
-      console.error('[CREATE-USER] Error creating user profile:', {
-        message: profileInsertError.message,
-        details: profileInsertError.details,
-        hint: profileInsertError.hint,
-        code: profileInsertError.code,
+    if (profileUpdateError) {
+      console.error('[CREATE-USER] Error updating user profile:', {
+        message: profileUpdateError.message,
+        details: profileUpdateError.details,
+        hint: profileUpdateError.hint,
+        code: profileUpdateError.code,
       });
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
       return new Response(
         JSON.stringify({
-          error: `Erro ao criar perfil: ${profileInsertError.message}`,
-          details: profileInsertError.details,
-          hint: profileInsertError.hint
+          error: `Erro ao atualizar perfil: ${profileUpdateError.message}`,
+          details: profileUpdateError.details,
+          hint: profileUpdateError.hint
         }),
         {
           status: 500,
@@ -244,7 +246,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    console.log('[CREATE-USER] User profile created successfully');
+    console.log('[CREATE-USER] User profile updated successfully');
 
     return new Response(
       JSON.stringify({ user: profileData }),
