@@ -96,10 +96,23 @@ Deno.serve(async (req: Request) => {
     );
   } catch (error) {
     console.error('Error in reset-user-password function:', error);
+
+    let errorMessage = error.message || 'Internal server error';
+    let statusCode = 400;
+
+    if (error.message === 'Unauthorized' || error.message === 'Unauthorized: Admin access required') {
+      statusCode = 401;
+    } else if (error.message === 'Missing authorization header') {
+      statusCode = 401;
+    }
+
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
+      JSON.stringify({
+        error: errorMessage,
+        details: error.toString()
+      }),
       {
-        status: error.message === 'Unauthorized' || error.message === 'Unauthorized: Admin access required' ? 401 : 400,
+        status: statusCode,
         headers: {
           ...corsHeaders,
           'Content-Type': 'application/json',
