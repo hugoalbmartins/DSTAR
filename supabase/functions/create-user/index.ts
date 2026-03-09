@@ -40,14 +40,24 @@ Deno.serve(async (req: Request) => {
       }
     );
 
+    console.log('Validating token...');
     const { data: { user: requestingUser }, error: authError } = await userClient.auth.getUser();
 
-    if (authError || !requestingUser) {
-      console.error('Auth validation failed:', authError);
-      throw new Error('Unauthorized');
+    if (authError) {
+      console.error('Auth validation failed:', {
+        message: authError.message,
+        status: authError.status,
+        name: authError.name
+      });
+      throw new Error(`Unauthorized: ${authError.message}`);
     }
 
-    console.log('Request from user:', requestingUser.email);
+    if (!requestingUser) {
+      console.error('No user found in token');
+      throw new Error('Unauthorized: No user found');
+    }
+
+    console.log('Request from user:', requestingUser.email, 'ID:', requestingUser.id);
 
     // Client admin para operações privilegiadas
     const supabaseClient = createClient(
@@ -61,15 +71,29 @@ Deno.serve(async (req: Request) => {
       }
     );
 
+    console.log('Checking admin permissions for user:', requestingUser.id);
     const { data: requestingUserProfile, error: profileError } = await supabaseClient
       .from('users')
       .select('role')
       .eq('id', requestingUser.id)
       .maybeSingle();
 
-    if (profileError || !requestingUserProfile || requestingUserProfile.role !== 'admin') {
+    if (profileError) {
+      console.error('Error fetching user profile:', profileError);
+      throw new Error(`Unauthorized: Error checking permissions - ${profileError.message}`);
+    }
+
+    if (!requestingUserProfile) {
+      console.error('User profile not found for ID:', requestingUser.id);
+      throw new Error('Unauthorized: User profile not found');
+    }
+
+    if (requestingUserProfile.role !== 'admin') {
+      console.error('User is not admin. Role:', requestingUserProfile.role);
       throw new Error('Unauthorized: Admin access required');
     }
+
+    console.log('User is admin, proceeding...');
 
     const body = await req.json();
     console.log('Request body received:', {
