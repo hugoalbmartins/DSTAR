@@ -141,6 +141,8 @@ export const usersService = {
 
     const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/reset-user-password`;
 
+    console.log('Reset password request:', { userId, passwordLength: newPassword?.length });
+
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -154,9 +156,11 @@ export const usersService = {
     });
 
     const result = await response.json();
+    console.log('Reset password response:', { status: response.status, result });
 
     if (!response.ok) {
-      throw new Error(result.error || 'Erro ao resetar password');
+      console.error('Reset password error:', result);
+      throw new Error(result.error || result.details || 'Erro ao resetar password');
     }
 
     return result;

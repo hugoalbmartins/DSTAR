@@ -15,6 +15,8 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    console.log('Reset password function called');
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -27,12 +29,16 @@ Deno.serve(async (req: Request) => {
     );
 
     const authHeader = req.headers.get('Authorization');
+    console.log('Auth header present:', !!authHeader);
+
     if (!authHeader) {
       throw new Error('Missing authorization header');
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user: requestingUser }, error: authError } = await supabaseClient.auth.getUser(token);
+
+    console.log('Requesting user:', requestingUser?.id, 'Auth error:', authError);
 
     if (authError || !requestingUser) {
       throw new Error('Unauthorized');
@@ -44,11 +50,15 @@ Deno.serve(async (req: Request) => {
       .eq('id', requestingUser.id)
       .maybeSingle();
 
+    console.log('User profile:', requestingUserProfile, 'Profile error:', profileError);
+
     if (profileError || !requestingUserProfile || requestingUserProfile.role !== 'admin') {
       throw new Error('Unauthorized: Admin access required');
     }
 
     const { userId, newPassword } = await req.json();
+
+    console.log('Request data:', { userId, passwordLength: newPassword?.length });
 
     if (!userId || !newPassword) {
       throw new Error('Missing required fields: userId, newPassword');
@@ -59,15 +69,19 @@ Deno.serve(async (req: Request) => {
       throw new Error('Password must be at least 8 characters long');
     }
 
+    console.log('Updating password for user:', userId);
+
     // Atualizar password do utilizador usando admin API
     const { data: updateData, error: updateError } = await supabaseClient.auth.admin.updateUserById(
       userId,
       { password: newPassword }
     );
 
+    console.log('Update result:', { updateData, updateError });
+
     if (updateError) {
       console.error('Error updating user password:', updateError);
-      throw updateError;
+      throw new Error(`Failed to update password: ${updateError.message}`);
     }
 
     // Atualizar flag must_change_password na tabela users
@@ -76,10 +90,14 @@ Deno.serve(async (req: Request) => {
       .update({ must_change_password: false })
       .eq('id', userId);
 
+    console.log('Profile update error:', profileUpdateError);
+
     if (profileUpdateError) {
       console.error('Error updating user profile:', profileUpdateError);
-      throw profileUpdateError;
+      throw new Error(`Failed to update user profile: ${profileUpdateError.message}`);
     }
+
+    console.log('Password reset successful');
 
     return new Response(
       JSON.stringify({
