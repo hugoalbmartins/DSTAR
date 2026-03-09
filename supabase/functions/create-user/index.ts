@@ -15,51 +15,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      console.error('Missing authorization header');
-      throw new Error('Missing authorization header');
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-
-    // Client para validar o token do utilizador (usa anon key)
-    const userClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-        global: {
-          headers: {
-            Authorization: authHeader,
-          },
-        },
-      }
-    );
-
-    console.log('Validating token...');
-    const { data: { user: requestingUser }, error: authError } = await userClient.auth.getUser();
-
-    if (authError) {
-      console.error('Auth validation failed:', {
-        message: authError.message,
-        status: authError.status,
-        name: authError.name
-      });
-      throw new Error(`Unauthorized: ${authError.message}`);
-    }
-
-    if (!requestingUser) {
-      console.error('No user found in token');
-      throw new Error('Unauthorized: No user found');
-    }
-
-    console.log('Request from user:', requestingUser.email, 'ID:', requestingUser.id);
-
-    // Client admin para operações privilegiadas
+    // Create admin client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -71,7 +27,37 @@ Deno.serve(async (req: Request) => {
       }
     );
 
-    console.log('Checking admin permissions for user:', requestingUser.id);
+    // Get the JWT from Authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('[CREATE-USER] Missing authorization header');
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Verify the JWT and get user
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user: requestingUser }, error: authError } = await supabaseClient.auth.getUser(token);
+
+    if (authError || !requestingUser) {
+      console.error('[CREATE-USER] Auth error:', authError?.message || 'No user found');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid token' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    console.log('[CREATE-USER] Request from:', requestingUser.email);
+
+    // Check if requesting user is admin
     const { data: requestingUserProfile, error: profileError } = await supabaseClient
       .from('users')
       .select('role')
@@ -79,24 +65,31 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (profileError) {
-      console.error('Error fetching user profile:', profileError);
-      throw new Error(`Unauthorized: Error checking permissions - ${profileError.message}`);
+      console.error('[CREATE-USER] Profile error:', profileError.message);
+      return new Response(
+        JSON.stringify({ error: 'Error checking permissions' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
-    if (!requestingUserProfile) {
-      console.error('User profile not found for ID:', requestingUser.id);
-      throw new Error('Unauthorized: User profile not found');
+    if (!requestingUserProfile || requestingUserProfile.role !== 'admin') {
+      console.error('[CREATE-USER] User is not admin:', requestingUserProfile?.role);
+      return new Response(
+        JSON.stringify({ error: 'Admin access required' }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
-    if (requestingUserProfile.role !== 'admin') {
-      console.error('User is not admin. Role:', requestingUserProfile.role);
-      throw new Error('Unauthorized: Admin access required');
-    }
-
-    console.log('User is admin, proceeding...');
+    console.log('[CREATE-USER] Admin verified, processing request...');
 
     const body = await req.json();
-    console.log('Request body received:', {
+    console.log('[CREATE-USER] Request body received:', {
       hasEmail: !!body.email,
       hasPassword: !!body.password,
       hasName: !!body.name,
@@ -106,16 +99,30 @@ Deno.serve(async (req: Request) => {
     const { email, password, name, role, commission_percentage, commission_threshold } = body;
 
     if (!email || !password || !name) {
-      console.error('Missing required fields:', { email: !!email, password: !!password, name: !!name });
-      throw new Error('Missing required fields: email, password, name');
+      console.error('[CREATE-USER] Missing required fields:', { email: !!email, password: !!password, name: !!name });
+      return new Response(
+        JSON.stringify({ error: 'Missing required fields: email, password, name' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Verificar se o email já existe em auth.users
+    console.log('[CREATE-USER] Checking if email exists...');
     const { data: existingUsers } = await supabaseClient.auth.admin.listUsers();
     const emailExists = existingUsers?.users.some(u => u.email?.toLowerCase() === email.toLowerCase());
 
     if (emailExists) {
-      throw new Error('Um utilizador com este email já existe');
+      console.log('[CREATE-USER] Email already exists in auth.users');
+      return new Response(
+        JSON.stringify({ error: 'Um utilizador com este email já existe' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Verificar também na tabela users (caso haja inconsistência)
@@ -126,10 +133,17 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (existingUser) {
-      throw new Error('Um utilizador com este email já existe na base de dados');
+      console.log('[CREATE-USER] Email already exists in users table');
+      return new Response(
+        JSON.stringify({ error: 'Um utilizador com este email já existe na base de dados' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
-    console.log('Creating auth user with email:', email);
+    console.log('[CREATE-USER] Creating auth user with email:', email);
 
     const { data: authData, error: createError } = await supabaseClient.auth.admin.createUser({
       email,
@@ -141,15 +155,28 @@ Deno.serve(async (req: Request) => {
     });
 
     if (createError) {
-      console.error('Error creating auth user:', createError);
-      throw new Error(createError.message || 'Erro ao criar utilizador no sistema de autenticação');
+      console.error('[CREATE-USER] Error creating auth user:', createError);
+      return new Response(
+        JSON.stringify({ error: createError.message || 'Erro ao criar utilizador no sistema de autenticação' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     if (!authData.user) {
-      throw new Error('Failed to create user');
+      console.error('[CREATE-USER] No user data returned');
+      return new Response(
+        JSON.stringify({ error: 'Failed to create user' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
-    console.log('Auth user created with ID:', authData.user.id);
+    console.log('[CREATE-USER] Auth user created with ID:', authData.user.id);
 
     const insertData: any = {
       id: authData.user.id,
@@ -167,7 +194,7 @@ Deno.serve(async (req: Request) => {
       insertData.commission_threshold = commission_threshold;
     }
 
-    console.log('Inserting user profile data:', insertData);
+    console.log('[CREATE-USER] Inserting user profile data:', insertData);
 
     const { data: profileData, error: profileInsertError } = await supabaseClient
       .from('users')
@@ -176,17 +203,27 @@ Deno.serve(async (req: Request) => {
       .single();
 
     if (profileInsertError) {
-      console.error('Error creating user profile:', {
+      console.error('[CREATE-USER] Error creating user profile:', {
         message: profileInsertError.message,
         details: profileInsertError.details,
         hint: profileInsertError.hint,
         code: profileInsertError.code,
       });
       await supabaseClient.auth.admin.deleteUser(authData.user.id);
-      throw new Error(`Erro ao criar perfil: ${profileInsertError.message} ${profileInsertError.details || ''} ${profileInsertError.hint || ''}`);
+      return new Response(
+        JSON.stringify({
+          error: `Erro ao criar perfil: ${profileInsertError.message}`,
+          details: profileInsertError.details,
+          hint: profileInsertError.hint
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
-    console.log('User profile created successfully');
+    console.log('[CREATE-USER] User profile created successfully');
 
     return new Response(
       JSON.stringify({ user: profileData }),
@@ -199,11 +236,11 @@ Deno.serve(async (req: Request) => {
       }
     );
   } catch (error) {
-    console.error('Error in create-user function:', error);
+    console.error('[CREATE-USER] Unexpected error:', error);
     return new Response(
       JSON.stringify({ error: error.message || 'Internal server error' }),
       {
-        status: error.message === 'Unauthorized' || error.message === 'Unauthorized: Admin access required' ? 401 : 400,
+        status: 500,
         headers: {
           ...corsHeaders,
           'Content-Type': 'application/json',
