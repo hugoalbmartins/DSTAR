@@ -15,18 +15,6 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    // Create admin client
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      }
-    );
-
     // Get the JWT from Authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
@@ -40,20 +28,53 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Verify the JWT and get user
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user: requestingUser }, error: authError } = await supabaseClient.auth.getUser(token);
+
+    // Create client with the user's token to validate it
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: {
+            Authorization: authHeader,
+          },
+        },
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
+
+    // Verify the JWT and get user
+    const { data: { user: requestingUser }, error: authError } = await supabaseClient.auth.getUser();
 
     if (authError || !requestingUser) {
-      console.error('[CREATE-USER] Auth error:', authError?.message || 'No user found');
+      console.error('[CREATE-USER] Auth error:', authError?.message || 'No user found', authError);
       return new Response(
-        JSON.stringify({ error: 'Unauthorized - Invalid token' }),
+        JSON.stringify({
+          error: 'Unauthorized - Invalid token',
+          details: authError?.message
+        }),
         {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       );
     }
+
+    // Create admin client for admin operations
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
 
     console.log('[CREATE-USER] Request from:', requestingUser.email);
 
@@ -111,7 +132,7 @@ Deno.serve(async (req: Request) => {
 
     // Verificar se o email já existe em auth.users
     console.log('[CREATE-USER] Checking if email exists...');
-    const { data: existingUsers } = await supabaseClient.auth.admin.listUsers();
+    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
     const emailExists = existingUsers?.users.some(u => u.email?.toLowerCase() === email.toLowerCase());
 
     if (emailExists) {
@@ -126,7 +147,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Verificar também na tabela users (caso haja inconsistência)
-    const { data: existingUser } = await supabaseClient
+    const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('id')
       .eq('email', email)
@@ -145,7 +166,7 @@ Deno.serve(async (req: Request) => {
 
     console.log('[CREATE-USER] Creating auth user with email:', email);
 
-    const { data: authData, error: createError } = await supabaseClient.auth.admin.createUser({
+    const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -196,7 +217,7 @@ Deno.serve(async (req: Request) => {
 
     console.log('[CREATE-USER] Inserting user profile data:', insertData);
 
-    const { data: profileData, error: profileInsertError } = await supabaseClient
+    const { data: profileData, error: profileInsertError } = await supabaseAdmin
       .from('users')
       .insert([insertData])
       .select()
@@ -209,7 +230,7 @@ Deno.serve(async (req: Request) => {
         hint: profileInsertError.hint,
         code: profileInsertError.code,
       });
-      await supabaseClient.auth.admin.deleteUser(authData.user.id);
+      await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
       return new Response(
         JSON.stringify({
           error: `Erro ao criar perfil: ${profileInsertError.message}`,
