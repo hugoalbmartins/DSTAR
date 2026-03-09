@@ -36,13 +36,27 @@ export const authService = {
   },
 
   async signUp(email, password, userData) {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-    if (!session) {
-      throw new Error('Não autenticado');
+    if (sessionError || !session) {
+      console.error('[AUTH] Session error:', sessionError);
+      throw new Error('Não autenticado. Por favor, faça login novamente.');
     }
 
-    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    console.log('[AUTH] Session obtained:', {
+      hasAccessToken: !!session.access_token,
+      tokenLength: session.access_token?.length,
+      expiresAt: session.expires_at,
+      expiresIn: session.expires_at ? new Date(session.expires_at * 1000).toISOString() : null
+    });
+
+    const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !currentUser) {
+      console.error('[AUTH] Get user error:', userError);
+      throw new Error('Erro ao obter dados do utilizador. Por favor, faça login novamente.');
+    }
+
     console.log('[AUTH] Current user:', currentUser?.email, 'ID:', currentUser?.id);
 
     const { data: userProfile } = await supabase
@@ -79,6 +93,7 @@ export const authService = {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
@@ -95,7 +110,7 @@ export const authService = {
     console.log('[AUTH] Create user response:', {
       status: response.status,
       ok: response.ok,
-      result: JSON.stringify(result, null, 2)
+      result
     });
 
     if (!response.ok) {
@@ -103,6 +118,12 @@ export const authService = {
       console.error('[AUTH] Error creating user:', errorMessage);
       if (result.details) console.error('[AUTH] Error details:', result.details);
       if (result.hint) console.error('[AUTH] Error hint:', result.hint);
+
+      if (response.status === 401) {
+        console.error('[AUTH] 401 Unauthorized - Check session validity');
+        throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+
       throw new Error(errorMessage);
     }
 

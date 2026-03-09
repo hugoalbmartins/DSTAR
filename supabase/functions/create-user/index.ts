@@ -29,42 +29,9 @@ Deno.serve(async (req: Request) => {
     }
 
     const token = authHeader.replace('Bearer ', '');
+    console.log('[CREATE-USER] Token received, length:', token.length);
 
-    // Create client with the user's token to validate it
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: {
-            Authorization: authHeader,
-          },
-        },
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      }
-    );
-
-    // Verify the JWT and get user
-    const { data: { user: requestingUser }, error: authError } = await supabaseClient.auth.getUser();
-
-    if (authError || !requestingUser) {
-      console.error('[CREATE-USER] Auth error:', authError?.message || 'No user found', authError);
-      return new Response(
-        JSON.stringify({
-          error: 'Unauthorized - Invalid token',
-          details: authError?.message
-        }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
-    // Create admin client for admin operations
+    // Create admin client first to validate the user token
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -76,10 +43,32 @@ Deno.serve(async (req: Request) => {
       }
     );
 
+    // Verify the JWT using admin client
+    const { data: { user: requestingUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+    if (authError || !requestingUser) {
+      console.error('[CREATE-USER] Auth validation failed:', {
+        error: authError?.message,
+        hasUser: !!requestingUser,
+        errorCode: authError?.status
+      });
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized - Invalid or expired token',
+          details: authError?.message
+        }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    console.log('[CREATE-USER] User validated:', requestingUser.email);
     console.log('[CREATE-USER] Request from:', requestingUser.email);
 
     // Check if requesting user is admin
-    const { data: requestingUserProfile, error: profileError } = await supabaseClient
+    const { data: requestingUserProfile, error: profileError } = await supabaseAdmin
       .from('users')
       .select('role')
       .eq('id', requestingUser.id)
