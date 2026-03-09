@@ -43,7 +43,8 @@ import {
   Loader2,
   Eye,
   EyeOff,
-  RefreshCw
+  RefreshCw,
+  Mail
 } from "lucide-react";
 import { generatePassword } from "@/utils/passwordGenerator";
 
@@ -63,6 +64,13 @@ export default function Users() {
   const [deleteId, setDeleteId] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [emailChangeModalOpen, setEmailChangeModalOpen] = useState(false);
+  const [emailChangeData, setEmailChangeData] = useState({
+    userId: null,
+    currentEmail: "",
+    newEmail: "",
+    confirmEmail: ""
+  });
 
   const [formData, setFormData] = useState({
     name: "",
@@ -133,6 +141,63 @@ export default function Users() {
     setModalOpen(true);
   };
 
+  const openEmailChangeModal = (user) => {
+    setEmailChangeData({
+      userId: user.id,
+      currentEmail: user.email,
+      newEmail: "",
+      confirmEmail: ""
+    });
+    setEmailChangeModalOpen(true);
+  };
+
+  const handleEmailChange = async () => {
+    if (!emailChangeData.newEmail || !emailChangeData.confirmEmail) {
+      toast.error("Preencha todos os campos");
+      return;
+    }
+
+    if (emailChangeData.newEmail !== emailChangeData.confirmEmail) {
+      toast.error("Os emails não coincidem");
+      return;
+    }
+
+    if (emailChangeData.newEmail === emailChangeData.currentEmail) {
+      toast.error("O novo email não pode ser igual ao atual");
+      return;
+    }
+
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailChangeData.newEmail)) {
+      toast.error("Email inválido");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await usersService.changeUserEmail(
+        emailChangeData.userId,
+        emailChangeData.newEmail
+      );
+
+      await fetchUsers();
+      toast.success("Email alterado com sucesso");
+      setEmailChangeModalOpen(false);
+      setEmailChangeData({
+        userId: null,
+        currentEmail: "",
+        newEmail: "",
+        confirmEmail: ""
+      });
+    } catch (error) {
+      const message = error.message || "Erro ao alterar email";
+      toast.error(message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!formData.name || !formData.email) {
       toast.error("Nome e Email são obrigatórios");
@@ -152,9 +217,8 @@ export default function Users() {
     setSaving(true);
     try {
       if (editingUser) {
+        // Ao editar, NÃO permitir alterar email e nome
         const updateData = {
-          name: formData.name,
-          email: formData.email,
           role: formData.role,
           commission_percentage: formData.role === 'backoffice' ? formData.commission_percentage : 0,
           commission_threshold: formData.role === 'backoffice' ? formData.commission_threshold : 0
@@ -293,40 +357,52 @@ export default function Users() {
                   )}
                 </div>
 
-                <div className="flex gap-2 pt-4 border-t border-white/5">
+                <div className="flex flex-col gap-2 pt-4 border-t border-white/5">
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => openEditModal(user)}
+                      variant="ghost"
+                      size="sm"
+                      className="flex-1 text-[#172B4D]/70 hover:text-[#172B4D] hover:bg-slate-50"
+                      data-testid={`edit-user-${user.id}`}
+                    >
+                      <Edit2 size={16} className="mr-1" />
+                      Editar
+                    </Button>
+
+                    {!isCurrentUser && (
+                      <>
+                        <Button
+                          onClick={() => toggleUserActive(user.id)}
+                          variant="ghost"
+                          size="sm"
+                          className={`${user.active ? 'text-red-400 hover:bg-red-400/10' : 'text-green-400 hover:bg-green-400/10'}`}
+                          data-testid={`toggle-user-${user.id}`}
+                        >
+                          {user.active ? <UserX size={16} /> : <UserCheck size={16} />}
+                        </Button>
+                        <Button
+                          onClick={() => setDeleteId(user.id)}
+                          variant="ghost"
+                          size="sm"
+                          className="text-[#172B4D]/70 hover:text-red-400 hover:bg-red-400/10"
+                          data-testid={`delete-user-${user.id}`}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </>
+                    )}
+                  </div>
                   <Button
-                    onClick={() => openEditModal(user)}
+                    onClick={() => openEmailChangeModal(user)}
                     variant="ghost"
                     size="sm"
-                    className="flex-1 text-[#172B4D]/70 hover:text-[#172B4D] hover:bg-slate-50"
-                    data-testid={`edit-user-${user.id}`}
+                    className="w-full text-[#172B4D]/70 hover:text-[#172B4D] hover:bg-slate-50 text-xs"
+                    data-testid={`change-email-${user.id}`}
                   >
-                    <Edit2 size={16} className="mr-1" />
-                    Editar
+                    <Mail size={14} className="mr-1" />
+                    Alterar Email
                   </Button>
-
-                  {!isCurrentUser && (
-                    <>
-                      <Button
-                        onClick={() => toggleUserActive(user.id)}
-                        variant="ghost"
-                        size="sm"
-                        className={`${user.active ? 'text-red-400 hover:bg-red-400/10' : 'text-green-400 hover:bg-green-400/10'}`}
-                        data-testid={`toggle-user-${user.id}`}
-                      >
-                        {user.active ? <UserX size={16} /> : <UserCheck size={16} />}
-                      </Button>
-                      <Button
-                        onClick={() => setDeleteId(user.id)}
-                        variant="ghost"
-                        size="sm"
-                        className="text-[#172B4D]/70 hover:text-red-400 hover:bg-red-400/10"
-                        data-testid={`delete-user-${user.id}`}
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    </>
-                  )}
                 </div>
               </CardContent>
             </Card>
@@ -352,7 +428,13 @@ export default function Users() {
                 placeholder="Nome completo"
                 autoComplete="off"
                 data-testid="user-name-input"
+                disabled={!!editingUser}
               />
+              {editingUser && (
+                <p className="text-xs text-[#172B4D]/50 mt-1">
+                  Nome não pode ser alterado após criação
+                </p>
+              )}
             </div>
             <div>
               <Label className="form-label">Email *</Label>
@@ -364,7 +446,13 @@ export default function Users() {
                 placeholder="email@leiritrix.pt"
                 autoComplete="off"
                 data-testid="user-email-input"
+                disabled={!!editingUser}
               />
+              {editingUser && (
+                <p className="text-xs text-[#172B4D]/50 mt-1">
+                  Para alterar email, use o botão "Alterar Email" no cartão do utilizador
+                </p>
+              )}
             </div>
             <div>
               <Label className="form-label">
@@ -510,6 +598,93 @@ export default function Users() {
         </DialogContent>
       </Dialog>
 
+      {/* Email Change Modal */}
+      <Dialog open={emailChangeModalOpen} onOpenChange={setEmailChangeModalOpen}>
+        <DialogContent className="bg-white border-slate-200">
+          <DialogHeader>
+            <DialogTitle className="text-[#172B4D] font-['Manrope']">
+              Alterar Email de Acesso
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-900">
+                <strong>Email atual:</strong> {emailChangeData.currentEmail}
+              </p>
+              <p className="text-xs text-blue-700 mt-2">
+                Esta alteração irá mudar o email de acesso do utilizador.
+                O utilizador mantém todos os seus registos e dados associados.
+              </p>
+            </div>
+
+            <div>
+              <Label className="form-label">Novo Email *</Label>
+              <Input
+                type="email"
+                value={emailChangeData.newEmail}
+                onChange={(e) => setEmailChangeData({ ...emailChangeData, newEmail: e.target.value })}
+                className="form-input mt-1"
+                placeholder="novo-email@leiritrix.pt"
+                autoComplete="off"
+                data-testid="new-email-input"
+              />
+            </div>
+
+            <div>
+              <Label className="form-label">Confirmar Novo Email *</Label>
+              <Input
+                type="email"
+                value={emailChangeData.confirmEmail}
+                onChange={(e) => setEmailChangeData({ ...emailChangeData, confirmEmail: e.target.value })}
+                className="form-input mt-1"
+                placeholder="novo-email@leiritrix.pt"
+                autoComplete="off"
+                data-testid="confirm-new-email-input"
+              />
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <p className="text-xs text-amber-800">
+                <strong>Atenção:</strong> Após a alteração, o utilizador deverá fazer login com o novo email.
+                A password mantém-se inalterada.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setEmailChangeModalOpen(false);
+                setEmailChangeData({
+                  userId: null,
+                  currentEmail: "",
+                  newEmail: "",
+                  confirmEmail: ""
+                });
+              }}
+              className="btn-secondary"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleEmailChange}
+              disabled={saving}
+              className="btn-primary btn-primary-glow"
+              data-testid="confirm-email-change-btn"
+            >
+              {saving ? (
+                <>
+                  <Loader2 size={18} className="mr-2 animate-spin" />
+                  A alterar...
+                </>
+              ) : (
+                "Alterar Email"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent className="bg-white border-slate-200">
@@ -521,7 +696,7 @@ export default function Users() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="btn-secondary">Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-500 hover:bg-red-600 text-white"
             >

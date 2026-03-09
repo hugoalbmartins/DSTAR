@@ -101,4 +101,34 @@ export const usersService = {
 
     return stats;
   },
+
+  async changeUserEmail(userId, newEmail) {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      throw new Error('Não autenticado');
+    }
+
+    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/change-user-email`;
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        newEmail,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Erro ao alterar email');
+    }
+
+    return result;
+  },
 };
