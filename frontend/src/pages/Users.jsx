@@ -486,7 +486,7 @@ export default function Users() {
       <Dialog open={modalOpen} onOpenChange={handleModalClose}>
         <DialogContent className="bg-white border-slate-200">
           <DialogHeader>
-            <DialogTitle className="text-white font-['Manrope']">
+            <DialogTitle className="text-[#172B4D] font-['Manrope']">
               {editingUser ? "Editar Utilizador" : "Novo Utilizador"}
             </DialogTitle>
           </DialogHeader>
@@ -552,14 +552,14 @@ export default function Users() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-white/50 hover:text-white transition-colors p-1"
+                    className="text-[#172B4D]/50 hover:text-[#172B4D] transition-colors p-1"
                     title={showPassword ? "Ocultar password" : "Mostrar password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-white/50 mt-1">
+              <p className="text-xs text-[#172B4D]/50 mt-1">
                 Min 8 caracteres: 1 maiúscula, 1 minúscula, 1 número, 1 especial
               </p>
             </div>
@@ -580,7 +580,7 @@ export default function Users() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors p-1"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#172B4D]/50 hover:text-[#172B4D] transition-colors p-1"
                   title={showConfirmPassword ? "Ocultar password" : "Mostrar password"}
                 >
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -620,7 +620,7 @@ export default function Users() {
                     placeholder="0.00"
                     data-testid="user-commission-percentage-input"
                   />
-                  <p className="text-xs text-white/50 mt-1">
+                  <p className="text-xs text-[#172B4D]/50 mt-1">
                     Percentagem sobre comissões de operadoras visíveis (0-100%)
                   </p>
                 </div>
@@ -636,7 +636,7 @@ export default function Users() {
                     placeholder="0.00"
                     data-testid="user-commission-threshold-input"
                   />
-                  <p className="text-xs text-white/50 mt-1">
+                  <p className="text-xs text-[#172B4D]/50 mt-1">
                     Valor mínimo de comissões totais visíveis que precisa ser atingido para receber comissão
                   </p>
                 </div>
@@ -881,8 +881,8 @@ export default function Users() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent className="bg-white border-slate-200">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Eliminar Utilizador</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70">
+            <AlertDialogTitle className="text-[#172B4D]">Eliminar Utilizador</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#172B4D]/70">
               Tem a certeza que pretende eliminar este utilizador? Esta ação não pode ser revertida.
             </AlertDialogDescription>
           </AlertDialogHeader>

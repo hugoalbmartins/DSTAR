@@ -48,7 +48,10 @@ export default function Login() {
       const { user } = await authService.signIn(email, password);
       setUser(user);
       toast.success("Login efetuado com sucesso!");
-      navigate("/dashboard");
+
+      // Wait a bit for state to update before navigating
+      await new Promise(resolve => setTimeout(resolve, 100));
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       toast.error(error.message || "Erro ao fazer login");
     } finally {

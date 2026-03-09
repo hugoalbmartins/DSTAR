@@ -62,16 +62,28 @@ const AuthProvider = ({ children }) => {
 
     initAuth();
 
-    const { data: { subscription } } = authService.onAuthStateChange((event, session, userProfile) => {
+    const { data: { subscription } } = authService.onAuthStateChange(async (event, session, userProfile) => {
       if (event === 'SIGNED_IN') {
-        setUser(userProfile);
-        if (userProfile?.must_change_password) {
-          setShowPasswordChange(true);
+        if (userProfile) {
+          setUser(userProfile);
+          if (userProfile?.must_change_password) {
+            setShowPasswordChange(true);
+          }
         }
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setShowPasswordChange(false);
         setShouldRedirectToLogin(true);
+      } else if (event === 'TOKEN_REFRESHED') {
+        // Re-fetch user profile on token refresh
+        try {
+          const currentUser = await authService.getCurrentUser();
+          if (currentUser) {
+            setUser(currentUser);
+          }
+        } catch (error) {
+          console.error("Error refreshing user profile:", error);
+        }
       }
     });
 
