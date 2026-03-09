@@ -323,7 +323,7 @@ export default function Operators() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {operators.length > 0 ? (
           operators.map((operator) => (
-            <Card key={operator.id} className="card-leiritrix" data-testid={`operator-card-${operator.id}`}>
+            <Card key={operator.id} className="card-modern" data-testid={`operator-card-${operator.id}`}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -408,7 +408,7 @@ export default function Operators() {
             </Card>
           ))
         ) : (
-          <Card className="card-leiritrix col-span-full">
+          <Card className="card-modern col-span-full">
             <CardContent className="p-8 text-center">
               <Radio size={48} className="mx-auto text-[#172B4D]/20 mb-4" />
               <p className="text-[#172B4D]/70">Nenhuma operadora registada</p>

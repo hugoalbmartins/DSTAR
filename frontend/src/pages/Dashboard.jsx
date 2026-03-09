@@ -546,7 +546,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <Card className="card-leiritrix">
+      <Card className="card-modern">
         <CardHeader className="border-b border-gray-200 flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-bold text-[#172B4D] flex items-center gap-2">
             <AlertTriangle className="text-orange-500" size={20} />

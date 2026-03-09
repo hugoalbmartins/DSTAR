@@ -341,7 +341,7 @@ export default function CommissionWizard() {
         </div>
       </div>
 
-      <Card className="card-leiritrix">
+      <Card className="card-modern">
         <CardHeader className="border-b border-slate-200 pb-4">
           <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg">
             1. Operadora e Parceiro
@@ -390,7 +390,7 @@ export default function CommissionWizard() {
         </CardContent>
       </Card>
 
-      <Card className="card-leiritrix">
+      <Card className="card-modern">
         <CardHeader className="border-b border-slate-200 pb-4">
           <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg">
             2. Tipo de Comissão
@@ -416,7 +416,7 @@ export default function CommissionWizard() {
         </CardContent>
       </Card>
 
-      <Card className="card-leiritrix">
+      <Card className="card-modern">
         <CardHeader className="border-b border-slate-200 pb-4">
           <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg">
             3. Tipos de Venda Permitidos *
@@ -445,7 +445,7 @@ export default function CommissionWizard() {
 
       {commissionType === 'automatic' && (
         <>
-          <Card className="card-leiritrix">
+          <Card className="card-modern">
             <CardHeader className="border-b border-gray-200 pb-4">
               <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg">
                 4. Diferenciação por NIF
@@ -465,7 +465,7 @@ export default function CommissionWizard() {
             </CardContent>
           </Card>
 
-          <Card className="card-leiritrix">
+          <Card className="card-modern">
             <CardHeader className="border-b border-gray-200 pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-[#172B4D] font-['Manrope'] text-lg">

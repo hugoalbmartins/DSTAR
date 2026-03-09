@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, createContext, useContext } from "react";
+import { useState, useEffect, useRef, createContext, useContext, lazy, Suspense } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
@@ -10,24 +10,23 @@ import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import BackupAlert from "@/components/BackupAlert";
 import { pushNotificationService } from "@/services/pushNotificationService";
 
-// Pages
-import Login from "@/pages/Login";
-import Dashboard from "@/pages/Dashboard";
-import Sales from "@/pages/Sales";
-import SaleForm from "@/pages/SaleForm";
-import SaleDetail from "@/pages/SaleDetail";
-import Clients from "@/pages/Clients";
-import ClientForm from "@/pages/ClientForm";
-import ClientDetail from "@/pages/ClientDetail";
-import Leads from "@/pages/Leads";
-import LeadForm from "@/pages/LeadForm";
-import Reports from "@/pages/Reports";
-import Users from "@/pages/Users";
-import Partners from "@/pages/Partners";
-import Operators from "@/pages/Operators";
-import CommissionSettings from "@/pages/CommissionSettings";
-import CommissionWizard from "@/pages/CommissionWizard";
-import Layout from "@/components/Layout";
+const Login = lazy(() => import("@/pages/Login"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Sales = lazy(() => import("@/pages/Sales"));
+const SaleForm = lazy(() => import("@/pages/SaleForm"));
+const SaleDetail = lazy(() => import("@/pages/SaleDetail"));
+const Clients = lazy(() => import("@/pages/Clients"));
+const ClientForm = lazy(() => import("@/pages/ClientForm"));
+const ClientDetail = lazy(() => import("@/pages/ClientDetail"));
+const Leads = lazy(() => import("@/pages/Leads"));
+const LeadForm = lazy(() => import("@/pages/LeadForm"));
+const Reports = lazy(() => import("@/pages/Reports"));
+const Users = lazy(() => import("@/pages/Users"));
+const Partners = lazy(() => import("@/pages/Partners"));
+const Operators = lazy(() => import("@/pages/Operators"));
+const CommissionSettings = lazy(() => import("@/pages/CommissionSettings"));
+const CommissionWizard = lazy(() => import("@/pages/CommissionWizard"));
+const Layout = lazy(() => import("@/components/Layout"));
 
 // Auth Context
 const AuthContext = createContext(null);
@@ -204,8 +203,13 @@ function AppRoutes() {
   return (
     <>
       <AuthRedirectHandler />
-      <Routes>
-        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#0d474f]">
+          <div className="spinner"></div>
+        </div>
+      }>
+        <Routes>
+          <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />
       
       <Route path="/" element={
         <ProtectedRoute>
@@ -263,7 +267,8 @@ function AppRoutes() {
       </Route>
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+        </Routes>
+      </Suspense>
     </>
   );
 }

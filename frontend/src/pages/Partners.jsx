@@ -331,7 +331,7 @@ export default function Partners() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {partners.length > 0 ? (
           partners.map((partner) => (
-            <Card key={partner.id} className="card-leiritrix border-l-4 border-l-blue-600" data-testid={`partner-card-${partner.id}`}>
+            <Card key={partner.id} className="card-modern border-l-4 border-l-blue-600" data-testid={`partner-card-${partner.id}`}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -416,7 +416,7 @@ export default function Partners() {
             </Card>
           ))
         ) : (
-          <Card className="card-leiritrix col-span-full">
+          <Card className="card-modern col-span-full">
             <CardContent className="p-8 text-center">
               <Building2 size={48} className="mx-auto text-[#172B4D]/20 mb-4" />
               <p className="text-[#172B4D]/70">Nenhum parceiro registado</p>
@@ -559,7 +559,7 @@ export default function Partners() {
                 <h3 className="text-white font-medium mb-3 text-sm">Operadoras Associadas</h3>
                 <div className="space-y-2">
                   {operators.map((operator) => (
-                    <Card key={operator.id} className="card-leiritrix">
+                    <Card key={operator.id} className="card-modern">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3 flex-1">
@@ -611,7 +611,7 @@ export default function Partners() {
                   {availableOperators
                     .slice((currentPage - 1) * operatorsPerPage, currentPage * operatorsPerPage)
                     .map((operator) => (
-                      <Card key={operator.id} className="card-leiritrix">
+                      <Card key={operator.id} className="card-modern">
                         <CardContent className="p-4">
                           <div className="flex items-center gap-3">
                             <Checkbox

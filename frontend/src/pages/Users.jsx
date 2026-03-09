@@ -387,7 +387,7 @@ export default function Users() {
           const isCurrentUser = user.id === currentUser?.id;
           
           return (
-            <Card key={user.id} className="card-leiritrix" data-testid={`user-card-${user.id}`}>
+            <Card key={user.id} className="card-modern" data-testid={`user-card-${user.id}`}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -515,7 +515,7 @@ export default function Users() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="form-input mt-1"
-                placeholder="email@leiritrix.pt"
+                placeholder="email@empresa.pt"
                 autoComplete="off"
                 data-testid="user-email-input"
                 disabled={!!editingUser}
@@ -696,7 +696,7 @@ export default function Users() {
                 value={emailChangeData.newEmail}
                 onChange={(e) => setEmailChangeData({ ...emailChangeData, newEmail: e.target.value })}
                 className="form-input mt-1"
-                placeholder="novo-email@leiritrix.pt"
+                placeholder="novo-email@empresa.pt"
                 autoComplete="off"
                 data-testid="new-email-input"
               />
@@ -709,7 +709,7 @@ export default function Users() {
                 value={emailChangeData.confirmEmail}
                 onChange={(e) => setEmailChangeData({ ...emailChangeData, confirmEmail: e.target.value })}
                 className="form-input mt-1"
-                placeholder="novo-email@leiritrix.pt"
+                placeholder="novo-email@empresa.pt"
                 autoComplete="off"
                 data-testid="confirm-new-email-input"
               />

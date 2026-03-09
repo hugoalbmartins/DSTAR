@@ -30,7 +30,7 @@ export const SalesLineChart = React.memo(({ data, title = "Evolução de Vendas"
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className="card-leiritrix overflow-hidden">
+      <Card className="card-modern overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50/30">
           <CardTitle className="text-lg font-bold text-slate-900">{title}</CardTitle>
           {subtitle && <p className="text-sm text-slate-600 mt-1">{subtitle}</p>}
@@ -87,7 +87,7 @@ export const SalesBarChart = React.memo(({ data, title = "Vendas por Operadora" 
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
     >
-      <Card className="card-leiritrix overflow-hidden">
+      <Card className="card-modern overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50/30">
           <CardTitle className="text-lg font-bold text-slate-900">{title}</CardTitle>
         </CardHeader>
@@ -137,7 +137,7 @@ export const ConversionFunnelChart = React.memo(({ data, title = "Funil de Conve
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
     >
-      <Card className="card-leiritrix overflow-hidden">
+      <Card className="card-modern overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50/30">
           <CardTitle className="text-lg font-bold text-slate-900">{title}</CardTitle>
         </CardHeader>

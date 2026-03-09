@@ -127,7 +127,7 @@ export default function CommissionSettings() {
         </div>
       </div>
 
-      <Card className="card-leiritrix">
+      <Card className="card-modern">
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="flex-1">
@@ -158,7 +158,7 @@ export default function CommissionSettings() {
       </Card>
 
       {selectedOperator && settings.length === 0 && (
-        <Card className="card-leiritrix">
+        <Card className="card-modern">
           <CardContent className="p-8 text-center">
             <Settings className="mx-auto mb-4 text-[#172B4D]/30" size={48} />
             <p className="text-[#172B4D] mb-2">Nenhuma configuração definida</p>
@@ -179,7 +179,7 @@ export default function CommissionSettings() {
       {selectedOperator && settings.length > 0 && (
         <div className="space-y-4">
           {settings.map((setting) => (
-            <Card key={setting.id} className="card-leiritrix">
+            <Card key={setting.id} className="card-modern">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

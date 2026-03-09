@@ -21,7 +21,7 @@ const activityColors = {
 
 const RecentActivity = React.memo(({ activities = [] }) => {
   return (
-    <Card className="card-leiritrix">
+    <Card className="card-modern">
       <CardHeader className="border-b border-gray-200">
         <CardTitle className="text-lg font-bold text-[#172B4D]">Atividade Recente</CardTitle>
       </CardHeader>
