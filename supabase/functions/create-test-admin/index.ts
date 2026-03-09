@@ -29,13 +29,24 @@ Deno.serve(async (req: Request) => {
 
     // Check if user already exists in auth.users
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const userExists = existingUsers?.users.some(u => u.email === 'test@tester.pt');
+    const existingUser = existingUsers?.users.find(u => u.email === 'test@tester.pt');
 
-    if (userExists) {
+    if (existingUser) {
+      // Update password if user exists
+      const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+        existingUser.id,
+        { password: 'Crm2026*' }
+      );
+
+      if (updateError) {
+        throw new Error(`Failed to update password: ${updateError.message}`);
+      }
+
       return new Response(
         JSON.stringify({
           success: true,
-          message: 'User test@tester.pt already exists',
+          message: 'User test@tester.pt password updated',
+          userId: existingUser.id,
           alreadyExists: true
         }),
         {
@@ -47,9 +58,6 @@ Deno.serve(async (req: Request) => {
         }
       );
     }
-
-    // Create user in auth.users with the specific UUID
-    const specificUserId = 'b8e7d123-4567-89ab-cdef-0123456789ab';
 
     const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email: 'test@tester.pt',
