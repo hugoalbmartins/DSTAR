@@ -42,6 +42,17 @@ export const authService = {
       throw new Error('Não autenticado');
     }
 
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    console.log('[AUTH] Current user:', currentUser?.email, 'ID:', currentUser?.id);
+
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', currentUser.id)
+      .maybeSingle();
+
+    console.log('[AUTH] User profile role:', userProfile?.role);
+
     const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-user`;
 
     const payload = {
@@ -53,9 +64,11 @@ export const authService = {
       commission_threshold: userData.commission_threshold,
     };
 
-    console.log('Sending create user request:', {
+    console.log('[AUTH] Sending create user request:', {
       url: apiUrl,
       hasSession: !!session,
+      sessionUserId: session.user?.id,
+      tokenLength: session.access_token?.length,
       payload: {
         ...payload,
         password: '[REDACTED]'
@@ -75,14 +88,16 @@ export const authService = {
     try {
       result = await response.json();
     } catch (e) {
-      console.error('Failed to parse response:', e);
+      console.error('[AUTH] Failed to parse response:', e);
       throw new Error('Erro ao processar resposta do servidor');
     }
 
-    console.log('Create user response:', {
+    console.log('[AUTH] Create user response:', {
       status: response.status,
       ok: response.ok,
-      error: result.error
+      error: result.error,
+      details: result.details,
+      hint: result.hint
     });
 
     if (!response.ok) {
