@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 
 export const usersService = {
   async getUsers(includeInactive = false) {
-    let query = supabase.from('users').select('*');
+    let query = supabase.from('users').select('*').eq('hidden', false);
 
     if (!includeInactive) {
       query = query.eq('active', true);
@@ -70,7 +70,7 @@ export const usersService = {
   },
 
   async getUsersByRole(role, includeInactive = false) {
-    let query = supabase.from('users').select('*').eq('role', role);
+    let query = supabase.from('users').select('*').eq('role', role).eq('hidden', false);
 
     if (!includeInactive) {
       query = query.eq('active', true);
