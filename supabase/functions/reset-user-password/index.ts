@@ -17,6 +17,42 @@ Deno.serve(async (req: Request) => {
   try {
     console.log('Reset password function called');
 
+    const authHeader = req.headers.get('Authorization');
+    console.log('Auth header present:', !!authHeader);
+
+    if (!authHeader) {
+      throw new Error('Missing authorization header');
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+
+    // Client para validar o token do utilizador (usa anon key)
+    const userClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+        global: {
+          headers: {
+            Authorization: authHeader,
+          },
+        },
+      }
+    );
+
+    const { data: { user: requestingUser }, error: authError } = await userClient.auth.getUser();
+
+    console.log('Requesting user:', requestingUser?.id, 'Auth error:', authError);
+
+    if (authError || !requestingUser) {
+      console.error('Auth validation failed:', authError);
+      throw new Error('Unauthorized');
+    }
+
+    // Client admin para operações privilegiadas
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -27,22 +63,6 @@ Deno.serve(async (req: Request) => {
         },
       }
     );
-
-    const authHeader = req.headers.get('Authorization');
-    console.log('Auth header present:', !!authHeader);
-
-    if (!authHeader) {
-      throw new Error('Missing authorization header');
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user: requestingUser }, error: authError } = await supabaseClient.auth.getUser(token);
-
-    console.log('Requesting user:', requestingUser?.id, 'Auth error:', authError);
-
-    if (authError || !requestingUser) {
-      throw new Error('Unauthorized');
-    }
 
     const { data: requestingUserProfile, error: profileError } = await supabaseClient
       .from('users')
