@@ -17,6 +17,7 @@ Deno.serve(async (req: Request) => {
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('Missing authorization header');
       throw new Error('Missing authorization header');
     }
 
@@ -46,6 +47,8 @@ Deno.serve(async (req: Request) => {
       throw new Error('Unauthorized');
     }
 
+    console.log('Request from user:', requestingUser.email);
+
     // Client admin para operações privilegiadas
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -68,9 +71,18 @@ Deno.serve(async (req: Request) => {
       throw new Error('Unauthorized: Admin access required');
     }
 
-    const { email, password, name, role, commission_percentage, commission_threshold } = await req.json();
+    const body = await req.json();
+    console.log('Request body received:', {
+      hasEmail: !!body.email,
+      hasPassword: !!body.password,
+      hasName: !!body.name,
+      role: body.role
+    });
+
+    const { email, password, name, role, commission_percentage, commission_threshold } = body;
 
     if (!email || !password || !name) {
+      console.error('Missing required fields:', { email: !!email, password: !!password, name: !!name });
       throw new Error('Missing required fields: email, password, name');
     }
 

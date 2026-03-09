@@ -44,23 +44,46 @@ export const authService = {
 
     const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-user`;
 
+    const payload = {
+      email,
+      password,
+      name: userData.name,
+      role: userData.role || 'vendedor',
+      commission_percentage: userData.commission_percentage,
+      commission_threshold: userData.commission_threshold,
+    };
+
+    console.log('Sending create user request:', {
+      url: apiUrl,
+      hasSession: !!session,
+      payload: {
+        ...payload,
+        password: '[REDACTED]'
+      }
+    });
+
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        email,
-        password,
-        name: userData.name,
-        role: userData.role || 'vendedor',
-        commission_percentage: userData.commission_percentage,
-        commission_threshold: userData.commission_threshold,
-      }),
+      body: JSON.stringify(payload),
     });
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (e) {
+      console.error('Failed to parse response:', e);
+      throw new Error('Erro ao processar resposta do servidor');
+    }
+
+    console.log('Create user response:', {
+      status: response.status,
+      ok: response.ok,
+      error: result.error
+    });
 
     if (!response.ok) {
       throw new Error(result.error || 'Erro ao criar utilizador');
