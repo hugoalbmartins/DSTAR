@@ -32,8 +32,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Users as UsersIcon, Plus, CreditCard as Edit2, Trash2, UserCheck, UserX, Shield, Loader as Loader2, Eye, EyeOff, RefreshCw, Mail } from "lucide-react";
-import { generatePassword } from "@/utils/passwordGenerator";
+import { Users as UsersIcon, Plus, CreditCard as Edit2, Trash2, UserCheck, UserX, Shield, Loader as Loader2, Eye, EyeOff, RefreshCw, Mail, KeyRound } from "lucide-react";
+import { generatePassword, validatePassword } from "@/utils/passwordGenerator";
 
 const ROLES = [
   { value: "admin", label: "Administrador", color: "bg-blue-100 text-blue-700 border border-blue-200" },
@@ -58,6 +58,15 @@ export default function Users() {
     newEmail: "",
     confirmEmail: ""
   });
+  const [passwordResetModalOpen, setPasswordResetModalOpen] = useState(false);
+  const [passwordResetData, setPasswordResetData] = useState({
+    userId: null,
+    userName: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showResetConfirmPassword, setShowResetConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -138,6 +147,29 @@ export default function Users() {
     setEmailChangeModalOpen(true);
   };
 
+  const openPasswordResetModal = (user) => {
+    setPasswordResetData({
+      userId: user.id,
+      userName: user.name,
+      newPassword: "",
+      confirmPassword: ""
+    });
+    setShowResetPassword(false);
+    setShowResetConfirmPassword(false);
+    setPasswordResetModalOpen(true);
+  };
+
+  const handleGenerateResetPassword = () => {
+    const generated = generatePassword(12);
+    setPasswordResetData({
+      ...passwordResetData,
+      newPassword: generated,
+      confirmPassword: generated
+    });
+    setShowResetPassword(true);
+    setShowResetConfirmPassword(true);
+  };
+
   const handleEmailChange = async () => {
     if (!emailChangeData.newEmail || !emailChangeData.confirmEmail) {
       toast.error("Preencha todos os campos");
@@ -154,7 +186,6 @@ export default function Users() {
       return;
     }
 
-    // Validar formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailChangeData.newEmail)) {
       toast.error("Email inválido");
@@ -179,6 +210,48 @@ export default function Users() {
       });
     } catch (error) {
       const message = error.message || "Erro ao alterar email";
+      toast.error(message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!passwordResetData.newPassword || !passwordResetData.confirmPassword) {
+      toast.error("Preencha todos os campos");
+      return;
+    }
+
+    const passwordError = validatePassword(passwordResetData.newPassword);
+    if (passwordError) {
+      toast.error(passwordError);
+      return;
+    }
+
+    if (passwordResetData.newPassword !== passwordResetData.confirmPassword) {
+      toast.error("As passwords não coincidem");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await usersService.resetUserPassword(
+        passwordResetData.userId,
+        passwordResetData.newPassword
+      );
+
+      toast.success("Password resetada com sucesso");
+      setPasswordResetModalOpen(false);
+      setPasswordResetData({
+        userId: null,
+        userName: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
+      setShowResetPassword(false);
+      setShowResetConfirmPassword(false);
+    } catch (error) {
+      const message = error.message || "Erro ao resetar password";
       toast.error(message);
     } finally {
       setSaving(false);
@@ -380,16 +453,28 @@ export default function Users() {
                       </>
                     )}
                   </div>
-                  <Button
-                    onClick={() => openEmailChangeModal(user)}
-                    variant="ghost"
-                    size="sm"
-                    className="w-full text-[#172B4D]/70 hover:text-[#172B4D] hover:bg-slate-50 text-xs"
-                    data-testid={`change-email-${user.id}`}
-                  >
-                    <Mail size={14} className="mr-1" />
-                    Alterar Email
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => openEmailChangeModal(user)}
+                      variant="ghost"
+                      size="sm"
+                      className="flex-1 text-[#172B4D]/70 hover:text-[#172B4D] hover:bg-slate-50 text-xs"
+                      data-testid={`change-email-${user.id}`}
+                    >
+                      <Mail size={14} className="mr-1" />
+                      Email
+                    </Button>
+                    <Button
+                      onClick={() => openPasswordResetModal(user)}
+                      variant="ghost"
+                      size="sm"
+                      className="flex-1 text-[#172B4D]/70 hover:text-[#172B4D] hover:bg-slate-50 text-xs"
+                      data-testid={`reset-password-${user.id}`}
+                    >
+                      <KeyRound size={14} className="mr-1" />
+                      Password
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -666,6 +751,126 @@ export default function Users() {
                 </>
               ) : (
                 "Alterar Email"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Password Reset Modal */}
+      <Dialog open={passwordResetModalOpen} onOpenChange={setPasswordResetModalOpen}>
+        <DialogContent className="bg-white border-slate-200">
+          <DialogHeader>
+            <DialogTitle className="text-[#172B4D] font-['Manrope']">
+              Resetar Password
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-900">
+                <strong>Utilizador:</strong> {passwordResetData.userName}
+              </p>
+              <p className="text-xs text-blue-700 mt-2">
+                Defina uma nova password para este utilizador. A password antiga será substituída.
+              </p>
+            </div>
+
+            <div>
+              <Label className="form-label">Nova Password *</Label>
+              <div className="flex gap-2 mt-1">
+                <div className="relative flex-1">
+                  <Input
+                    type={showResetPassword ? "text" : "password"}
+                    value={passwordResetData.newPassword}
+                    onChange={(e) => setPasswordResetData({ ...passwordResetData, newPassword: e.target.value })}
+                    className="form-input pr-10"
+                    placeholder="Nova password"
+                    autoComplete="new-password"
+                    data-testid="reset-new-password-input"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowResetPassword(!showResetPassword)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#172B4D]/50 hover:text-[#172B4D]"
+                  >
+                    {showResetPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <Button
+                  type="button"
+                  onClick={handleGenerateResetPassword}
+                  variant="outline"
+                  className="form-input px-3"
+                  title="Gerar password segura"
+                >
+                  <RefreshCw size={18} />
+                </Button>
+              </div>
+              <p className="text-xs text-[#172B4D]/50 mt-1">
+                Min 8 caracteres: 1 maiúscula, 1 minúscula, 1 número, 1 especial
+              </p>
+            </div>
+
+            <div>
+              <Label className="form-label">Confirmar Nova Password *</Label>
+              <div className="relative mt-1">
+                <Input
+                  type={showResetConfirmPassword ? "text" : "password"}
+                  value={passwordResetData.confirmPassword}
+                  onChange={(e) => setPasswordResetData({ ...passwordResetData, confirmPassword: e.target.value })}
+                  className="form-input pr-10"
+                  placeholder="Confirmar password"
+                  autoComplete="new-password"
+                  data-testid="reset-confirm-password-input"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowResetConfirmPassword(!showResetConfirmPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#172B4D]/50 hover:text-[#172B4D]"
+                >
+                  {showResetConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <p className="text-xs text-amber-800">
+                <strong>Atenção:</strong> Esta ação irá substituir a password atual do utilizador.
+                O utilizador poderá fazer login com a nova password imediatamente.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setPasswordResetModalOpen(false);
+                setPasswordResetData({
+                  userId: null,
+                  userName: "",
+                  newPassword: "",
+                  confirmPassword: ""
+                });
+                setShowResetPassword(false);
+                setShowResetConfirmPassword(false);
+              }}
+              className="btn-secondary"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handlePasswordReset}
+              disabled={saving}
+              className="btn-primary btn-primary-glow"
+              data-testid="confirm-password-reset-btn"
+            >
+              {saving ? (
+                <>
+                  <Loader2 size={18} className="mr-2 animate-spin" />
+                  A resetar...
+                </>
+              ) : (
+                "Resetar Password"
               )}
             </Button>
           </DialogFooter>
