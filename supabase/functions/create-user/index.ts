@@ -105,6 +105,8 @@ Deno.serve(async (req: Request) => {
       throw new Error('Um utilizador com este email já existe na base de dados');
     }
 
+    console.log('Creating auth user with email:', email);
+
     const { data: authData, error: createError } = await supabaseClient.auth.admin.createUser({
       email,
       password,
@@ -123,6 +125,8 @@ Deno.serve(async (req: Request) => {
       throw new Error('Failed to create user');
     }
 
+    console.log('Auth user created with ID:', authData.user.id);
+
     const insertData: any = {
       id: authData.user.id,
       email,
@@ -132,12 +136,14 @@ Deno.serve(async (req: Request) => {
       must_change_password: true,
     };
 
-    if (commission_percentage !== undefined) {
+    if (commission_percentage !== undefined && commission_percentage !== null) {
       insertData.commission_percentage = commission_percentage;
     }
-    if (commission_threshold !== undefined) {
+    if (commission_threshold !== undefined && commission_threshold !== null) {
       insertData.commission_threshold = commission_threshold;
     }
+
+    console.log('Inserting user profile data:', insertData);
 
     const { data: profileData, error: profileInsertError } = await supabaseClient
       .from('users')
@@ -146,10 +152,17 @@ Deno.serve(async (req: Request) => {
       .single();
 
     if (profileInsertError) {
+      console.error('Error creating user profile:', {
+        message: profileInsertError.message,
+        details: profileInsertError.details,
+        hint: profileInsertError.hint,
+        code: profileInsertError.code,
+      });
       await supabaseClient.auth.admin.deleteUser(authData.user.id);
-      console.error('Error creating user profile:', profileInsertError);
-      throw profileInsertError;
+      throw new Error(`Erro ao criar perfil: ${profileInsertError.message} ${profileInsertError.details || ''} ${profileInsertError.hint || ''}`);
     }
+
+    console.log('User profile created successfully');
 
     return new Response(
       JSON.stringify({ user: profileData }),
