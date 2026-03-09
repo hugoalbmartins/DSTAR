@@ -95,13 +95,15 @@ export const authService = {
     console.log('[AUTH] Create user response:', {
       status: response.status,
       ok: response.ok,
-      error: result.error,
-      details: result.details,
-      hint: result.hint
+      result: JSON.stringify(result, null, 2)
     });
 
     if (!response.ok) {
-      throw new Error(result.error || 'Erro ao criar utilizador');
+      const errorMessage = result.error || 'Erro ao criar utilizador';
+      console.error('[AUTH] Error creating user:', errorMessage);
+      if (result.details) console.error('[AUTH] Error details:', result.details);
+      if (result.hint) console.error('[AUTH] Error hint:', result.hint);
+      throw new Error(errorMessage);
     }
 
     return { user: result.user };
