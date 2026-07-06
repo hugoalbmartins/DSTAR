@@ -41,7 +41,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { ArrowLeft, Save, Loader2, User, FileText, Zap, ArrowRight, MapPin, Sun } from "lucide-react";
+import { ArrowLeft, Save, Loader as Loader2, User, FileText, Zap, ArrowRight, MapPin, Sun } from "lucide-react";
 
 const CATEGORIES = [
   { value: "energia", label: "Energia" },
@@ -135,7 +135,7 @@ export default function SaleForm() {
     partner_id: "",
     operator_id: "",
     client_category_id: "",
-    seller_id: "none",
+    seller_id: "",
     contract_value: "",
     loyalty_months: "",
     custom_loyalty_months: "",
@@ -748,6 +748,11 @@ export default function SaleForm() {
       return;
     }
 
+    if (sellers.length > 0 && !formData.seller_id) {
+      toast.error("Selecione o comercial associado à venda");
+      return;
+    }
+
     if (!formData.operator_id) {
       toast.error("Selecione uma operadora");
       return;
@@ -899,7 +904,7 @@ export default function SaleForm() {
         partner_id: formData.partner_id || null,
         operator_id: formData.operator_id || null,
         client_category_id: formData.client_category_id || null,
-        seller_id: formData.seller_id === "none" ? null : (formData.seller_id || null),
+        seller_id: formData.seller_id || null,
         status: 'em_negociacao',
         contract_value: ['Up_sell', 'Cross_sell'].includes(formData.sale_type)
           ? parseFloat(formData.new_monthly_value) || 0
@@ -1224,7 +1229,7 @@ export default function SaleForm() {
               partner_id: "",
               operator_id: "",
               client_category_id: "",
-              seller_id: "none",
+              seller_id: "",
               contract_value: "",
               loyalty_months: "",
               custom_loyalty_months: "",
@@ -1581,15 +1586,12 @@ export default function SaleForm() {
 
               {sellers.length > 0 && (
                 <div>
-                  <Label htmlFor="seller_id" className="form-label">Vendedor</Label>
+                  <Label htmlFor="seller_id" className="form-label">Comercial *</Label>
                   <Select value={formData.seller_id} onValueChange={(v) => handleChange("seller_id", v)}>
                     <SelectTrigger className="form-input" data-testid="seller-select">
-                      <SelectValue placeholder="Selecione o vendedor" />
+                      <SelectValue placeholder="Selecione o comercial" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-slate-200">
-                      <SelectItem value="none" className="text-slate-900">
-                        Nenhum
-                      </SelectItem>
                       {sellers.map((seller) => (
                         <SelectItem key={seller.id} value={seller.id} className="text-slate-900">
                           {seller.name}

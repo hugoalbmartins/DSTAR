@@ -2,6 +2,16 @@ import { supabase } from '../lib/supabase';
 
 export const servicesService = {
   async getServicesByClientId(clientId) {
+    const { data: addresses, error: addrError } = await supabase
+      .from('addresses')
+      .select('id')
+      .eq('client_id', clientId);
+
+    if (addrError) throw addrError;
+    if (!addresses || addresses.length === 0) return [];
+
+    const addressIds = addresses.map(a => a.id);
+
     const { data, error } = await supabase
       .from('services')
       .select(`
@@ -19,7 +29,7 @@ export const servicesService = {
           name
         )
       `)
-      .eq('address.client_id', clientId)
+      .in('address_id', addressIds)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -136,6 +146,16 @@ export const servicesService = {
   },
 
   async getActiveServices(clientId) {
+    const { data: addresses, error: addrError } = await supabase
+      .from('addresses')
+      .select('id')
+      .eq('client_id', clientId);
+
+    if (addrError) throw addrError;
+    if (!addresses || addresses.length === 0) return [];
+
+    const addressIds = addresses.map(a => a.id);
+
     const { data, error } = await supabase
       .from('services')
       .select(`
@@ -152,7 +172,7 @@ export const servicesService = {
           name
         )
       `)
-      .eq('address.client_id', clientId)
+      .in('address_id', addressIds)
       .eq('is_active', true)
       .order('created_at', { ascending: false });
 
