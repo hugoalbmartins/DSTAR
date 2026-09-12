@@ -81,6 +81,28 @@ export const addressesService = {
     return true;
   },
 
+  async getAddressesWithServices(clientId) {
+    const { data, error } = await supabase
+      .from('addresses')
+      .select(`
+        *,
+        services (
+          id,
+          service_number,
+          service_type,
+          is_active,
+          cpe,
+          cui,
+          operator:operator_id (id, name)
+        )
+      `)
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  },
+
   async getActiveAddresses(clientId) {
     const { data, error } = await supabase
       .from('addresses')

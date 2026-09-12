@@ -41,7 +41,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { ArrowLeft, Save, Loader as Loader2, User, FileText, Zap, ArrowRight, MapPin, Sun } from "lucide-react";
+import { ArrowLeft, Save, Loader as Loader2, User, FileText, Zap, ArrowRight, MapPin, Sun, Check } from "lucide-react";
 
 const CATEGORIES = [
   { value: "energia", label: "Energia" },
@@ -121,6 +121,8 @@ export default function SaleForm() {
   const [availableServices, setAvailableServices] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [sourceLead, setSourceLead] = useState(null);
+  const [clientAddresses, setClientAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
 
   const [formData, setFormData] = useState({
     client_name: "",
@@ -182,6 +184,7 @@ export default function SaleForm() {
       if (client) {
         setNifInput(client.nif);
         setCurrentClient(client);
+        loadClientAddresses(client.id);
         setFormData(prev => ({
           ...prev,
           client_name: client.name,
@@ -205,6 +208,7 @@ export default function SaleForm() {
       if (client) {
         setNifInput(client.nif);
         setCurrentClient(client);
+        loadClientAddresses(client.id);
         setFormData(prev => ({
           ...prev,
           client_name: client.name,
@@ -223,6 +227,36 @@ export default function SaleForm() {
     } catch (error) {
       console.error('Error loading client data from lead:', error);
       toast.error('Erro ao carregar dados da lead');
+    }
+  };
+
+  const loadClientAddresses = async (clientId) => {
+    try {
+      const addresses = await addressesService.getAddressesWithServices(clientId);
+      setClientAddresses(addresses || []);
+    } catch (error) {
+      console.error('Error loading client addresses:', error);
+      setClientAddresses([]);
+    }
+  };
+
+  const selectExistingAddress = (address) => {
+    setSelectedAddressId(address.id);
+    handleChange("street_address", address.street_address || "");
+    handleChange("postal_code", address.postal_code || "");
+    handleChange("city", address.city || "");
+    if (selectedService && selectedService.address_id !== address.id) {
+      setSelectedService(null);
+    }
+  };
+
+  const clearAddressSelection = () => {
+    setSelectedAddressId(null);
+    handleChange("street_address", "");
+    handleChange("postal_code", "");
+    handleChange("city", "");
+    if (selectedService) {
+      setSelectedService(null);
     }
   };
 
@@ -517,6 +551,7 @@ export default function SaleForm() {
 
       if (client) {
         setCurrentClient(client);
+        loadClientAddresses(client.id);
         const services = await servicesService.getServicesByClientId(client.id);
         setAvailableServices(services || []);
 
@@ -569,6 +604,7 @@ export default function SaleForm() {
 
   const handleNovaVenda = () => {
     const latestSale = previousSales[0];
+    setSelectedAddressId(null);
     setFormData({
       ...formData,
       client_name: latestSale.client_name || "",
@@ -635,6 +671,7 @@ export default function SaleForm() {
       }
     }
 
+    setSelectedAddressId(null);
     setFormData(newFormData);
     setShowForm(true);
   };
@@ -713,6 +750,7 @@ export default function SaleForm() {
       }
     }
 
+    setSelectedAddressId(selectedSaleFlow === "MC" ? null : (service.address_id || null));
     setFormData(newFormData);
     setShowForm(true);
   };
@@ -847,6 +885,8 @@ export default function SaleForm() {
       let address = null;
       if (selectedService && selectedSaleFlow !== "MC") {
         address = { id: selectedService.address_id };
+      } else if (selectedAddressId && selectedSaleFlow !== "MC") {
+        address = { id: selectedAddressId };
       } else {
         address = await addressesService.createAddress({
           client_id: client.id,
@@ -1216,6 +1256,8 @@ export default function SaleForm() {
             setShowForm(false);
             setNifInput("");
             setPreviousSales([]);
+            setClientAddresses([]);
+            setSelectedAddressId(null);
             setFormData({
               client_name: "",
               client_email: "",
@@ -1307,6 +1349,73 @@ export default function SaleForm() {
                   data-testid="client-phone-input"
                 />
               </div>
+
+              {currentClient && clientAddresses.length > 0 && (
+                <div className="md:col-span-2">
+                  <Label className="form-label flex items-center gap-2">
+                    <MapPin size={16} className="text-brand-600" />
+                    Moradas Existentes do Cliente
+                  </Label>
+                  <div className="space-y-2 mt-2">
+                    {clientAddresses.map((addr) => (
+                      <div
+                        key={addr.id}
+                        onClick={() => selectExistingAddress(addr)}
+                        className={`cursor-pointer rounded-lg border p-3 transition-all duration-200 ${
+                          selectedAddressId === addr.id
+                            ? 'border-brand-500 bg-brand-50 ring-1 ring-brand-500'
+                            : 'border-slate-200 hover:border-brand-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className="font-medium text-slate-900 text-sm">
+                              {addr.street_address}
+                            </p>
+                            <p className="text-slate-600 text-xs mt-0.5">
+                              {addr.postal_code} {addr.city}
+                            </p>
+                            {addr.services && addr.services.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {addr.services.map(svc => (
+                                  <span
+                                    key={svc.id}
+                                    className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
+                                      svc.is_active
+                                        ? 'bg-brand-100 text-brand-700'
+                                        : 'bg-slate-100 text-slate-500'
+                                    }`}
+                                  >
+                                    <Zap size={10} />
+                                    {svc.service_number || 'Sem nº'}
+                                    {' · '}
+                                    {svc.service_type.replace('energia_', '').replace('_', ' ')}
+                                    {svc.operator && ` · ${svc.operator.name}`}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          {selectedAddressId === addr.id && (
+                            <Check size={18} className="text-brand-600 flex-shrink-0 ml-2" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={clearAddressSelection}
+                      className={`text-sm font-medium transition-colors ${
+                        selectedAddressId === null
+                          ? 'text-brand-600'
+                          : 'text-slate-500 hover:text-brand-600'
+                      }`}
+                    >
+                      + Nova morada (preencher manualmente)
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="md:col-span-2">
                 <Label htmlFor="street_address" className="form-label">Rua e Número *</Label>
@@ -1890,6 +1999,7 @@ export default function SaleForm() {
               setShowForm(false);
               setNifInput("");
               setPreviousSales([]);
+              setSelectedAddressId(null);
             }}
             data-testid="cancel-btn"
           >
