@@ -82,7 +82,7 @@ export const addressesService = {
   },
 
   async getAddressesWithServices(clientId) {
-    const { data, error } = await supabase
+    const { data: addresses, error: addrError } = await supabase
       .from('addresses')
       .select(`
         *,
@@ -99,8 +99,39 @@ export const addressesService = {
       .eq('client_id', clientId)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data;
+    if (addrError) throw addrError;
+    if (!addresses || addresses.length === 0) return [];
+
+    const addressIds = addresses.map(a => a.id);
+
+    const { data: sales, error: salesError } = await supabase
+      .from('sales')
+      .select('id, address_id, service_id, numero_servico, prt, category, sale_type, status, operator_id')
+      .in('address_id', addressIds)
+      .order('created_at', { ascending: false });
+
+    if (salesError) throw salesError;
+
+    const salesByService = {};
+    (sales || []).forEach(s => {
+      if (s.service_id) {
+        if (!salesByService[s.service_id]) salesByService[s.service_id] = [];
+        salesByService[s.service_id].push(s);
+      }
+    });
+
+    return addresses.map(addr => ({
+      ...addr,
+      services: (addr.services || []).map(svc => {
+        const svcSales = salesByService[svc.id] || [];
+        const latestSale = svcSales[0];
+        return {
+          ...svc,
+          numero_servico: latestSale?.numero_servico || svc.service_number || null,
+          prt: latestSale?.prt || null,
+        };
+      }),
+    }));
   },
 
   async getActiveAddresses(clientId) {

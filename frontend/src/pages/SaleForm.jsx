@@ -1201,8 +1201,11 @@ export default function SaleForm() {
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <p className="text-slate-900 font-semibold">
-                          {service.service_number || 'Sem número de serviço'}
+                          {service.numero_servico || service.service_number || 'Sem número de serviço'}
                         </p>
+                        {service.prt && (
+                          <p className="text-slate-600 text-xs mt-0.5">PRT: {service.prt}</p>
+                        )}
                         <p className="text-slate-600 text-sm mt-1">
                           {service.address?.street_address}
                         </p>
@@ -1387,10 +1390,11 @@ export default function SaleForm() {
                                     }`}
                                   >
                                     <Zap size={10} />
-                                    {svc.service_number || 'Sem nº'}
+                                    {svc.numero_servico || svc.service_number || 'Sem nº'}
                                     {' · '}
                                     {svc.service_type.replace('energia_', '').replace('_', ' ')}
                                     {svc.operator && ` · ${svc.operator.name}`}
+                                    {svc.prt && ` · PRT: ${svc.prt}`}
                                   </span>
                                 ))}
                               </div>

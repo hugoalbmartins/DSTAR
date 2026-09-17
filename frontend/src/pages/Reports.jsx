@@ -242,7 +242,7 @@ export default function Reports() {
         "Categoria", "Operadora", "Tipo Venda", "Parceiro", "Vendedor",
         "Valor Contrato", "Comissão Vendedor", "Comissão Parceiro", "Comissão Backoffice", "Comissão Total",
         "Estado", "Fidelização (meses)", "Data de Venda", "Data de Ativação", "Fim Fidelização",
-        "REQ", "CPE", "Potência (kVA)", "CUI", "Escalão",
+        "Número de Serviço", "PRT", "REQ", "CPE", "Potência (kVA)", "CUI", "Escalão",
         "Potência Solar (kW)", "Quantidade Painéis", "Notas", "ID", "Data Criação"
       ],
       ...salesReport.sales.map(sale => [
@@ -271,6 +271,8 @@ export default function Reports() {
         sale.sale_date ? new Date(sale.sale_date).toLocaleDateString('pt-PT') : new Date(sale.created_at).toLocaleDateString('pt-PT'),
         sale.active_date ? new Date(sale.active_date).toLocaleDateString('pt-PT') : "",
         sale.loyalty_end_date ? new Date(sale.loyalty_end_date).toLocaleDateString('pt-PT') : "",
+        sale.numero_servico || "",
+        sale.prt || "",
         sale.req || "",
         sale.cpe || "",
         sale.potencia || "",
@@ -561,6 +563,22 @@ export default function Reports() {
                           const statusInfo = STATUS_MAP[value];
                           return <ModernBadge variant={statusInfo?.variant}>{statusInfo?.label}</ModernBadge>;
                         }
+                      },
+                      {
+                        key: 'numero_servico',
+                        label: 'Nº Serviço',
+                        sortable: true,
+                        render: (value) => (
+                          <span className="font-mono text-sm text-slate-700">{value || '-'}</span>
+                        )
+                      },
+                      {
+                        key: 'prt',
+                        label: 'PRT',
+                        sortable: true,
+                        render: (value) => (
+                          <span className="font-mono text-sm text-slate-700">{value || '-'}</span>
+                        )
                       },
                       {
                         key: 'sale_date',

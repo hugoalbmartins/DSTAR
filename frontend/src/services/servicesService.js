@@ -12,7 +12,7 @@ export const servicesService = {
 
     const addressIds = addresses.map(a => a.id);
 
-    const { data, error } = await supabase
+    const { data: services, error: svcError } = await supabase
       .from('services')
       .select(`
         *,
@@ -32,8 +32,31 @@ export const servicesService = {
       .in('address_id', addressIds)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data;
+    if (svcError) throw svcError;
+    if (!services || services.length === 0) return [];
+
+    const serviceIds = services.map(s => s.id);
+
+    const { data: sales, error: salesError } = await supabase
+      .from('sales')
+      .select('id, service_id, numero_servico, prt')
+      .in('service_id', serviceIds)
+      .order('created_at', { ascending: false });
+
+    if (salesError) throw salesError;
+
+    const salesByService = {};
+    (sales || []).forEach(s => {
+      if (s.service_id && !salesByService[s.service_id]) {
+        salesByService[s.service_id] = s;
+      }
+    });
+
+    return services.map(svc => ({
+      ...svc,
+      numero_servico: salesByService[svc.id]?.numero_servico || svc.service_number || null,
+      prt: salesByService[svc.id]?.prt || null,
+    }));
   },
 
   async getServicesByAddressId(addressId) {
